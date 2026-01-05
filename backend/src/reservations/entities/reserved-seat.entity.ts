@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 import { Reservation } from './reservation.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { SeatStatus } from 'src/common/enums/reservation-status.enum';
+import { SeatStatus } from 'src/common/enums/reservation.enum';
 
 @Entity('reserved_seats')
 export class ReservedSeat extends BaseEntity {

@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { ReservationStatus } from 'src/common/enums/reservation-status.enum';
+import { ReservationStatus } from 'src/common/enums/reservation.enum';
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { ReservedSeat } from './reserved-seat.entity';
 // import { User } from '../../users/entities/user.entity';
@@ -16,6 +16,7 @@ export class Reservation extends BaseEntity {
     // @JoinColumn({ name: 'eventId' })
     //   event: Event;
 
+    // @Column({ type: 'uuid' })
     @Column()
     userId: string;
 

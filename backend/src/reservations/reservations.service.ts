@@ -9,7 +9,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Reservation } from './entities/reservation.entity';
 import { ReservedSeat } from './entities/reserved-seat.entity';
 import { LockSeatsDto } from './dto/lock-seats.dto';
-import { ReservationStatus, SeatStatus } from 'src/common/enums/reservation-status.enum';
+import { ReservationStatus, SeatStatus } from 'src/common/enums/reservation.enum';
 import { DEFAULT_SEAT_PRICE, RESERVATION_EXPIRATION_MINUTES } from 'src/common/constants/reservation.constants';
 
 @Injectable()
@@ -136,10 +136,6 @@ export class ReservationsService {
         }
 
         return expired.length;
-    }
-
-    async findAll() {
-        return this.reservationRepo.find({ relations: ['seats'] });
     }
 
 }

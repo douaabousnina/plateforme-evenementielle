@@ -4,19 +4,19 @@ Content-Type: application/json
 
 {
   "eventId": "b1f5d3c4-1234-4f2e-9876-abcdef123456",
-  "seatIds": ["A1", "A2", "A3"]
+  "seatIds": ["A4", "A5", "A6"]
 }
 
 ###
 
 ### ✅ Confirm reservation
-PATCH http://localhost:3000/reservations/3493966a-4cc0-4e69-8770-5dcd5563af63/confirm
+PATCH http://localhost:3000/reservations/2b421dff-cc5c-4bce-82b5-e95a8e26f763/confirm
 Content-Type: application/json
 
 ###
 
 ### ❌ Cancel reservation
-PATCH http://localhost:3000/reservations/3493966a-4cc0-4e69-8770-5dcd5563af63/cancel
+PATCH http://localhost:3000/reservations/cfaf6d56-2f4d-49dc-ab5b-bb2df133d109/cancel
 Content-Type: application/json
 
 ###
@@ -28,6 +28,6 @@ Content-Type: application/json
 ###
 
 ### 👤 Get reservations by user
-GET http://localhost:3000/reservations/user/<user_uuid>
+GET http://localhost:3000/reservations/user/sample-user-id
 Content-Type: application/json
 
