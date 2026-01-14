@@ -3,7 +3,7 @@ POST http://localhost:3000/payments
 Content-Type: application/json
 
 {
-  "reservationId": "3bb47db7-0147-4d5d-95c9-addd438438f3",
+  "reservationId": "8d783e1f-3161-49bd-bf31-6081bd3c85ba",
   "method": "visa",
   "cardNumber": "4111111111111111",
   "cardHolder": "John Doe"

@@ -2,6 +2,7 @@ import {
     Injectable,
     NotFoundException,
     BadRequestException,
+    ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, LessThan } from 'typeorm';
@@ -14,6 +15,8 @@ import { DEFAULT_SEAT_PRICE, RESERVATION_EXPIRATION_MINUTES } from 'src/common/c
 
 @Injectable()
 export class ReservationsService {
+    private isExpiringWorking = false;
+
     constructor(
         @InjectRepository(Reservation)
         private readonly reservationRepo: Repository<Reservation>,
@@ -33,7 +36,9 @@ export class ReservationsService {
         });
 
         if (takenSeats.length > 0) {
-            throw new BadRequestException(`Seats already taken: ${takenSeats.map(s => s.seatId).join(', ')}`);
+            throw new ConflictException(
+                `Seats already taken: ${takenSeats.map(s => s.seatId).join(', ')}`
+            );
         }
 
         // create reservation
@@ -64,10 +69,12 @@ export class ReservationsService {
     async confirm(reservationId: string) {
         const reservation = await this.findById(reservationId);
 
-        if (!reservation) throw new NotFoundException('Reservation not found');
-
         if (reservation.status !== ReservationStatus.PENDING) {
             throw new BadRequestException('Reservation not confirmable');
+        }
+
+        if (!reservation.seats?.length) {
+            throw new NotFoundException('Reserved seats not found');
         }
 
         if (reservation.expiresAt < new Date()) {
@@ -88,10 +95,12 @@ export class ReservationsService {
     async cancel(reservationId: string) {
         const reservation = await this.findById(reservationId);
 
-        if (!reservation) throw new NotFoundException('Reservation not found');
-
         if (reservation.status !== ReservationStatus.PENDING) {
             throw new BadRequestException('Only pending reservations can be cancelled');
+        }
+
+        if (!reservation.seats?.length) {
+            throw new NotFoundException('Reserved seats not found');
         }
 
         reservation.status = ReservationStatus.CANCELLED;
@@ -123,6 +132,9 @@ export class ReservationsService {
     // AUTO-EXPIRE PENDING RESERVATIONS
     @Cron(CronExpression.EVERY_MINUTE)
     async expireOldReservations() {
+        if (this.isExpiringWorking) return 0;
+        this.isExpiringWorking = true;
+
         const expired = await this.reservationRepo.find({
             where: { status: ReservationStatus.PENDING, expiresAt: LessThan(new Date()) },
             relations: ['seats'],
@@ -131,11 +143,14 @@ export class ReservationsService {
         for (const reservation of expired) {
             reservation.status = ReservationStatus.EXPIRED;
             reservation.seats.forEach(s => (s.status = SeatStatus.AVAILABLE));
-            await this.seatRepo.save(reservation.seats);
-            await this.reservationRepo.save(reservation);
         }
 
+        if (expired.length > 0) {
+            await this.seatRepo.save(expired.flatMap(r => r.seats));
+            await this.reservationRepo.save(expired);
+        }
+
+        this.isExpiringWorking = false;
         return expired.length;
     }
-
 }

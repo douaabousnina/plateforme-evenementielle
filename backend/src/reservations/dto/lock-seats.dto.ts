@@ -1,7 +1,8 @@
-import { IsArray, ArrayNotEmpty, IsString } from 'class-validator';
+import { IsArray, ArrayNotEmpty, IsString, IsNotEmpty } from 'class-validator';
 
 export class LockSeatsDto {
   @IsString()
+  @IsNotEmpty()
   eventId: string;
 
   @IsArray()

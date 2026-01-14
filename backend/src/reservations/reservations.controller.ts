@@ -5,8 +5,6 @@ import {
     Get,
     Param,
     Body,
-    HttpCode,
-    HttpStatus,
 } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { LockSeatsDto } from './dto/lock-seats.dto';
@@ -14,7 +12,7 @@ import { LockSeatsDto } from './dto/lock-seats.dto';
 @Controller('reservations')
 export class ReservationsController {
     constructor(private readonly reservationsService: ReservationsService) { }
-    
+
     // LOCK SEATS & CREATE RESERVATION
     @Post('lock')
     async lockSeats(

@@ -4,13 +4,14 @@ Content-Type: application/json
 
 {
   "eventId": "b1f5d3c4-1234-4f2e-9876-abcdef123456",
-  "seatIds": ["A4", "A5", "A6"]
+  "seatIds": ["A10"]
 }
 
 ###
 
+
 ### ✅ Confirm reservation
-PATCH http://localhost:3000/reservations/2b421dff-cc5c-4bce-82b5-e95a8e26f763/confirm
+PATCH http://localhost:3000/reservations/8cb441a0-ab6b-4562-bf92-51d0af21d0bd/confirm
 Content-Type: application/json
 
 ###
