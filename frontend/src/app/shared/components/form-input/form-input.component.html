@@ -1,0 +1,43 @@
+<label class="flex flex-col w-full">
+    <div class="flex items-center justify-between mb-2">
+        <p class="text-[#0d101c] dark:text-gray-300 text-sm font-semibold">{{ label() }}</p>
+        @if (helpIcon()) {
+            <span class="material-symbols-outlined text-gray-400 text-[16px] cursor-help" [title]="helpText()">
+                {{ helpIcon() }}
+            </span>
+        }
+    </div>
+    <div class="relative">
+        <input 
+            [value]="value()"
+            (blur)="onBlur($event.target.value)"
+            [name]="name()"
+            [type]="type()"
+            [disabled]="disabled()"
+            [attr.maxlength]="maxlength()"
+            [class.tracking-wide]="name() === 'cardNumber'"
+            [class.text-center]="name() === 'expiryDate' || name() === 'cvc'"
+            [class.border-red-500]="error() && isTouched()"
+            [class.dark:border-red-500]="error() && isTouched()"
+            class="form-input flex w-full rounded-lg text-[#0d101c] dark:text-white border border-[#cfd3e8] dark:border-gray-600 bg-[#f8f9fc] dark:bg-[#131625] focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 placeholder:text-gray-400"
+            [class.pl-12]="icon()"
+            [placeholder]="placeholder()" />
+        @if (icon()) {
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                {{ icon() }}
+            </span>
+        }
+    </div>
+    @if (error() && isTouched()) {
+        <span class="text-xs text-red-500 mt-1 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">error</span>
+            {{ error() }}
+        </span>
+    }
+    @if (helpText() && !helpIcon() && (!error() || !isTouched())) {
+        <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">info</span>
+            {{ helpText() }}
+        </span>
+    }
+</label>

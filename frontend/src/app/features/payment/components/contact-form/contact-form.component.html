@@ -1,0 +1,35 @@
+<section class="bg-white dark:bg-[#1a1d2d] rounded-xl p-6 shadow-sm border border-[#e7e9f3] dark:border-gray-800">
+    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-[#f0f2f5] dark:border-gray-700">
+        <span class="material-symbols-outlined text-primary text-[24px]">person</span>
+        <h2 class="text-lg font-bold text-[#0d101c] dark:text-white">Coordonnées</h2>
+    </div>
+
+    <form class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            <app-form-input 
+                [label]="'Prénom'"
+                [placeholder]="'Jean'"
+                [value]="firstNameValue()"
+                [name]="'firstName'"
+                [error]="firstNameError()"
+                (blurred)="onFieldBlur('firstName', $event)" />
+            <app-form-input 
+                [label]="'Nom'"
+                [placeholder]="'Dupont'"
+                [value]="lastNameValue()"
+                [name]="'lastName'"
+                [error]="lastNameError()"
+                (blurred)="onFieldBlur('lastName', $event)" />
+        </div>
+
+        <app-form-input 
+            [label]="'Email'"
+            [type]="'email'"
+            [placeholder]="'jean.dupont@email.com'"
+            [value]="emailValue()"
+            [name]="'email'"
+            [error]="emailError()"
+            [helpText]="'Vos billets seront envoyés à cette adresse.'"
+            (blurred)="onFieldBlur('email', $event)" />
+    </form>
+</section>
