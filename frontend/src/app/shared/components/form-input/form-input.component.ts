@@ -17,6 +17,7 @@ export class FormInputComponent {
     helpIcon = input<string>();
     disabled = input<boolean>(false);
     error = input<string>('');
+    forceShowError = input<boolean>(false);
 
     blurred = output<string>();
 

@@ -1,0 +1,23 @@
+<div class="flex p-1 bg-[#f6f6f8] dark:bg-[#131625] rounded-lg mb-6 w-full max-w-md">
+    <button (click)="selectMethod('card')" [class.bg-white]="selectedMethod() === 'card'"
+        [class.dark:bg-[#2a2d3d]]="selectedMethod() === 'card'" [class.text-primary]="selectedMethod() === 'card'"
+        [class.font-bold]="selectedMethod() === 'card'" [class.shadow-sm]="selectedMethod() === 'card'"
+        [class.border]="selectedMethod() === 'card'" [class.border-gray-200]="selectedMethod() === 'card'"
+        [class.dark:border-gray-600]="selectedMethod() === 'card'" [class.text-gray-500]="selectedMethod() !== 'card'"
+        [class.dark:text-gray-400]="selectedMethod() !== 'card'" [class.font-medium]="selectedMethod() !== 'card'"
+        class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded text-sm hover:text-[#0d101c] dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-[20px]">credit_card</span>
+        Carte Bancaire
+    </button>
+    <button (click)="selectMethod('paypal')" [class.bg-white]="selectedMethod() === 'paypal'"
+        [class.dark:bg-[#2a2d3d]]="selectedMethod() === 'paypal'" [class.text-primary]="selectedMethod() === 'paypal'"
+        [class.font-bold]="selectedMethod() === 'paypal'" [class.shadow-sm]="selectedMethod() === 'paypal'"
+        [class.border]="selectedMethod() === 'paypal'" [class.border-gray-200]="selectedMethod() === 'paypal'"
+        [class.dark:border-gray-600]="selectedMethod() === 'paypal'"
+        [class.text-gray-500]="selectedMethod() !== 'paypal'" [class.dark:text-gray-400]="selectedMethod() !== 'paypal'"
+        [class.font-medium]="selectedMethod() !== 'paypal'"
+        class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded text-sm hover:text-[#0d101c] dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+        PayPal
+    </button>
+</div>

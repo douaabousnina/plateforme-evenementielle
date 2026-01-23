@@ -1,5 +1,5 @@
 import { output, signal, input, effect, inject, Directive } from '@angular/core';
-import { FormValidationService } from '../../../core/services/form-validation.service';
+import { FormValidationService } from '../../../features/reservation/services/form-validation.service';
 
 export type FieldConfig = {
   [key: string]: { value: ReturnType<typeof signal<string>>; error: ReturnType<typeof signal<string>> };
@@ -13,6 +13,7 @@ export abstract class BaseFormComponent<T> {
   formData = output<T>();
   validationStatus = output<boolean>();
   triggerValidation = input<boolean>(false);
+  showErrors = signal<boolean>(false);
 
   protected validation = inject(FormValidationService);
 
@@ -30,16 +31,21 @@ export abstract class BaseFormComponent<T> {
   }
 
   protected validateAll(): void {
+    this.showErrors.set(true);
+    let isAllValid = true;
+
     for (const field of this.fieldNames) {
       if (!this.validateField(field)) {
-        this.validationStatus.emit(false);
-        return;
+        isAllValid = false;
       }
     }
 
-    const data = this.buildFormData();
-    this.validationStatus.emit(true);
-    this.formData.emit(data as T);
+    this.validationStatus.emit(isAllValid);
+
+    if (isAllValid) {
+      const data = this.buildFormData();
+      this.formData.emit(data as T);
+    }
   }
 
   protected validateField(field: string): boolean {

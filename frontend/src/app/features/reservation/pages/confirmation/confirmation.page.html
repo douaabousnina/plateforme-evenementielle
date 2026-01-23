@@ -1,0 +1,153 @@
+<div
+    class="bg-background-light dark:bg-background-dark text-[#0d101c] dark:text-gray-100 font-display min-h-screen flex flex-col">
+
+    <app-header />
+
+
+    <main class="flex-grow w-full max-w-[1000px] mx-auto px-4 md:px-6 py-12">
+
+        <app-breadcrumb [steps]="breadcrumbSteps()" />
+        <!-- Success Animation -->
+        <div class="text-center mb-8">
+            <div
+                class="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full mb-4 animate-bounce">
+                <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[48px]">
+                    check_circle
+                </span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-[#0d101c] dark:text-white mb-3">
+                Réservation confirmée !
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300 mb-2">
+                Votre paiement a été traité avec succès
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Numéro de confirmation: <span class="font-mono font-bold text-primary">{{ confirmationCode() }}</span>
+            </p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+            <!-- Left: QR Code & Download -->
+            <div class="lg:col-span-1">
+                <app-qr-code [confirmationCode]="confirmationCode()" [qrCode]="qrCode()" />
+            </div>
+
+            <!-- Right: Order Details -->
+            <div class="lg:col-span-2">
+                <app-order-details [order]="order()" />
+            </div>
+        </div>
+
+        <!-- Email Confirmation Notice -->
+        <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/30 rounded-xl p-6 mb-8">
+            <div class="flex items-start gap-4">
+                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[32px]">
+                    mail
+                </span>
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-blue-900 dark:text-blue-100 mb-2">
+                        Confirmation envoyée par email
+                    </h3>
+                    <p class="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                        Un email de confirmation contenant vos billets électroniques a été envoyé à :
+                    </p>
+                    <p class="text-sm font-bold text-blue-900 dark:text-blue-100 font-mono">
+                        {{ order()?.contactInfo?.email || 'votre adresse email' }}
+                    </p>
+                    <p class="text-xs text-blue-600 dark:text-blue-400 mt-3">
+                        💡 Vérifiez également vos spams si vous ne trouvez pas l'email
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div
+            class="bg-white dark:bg-[#1a1d2d] rounded-xl p-6 shadow-sm border border-[#e7e9f3] dark:border-gray-800 mb-8">
+            <h3 class="text-lg font-bold text-[#0d101c] dark:text-white mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">checklist</span>
+                Prochaines étapes
+            </h3>
+
+            <div class="space-y-4">
+                <div class="flex items-start gap-4 p-4 bg-[#f8f9fc] dark:bg-[#131625] rounded-lg">
+                    <div class="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full shrink-0">
+                        <span class="text-primary font-bold text-sm">1</span>
+                    </div>
+                    <div>
+                        <p class="font-bold text-[#0d101c] dark:text-white mb-1">
+                            Conservez vos billets
+                        </p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Gardez votre email de confirmation et le QR code accessible sur votre téléphone
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-4 bg-[#f8f9fc] dark:bg-[#131625] rounded-lg">
+                    <div class="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full shrink-0">
+                        <span class="text-primary font-bold text-sm">2</span>
+                    </div>
+                    <div>
+                        <p class="font-bold text-[#0d101c] dark:text-white mb-1">
+                            Arrivez à l'avance
+                        </p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Nous recommandons d'arriver 30 minutes avant le début de l'événement
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-4 bg-[#f8f9fc] dark:bg-[#131625] rounded-lg">
+                    <div class="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full shrink-0">
+                        <span class="text-primary font-bold text-sm">3</span>
+                    </div>
+                    <div>
+                        <p class="font-bold text-[#0d101c] dark:text-white mb-1">
+                            Présentez votre QR code
+                        </p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Scannez votre QR code à l'entrée pour accéder à l'événement
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button (click)="downloadTickets()"
+                class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-900/10 hover:shadow-blue-900/20 transition-all">
+                <span class="material-symbols-outlined">download</span>
+                <span>Télécharger les billets</span>
+            </button>
+
+            <button (click)="printConfirmation()"
+                class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-[#1a1d2d] hover:bg-gray-50 dark:hover:bg-[#151829] text-[#0d101c] dark:text-white font-bold rounded-xl border border-gray-300 dark:border-gray-600 transition-all">
+                <span class="material-symbols-outlined">print</span>
+                <span>Imprimer</span>
+            </button>
+
+            <button (click)="goToMyTickets()"
+                class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-[#1a1d2d] hover:bg-gray-50 dark:hover:bg-[#151829] text-[#0d101c] dark:text-white font-bold rounded-xl border border-gray-300 dark:border-gray-600 transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Mes billets</span>
+            </button>
+        </div>
+
+        <!-- Support -->
+        <div class="mt-12 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                Besoin d'aide ? Consultez notre
+                <a href="#" class="text-primary font-bold hover:underline">centre d'aide</a>
+                ou contactez notre
+                <a href="#" class="text-primary font-bold hover:underline">support client</a>
+            </p>
+            <p class="text-xs text-gray-400">
+                Transaction sécurisée • ID: {{ transactionId() }}
+            </p>
+        </div>
+    </main>
+</div>

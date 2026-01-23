@@ -1,0 +1,66 @@
+<section class="bg-white dark:bg-[#1a1d2d] rounded-xl p-6 shadow-sm border border-[#e7e9f3] dark:border-gray-800">
+
+    <div class="flex flex-col gap-4">
+
+        <!-- Reminder -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-gray-600 dark:text-gray-300">
+                    notifications_active
+                </span>
+                <span class="text-sm font-medium text-[#0d101c] dark:text-white">
+                    Recevoir un rappel 24h avant l'événement
+                </span>
+            </div>
+
+            <!-- Switch -->
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" (change)="sendReminder.set(!sendReminder())" [checked]="sendReminder()"
+                    class="sr-only peer" />
+
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20
+                 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full
+                 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
+                 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
+                 after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                </div>
+            </label>
+        </div>
+
+        <hr class="border-gray-100 dark:border-gray-700" />
+
+        <!-- Terms -->
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" (change)="acceptTerms.set(!acceptTerms())" [checked]="acceptTerms()" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary
+               focus:ring-offset-0 bg-[#f8f9fc] dark:bg-[#131625]
+               dark:border-gray-600 transition-all cursor-pointer" />
+
+            <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">
+                J'accepte les
+                <a class="font-bold underline decoration-1 underline-offset-2" href="#">
+                    Conditions Générales de Vente
+                </a>
+                et la politique de confidentialité.
+            </span>
+        </label>
+
+    </div>
+
+    <!-- Button -->
+    <button (click)="onSubmit()" [disabled]="!acceptTerms() || isProcessing()"
+        [class.opacity-50]="!acceptTerms() || isProcessing()"
+        [class.cursor-not-allowed]="!acceptTerms() || isProcessing()" class="mt-8 w-full bg-primary hover:bg-blue-700 disabled:hover:bg-primary
+           text-white font-bold text-lg rounded-xl h-14 shadow-lg
+           shadow-blue-900/10 hover:shadow-blue-900/20 transition-all
+           transform active:scale-[0.99] flex items-center justify-center gap-3">
+
+        @if (isProcessing()) {
+        <span class="material-symbols-outlined animate-spin">progress_activity</span>
+        <span>Traitement en cours...</span>
+        } @else {
+        <span>Payer {{ amount() | number:'1.2-2' }} €</span>
+        <span class="material-symbols-outlined">arrow_forward</span>
+        }
+    </button>
+
+</section>
