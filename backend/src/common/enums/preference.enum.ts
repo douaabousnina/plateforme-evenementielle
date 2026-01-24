@@ -1,0 +1,12 @@
+export enum Preference {
+  THEATRE = 'THEATRE',
+  FESTIVALS = 'FESTIVALS',
+  CONCERTS = 'CONCERTS',
+  EDUCATION = 'EDUCATION',
+  CINEMA = 'CINEMA',
+  SPORT = 'SPORT',
+  TECH='TECH',
+    ART='ART',
+    FOOD='FOOD',
+
+}
