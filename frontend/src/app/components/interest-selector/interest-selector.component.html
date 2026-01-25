@@ -1,0 +1,9 @@
+<div class="interests">
+  @for (interest of interests; track interest) {
+    <div 
+      (click)="toggleInterest(interest)" 
+      [class.selected]="selected.includes(interest)">
+      {{ interest }}
+    </div>
+  }
+</div>

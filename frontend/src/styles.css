@@ -1,1 +1,85 @@
-/* You can add global styles to this file, and also import other style files */
+/* styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+  background-color: #f6f6f8;
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+.left {
+  flex: 1;
+  background: url('assets/home.png') no-repeat center center;
+  background-size: cover;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  font-size: larger;
+
+}
+
+.right {
+  flex: 1;
+  background: #f6f6f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+form {
+  width: 80%;
+  max-width: 600px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #101322;
+  border-radius: 10px;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #172e9e;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.btn:hover {
+  background-color: #101322;
+}
+
+.interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.interests div {
+  padding: 8px 15px;
+  border: 1px solid #172e9e;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.interests div.selected {
+  background-color: #172e9e;
+  color: white;
+}

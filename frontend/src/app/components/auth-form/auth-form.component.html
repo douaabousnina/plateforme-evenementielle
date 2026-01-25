@@ -1,0 +1,11 @@
+<!-- form.component.html -->
+<form (ngSubmit)="submitForm()">
+ 
+  <app-auth-input label="Adresse email" type="email" placeholder="exemple@email.com" [(value)]="user.email"></app-auth-input>
+  <app-auth-input label="Mot de passe" type="password" placeholder="********" [(value)]="user.password"></app-auth-input>
+    <app-auth-input label="Confirmer le mot de passe" type="password" placeholder="********" [(value)]="user.confirmPassword"></app-auth-input>
+
+  <app-interest-selector></app-interest-selector>
+
+  <app-auth-button text="Créer mon compte" type="submit"></app-auth-button>
+</form>
