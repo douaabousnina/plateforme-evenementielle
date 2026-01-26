@@ -1,0 +1,44 @@
+<div class="scan-history-page">
+  <div class="scan-history-container">
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="page-title">Historique des Scans</h1>
+      <p class="page-subtitle">Consultez l'historique des validations de billets pour vos événements</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && eventStats.length === 0" class="empty-state">
+      <span class="material-symbols-outlined empty-icon">qr_code_scanner</span>
+      <p class="empty-text">Aucun scan enregistré</p>
+    </div>
+
+    <!-- Event Statistics Cards -->
+    <div *ngIf="!loading && eventStats.length > 0" class="stats-container">
+      <!-- Summary Stats -->
+      <app-scan-stats-summary
+        [totalEvents]="eventStats.length"
+        [totalScans]="allScans.length"
+        [uniqueTickets]="getTotalUniqueTickets()">
+      </app-scan-stats-summary>
+
+      <!-- Event Cards -->
+      <app-event-stats-card 
+        *ngFor="let event of eventStats"
+        [event]="event"
+        [isExpanded]="isEventExpanded(event.eventId)"
+        (toggleExpand)="toggleEvent(event.eventId)">
+        
+        <!-- Scan Details (shown when expanded) -->
+        <app-scan-details-table 
+          *ngIf="isEventExpanded(event.eventId)"
+          [scans]="event.scans">
+        </app-scan-details-table>
+      </app-event-stats-card>
+    </div>
+  </div>
+</div>
