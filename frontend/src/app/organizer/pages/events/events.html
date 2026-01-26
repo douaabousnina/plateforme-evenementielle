@@ -1,0 +1,164 @@
+<div class="flex h-screen w-full overflow-hidden">
+  <app-side-bar></app-side-bar>
+
+  <main class="flex-1 flex flex-col h-full overflow-hidden bg-background-light dark:bg-background-dark relative">
+    
+    <!-- Header -->
+    <header class="flex-shrink-0 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-white/5 px-6 py-5 shadow-sm">
+      <div class="max-w-[1400px] mx-auto flex flex-wrap justify-between items-end gap-4">
+        <div class="flex flex-col gap-1">
+          <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            Mes Événements
+          </h1>
+          <p class="text-slate-500 dark:text-text-secondary text-base">
+            Gérez et suivez les performances de vos événements.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button 
+            type="button"
+            aria-label="Filtrer les événements"
+            class="flex items-center gap-2 h-10 px-4 rounded-xl bg-white dark:bg-[#1a1d2d] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">filter_list</span>
+            <span class="hidden sm:block">Filtrer</span>
+          </button>
+          <button 
+            type="button"
+            routerLink="/events/create"
+            aria-label="Créer un nouvel événement"
+            class="flex items-center gap-2 h-10 px-5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all duration-200 hover:scale-105 shadow-lg shadow-primary/25">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add</span>
+            <span>Créer un événement</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar">
+      <div class="p-6 max-w-[1400px] mx-auto w-full space-y-8 pb-20">
+        
+        <!-- Stats Cards (KPI for Events) -->
+        @if(eventService.loading()) {
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5" role="status" aria-label="Chargement des statistiques">
+            @for (i of [1,2,3]; track i) {
+              <div class="h-32 rounded-2xl bg-slate-100 dark:bg-white/5 animate-pulse"></div>
+            }
+          </div>
+        }
+
+        @if(eventService.eventsData(); as data) {
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 animate-fadeIn">
+            <!-- Total Events -->
+            <article class="bg-white dark:bg-[#1a1d2d] rounded-2xl p-6 border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md transition-all">
+              <div class="flex justify-between items-start mb-3">
+                <h2 class="text-slate-500 dark:text-text-secondary font-medium text-sm">Événements actifs</h2>
+                <div class="size-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center" aria-hidden="true">
+                  <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[22px]">event</span>
+                </div>
+              </div>
+              <p class="text-3xl font-black text-slate-900 dark:text-white mb-2">
+                <span class="sr-only">Nombre d'événements actifs : </span>{{ data.total }}
+              </p>
+              <div class="flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-medium">
+                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">trending_up</span>
+                <span><span class="sr-only">Augmentation de </span>+2 ce mois</span>
+              </div>
+            </article>
+
+            <!-- Total Tickets Sold -->
+            <article class="bg-white dark:bg-[#1a1d2d] rounded-2xl p-6 border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md transition-all">
+              <div class="flex justify-between items-start mb-3">
+                <h2 class="text-slate-500 dark:text-text-secondary font-medium text-sm">Billets vendus (30j)</h2>
+                <div class="size-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center" aria-hidden="true">
+                  <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-[22px]">confirmation_number</span>
+                </div>
+              </div>
+              <p class="text-3xl font-black text-slate-900 dark:text-white mb-2">
+                <span class="sr-only">Nombre de billets vendus : </span>{{ getTotalTicketsSold(data.events) }}
+              </p>
+              <div class="flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-medium">
+                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">trending_up</span>
+                <span><span class="sr-only">Augmentation de </span>+15% vs N-1</span>
+              </div>
+            </article>
+
+            <!-- Revenue -->
+            <article class="bg-white dark:bg-[#1a1d2d] rounded-2xl p-6 border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md transition-all">
+              <div class="flex justify-between items-start mb-3">
+                <h2 class="text-slate-500 dark:text-text-secondary font-medium text-sm">Chiffre d'affaires (30j)</h2>
+                <div class="size-10 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center" aria-hidden="true">
+                  <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[22px]">payments</span>
+                </div>
+              </div>
+              <p class="text-3xl font-black text-slate-900 dark:text-white mb-2">
+                <span class="sr-only">Chiffre d'affaires : </span>24 500 €
+              </p>
+              <div class="flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-medium">
+                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">trending_up</span>
+                <span><span class="sr-only">Croissance de </span>+8% croissance</span>
+              </div>
+            </article>
+          </div>
+        }
+
+        <!-- Search & Filters -->
+        <section aria-label="Recherche et filtres">
+          <div class="flex flex-col sm:flex-row gap-4 justify-between items-end sm:items-center bg-white dark:bg-[#1a1d2d] p-4 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+            <!-- Search Input -->
+            <div class="relative w-full sm:w-96 group">
+              <label for="search-events" class="sr-only">Rechercher un événement</label>
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">search</span>
+              </div>
+              <input 
+                id="search-events"
+                type="search" 
+                placeholder="Rechercher par nom d'événement..."
+                aria-label="Rechercher un événement par nom"
+                class="block w-full pl-10 pr-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition-all">
+            </div>
+            
+            <!-- Filters -->
+            <div class="flex gap-3 w-full sm:w-auto">
+              <!-- Status Filter -->
+              <div class="relative">
+                <label for="filter-status" class="sr-only">Filtrer par statut</label>
+                <select 
+                  id="filter-status"
+                  aria-label="Filtrer les événements par statut"
+                  class="form-select pl-3 pr-10 py-2.5 text-sm border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white cursor-pointer min-w-[140px]">
+                  <option value="">Tous les statuts</option>
+                  <option value="published">Publié</option>
+                  <option value="draft">Brouillon</option>
+                  <option value="sold-out">Complet</option>
+                  <option value="cancelled">Annulé</option>
+                </select>
+              </div>
+              
+              <!-- Sort Filter -->
+              <div class="relative">
+                <label for="filter-sort" class="sr-only">Trier par</label>
+                <select 
+                  id="filter-sort"
+                  aria-label="Trier les événements"
+                  class="form-select pl-3 pr-10 py-2.5 text-sm border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white cursor-pointer min-w-[140px]">
+                  <option value="recent">Plus récents</option>
+                  <option value="oldest">Plus anciens</option>
+                  <option value="sales">Ventes élevées</option>
+                  <option value="alpha">Alphabétique</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Events Table -->
+        <section aria-label="Liste des événements" class="animate-fadeIn">
+          <app-events-table></app-events-table>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
