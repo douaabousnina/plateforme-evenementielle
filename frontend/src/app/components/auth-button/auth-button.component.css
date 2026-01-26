@@ -1,0 +1,23 @@
+.btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #1d3fff, #0f33e6);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  box-shadow: 0 10px 25px rgba(15, 51, 230, 0.25);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(15, 51, 230, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}

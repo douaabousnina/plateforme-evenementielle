@@ -1,4 +1,9 @@
-<div class="form-group">
+<div class="input-wrapper">
   <label>{{ label }}</label>
-  <input [type]="type" [placeholder]="placeholder" [ngModel]="value" (ngModelChange)="valueChange.emit($event)" />
+  <input
+    [type]="type"
+    [placeholder]="placeholder"
+    [ngModel]="value"
+    (ngModelChange)="valueChange.emit($event)"
+  />
 </div>

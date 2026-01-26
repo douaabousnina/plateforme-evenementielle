@@ -1,0 +1,19 @@
+.interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.interests div {
+  padding: 8px 15px;
+  border: 1px solid #cfd3e8;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.interests div.selected {
+color:#1d3fff;
+  background-color: #e4e7ff;
+  border-color: #1d3fff;
+}

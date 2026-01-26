@@ -1,0 +1,15 @@
+form {
+  width: 100%;
+   display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+}

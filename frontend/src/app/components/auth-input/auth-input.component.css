@@ -1,9 +1,32 @@
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  
+}
+
 label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0d101c;
+  margin-left: 0.5rem;
 }
 
 input {
-  display: block;
+  height: 40px;
+  padding: 0 1rem 0 2.75rem;
+  border-radius: 9999px;
+  border: 1px solid #d6daf0;
+  background: #f8f9fc;
+  font-size: 0.95rem;
+
+  &:focus {
+    outline: none;
+    border-color: #0f33e6;
+    box-shadow: 0 0 0 2px rgba(15, 51, 230, 0.15);
+  }
+}
+input::placeholder {
+  color: #a1a6c0;
+  font-size: 0.95rem;
 }
