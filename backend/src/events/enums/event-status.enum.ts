@@ -3,5 +3,5 @@ export enum EventStatus {
   PUBLISHED = 'published',
   SOLD_OUT = 'sold_out',
   CANCELLED = 'cancelled',
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
 }

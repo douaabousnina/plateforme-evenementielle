@@ -1,4 +1,11 @@
-import { IsOptional, IsEnum, IsString, IsNumber, IsDate, Min } from 'class-validator';
+import {
+  IsOptional,
+  IsEnum,
+  IsString,
+  IsNumber,
+  IsDate,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { EventCategory } from '../enums/event-category.enum';

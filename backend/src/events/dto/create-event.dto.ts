@@ -9,7 +9,7 @@ import {
   Min,
   Max,
   ValidateNested,
-  IsUrl
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -22,7 +22,9 @@ export class CreateEventDto {
   @IsNotEmpty()
   title: string;
 
-  @ApiProperty({ example: 'The biggest summer music festival featuring top artists' })
+  @ApiProperty({
+    example: 'The biggest summer music festival featuring top artists',
+  })
   @IsString()
   @IsNotEmpty()
   description: string;
@@ -61,7 +63,7 @@ export class CreateEventDto {
   @Min(1)
   totalCapacity: number;
 
-  @ApiProperty({ example: 50.00 })
+  @ApiProperty({ example: 50.0 })
   @IsNumber()
   @Min(0)
   basePrice: number;

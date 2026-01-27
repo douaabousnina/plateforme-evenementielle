@@ -4,7 +4,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Index
+  Index,
 } from 'typeorm'; //  ManyToOne,JoinColumn
 import { EventStatus } from '../enums/event-status.enum';
 import { EventCategory } from '../enums/event-category.enum';
@@ -23,7 +23,7 @@ export class Event {
   @Column({
     type: 'enum',
     enum: EventCategory,
-    default: EventCategory.OTHER
+    default: EventCategory.OTHER,
   })
   @Index()
   category: EventCategory;
@@ -47,7 +47,7 @@ export class Event {
   @Column({
     type: 'enum',
     enum: EventStatus,
-    default: EventStatus.DRAFT
+    default: EventStatus.DRAFT,
   })
   @Index()
   status: EventStatus;

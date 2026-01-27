@@ -7,5 +7,5 @@ export enum EventCategory {
   EXHIBITION = 'exhibition',
   WORKSHOP = 'workshop',
   NETWORKING = 'networking',
-  OTHER = 'other'
+  OTHER = 'other',
 }
