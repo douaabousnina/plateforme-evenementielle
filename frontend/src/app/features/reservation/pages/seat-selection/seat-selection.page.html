@@ -63,8 +63,8 @@
 
                 <!-- LEFT: Seat Map (8 cols) -->
                 <div class="lg:col-span-8">
-                    @if (selectedSeats().length > 0) {
-                    <app-interactive-seat-map [seats]="selectedSeats()" [selectedSeats]="selectedSeats()"
+                    @if (seats().length > 0) {
+                    <app-interactive-seat-map [seats]="seats()" [selectedSeats]="selectedSeats()"
                         (seatSelected)="handleSeatSelection($event)" />
                     } @else {
                     <div class="text-center py-12 text-slate-500 dark:text-slate-400">

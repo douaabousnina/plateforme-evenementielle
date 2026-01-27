@@ -3,10 +3,11 @@ POST http://localhost:3000/payments
 Content-Type: application/json
 
 {
-  "reservationId": "8d783e1f-3161-49bd-bf31-6081bd3c85ba",
-  "method": "visa",
-  "cardNumber": "4111111111111111",
-  "cardHolder": "John Doe"
+  "reservationId": "1f826af7-b6e2-48f6-adc7-27b59ca3b440",
+  "cardNumber": "5111111111111111",
+  "cardHolder": "John Doe",
+  "expiryDate": "12/25",
+  "cvc": "123"
 }
 
 ### Refund a payment

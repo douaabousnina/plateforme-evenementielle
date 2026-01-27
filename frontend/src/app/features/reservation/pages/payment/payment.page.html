@@ -11,8 +11,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
-                <app-contact-form [triggerValidation]="triggerValidation()"
-                    (validationStatus)="onContactValidation($event)" (formData)="onContactData($event)" />
+                <app-contact-form [contactInfo]="contactInfo()" />
 
                 <app-payment-form [triggerValidation]="triggerValidation()"
                     (validationStatus)="onPaymentValidation($event)" (formData)="onPaymentData($event)" />
@@ -25,6 +24,7 @@
 
             <div class="lg:col-span-4">
                 <app-timer />
+                <br>
                 <app-seat-cart-summary [selectedSeats]="selectedSeats()" [subtotal]="cartSubtotal()"
                     [serviceFee]="cartServiceFee()" [total]="cartTotal()" [readonly]="true" />
             </div>

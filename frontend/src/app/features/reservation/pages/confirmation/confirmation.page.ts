@@ -47,7 +47,6 @@ export class ConfirmationPage {
       confirmationCode: this.confirmationCode(),
       transactionId: this.transactionId(),
       qrCode: this.qrCode(),
-      contactInfo: this.paymentService.contact(),
       createdAt: res.createdAt || new Date()
     };
   });

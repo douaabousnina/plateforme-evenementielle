@@ -32,12 +32,14 @@ export class PaymentsService {
       throw new BadRequestException('Reservation not payable');
     }
 
+    // Validate card and determine method before creating payment
+    const paymentMethod = this.generateMethod(dto.cardNumber);
 
     const payment = this.paymentRepo.create({
       userId,
       reservationId: reservation.id,
       amount: reservation.totalPrice,
-      method: this.generateMethod(parseInt(dto.cardNumber.slice(-1))),
+      method: paymentMethod,
       cardLast4: dto.cardNumber.slice(-4),
       status: PaymentStatus.PENDING,
     });
@@ -87,7 +89,24 @@ export class PaymentsService {
     return payment;
   }
 
-  private generateMethod(cardNumber: number): PaymentMethod {
-    return cardNumber % 2 === 0 ? PaymentMethod.VISA : PaymentMethod.MASTERCARD;
+  private generateMethod(cardNumber: string): PaymentMethod {
+    if (!cardNumber) {
+      throw new BadRequestException('Card number is required');
+    }
+
+    const normalized = cardNumber.replace(/\s+/g, '');
+
+    // VISA: starts with 4
+    if (/^4/.test(normalized)) {
+      return PaymentMethod.VISA;
+    }
+
+    // MASTERCARD: starts with 5 (51–55) or 2 (2221–2720)
+    if (/^(5[1-5]|2[2-7])/.test(normalized)) {
+      return PaymentMethod.MASTERCARD;
+    }
+
+    throw new BadRequestException(`Unsupported card type.`);
   }
+
 }

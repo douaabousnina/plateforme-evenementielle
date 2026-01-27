@@ -16,6 +16,7 @@ export class FormValidationService {
     firstName: { required: 'Le prénom est requis', pattern: '' },
     lastName: { required: 'Le nom est requis', pattern: '' },
     email: { required: 'L\'email est requis', pattern: 'Email invalide' },
+    
     cardNumber: { required: 'Le numéro de carte est requis', pattern: 'Numéro de carte invalide (16 chiffres)' },
     expiryDate: { required: 'La date est requise', pattern: 'Format invalide (MM / AA)' },
     cvc: { required: 'Le CVC est requis', pattern: 'CVC invalide (3 chiffres)' },

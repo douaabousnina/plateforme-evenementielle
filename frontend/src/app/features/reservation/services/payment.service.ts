@@ -10,26 +10,11 @@ export class PaymentService {
     private apiService = inject(ApiService);
     private route = inject(Router);
 
-    // TODO: contact info normalement auth service
-    contactInfo = signal<ContactInfo | null>(null);
-    paymentInfo = signal<PaymentInfo | null>(null);
-
     loading = this.apiService.loading;
     error = this.apiService.error;
 
-    setContactInfo(info: ContactInfo): void {
-        this.contactInfo.set(info);
-    }
-
-    setPaymentInfo(info: PaymentInfo): void {
-        this.paymentInfo.set(info);
-    }
-
-    processPayment(reservationId: string, contactInfo: ContactInfo, paymentInfo: PaymentInfo): Observable<Payment> {
+    processPayment(reservationId: string, paymentInfo: PaymentInfo): Observable<Payment> {
         this.loading.set(true);
-
-        this.setContactInfo(contactInfo);
-        this.setPaymentInfo(paymentInfo);
 
         const request: PaymentRequest = {
             reservationId: reservationId,
@@ -39,11 +24,14 @@ export class PaymentService {
             expiryDate: paymentInfo.expiryDate
         };
 
+        console.log(request);
+
         return this.apiService.post<Payment>('payments', request).pipe(
             tap(response => {
-                if (response.status === 'success') {
+                console.log('Response: ', response)
+                if (response.status === 'SUCCESS') {
                     // TODO: toast
-                    this.route.navigate(['/reservation/confirmation'], {
+                    this.route.navigate(['/confirmation'], {
                         state: { reservationId }
                     });
                 }
@@ -51,11 +39,14 @@ export class PaymentService {
         );
     }
 
-    refundPayment(paymentRefundRequest: PaymentRefundRequest): Observable<Payment> {
-        return this.apiService.post<Payment>('payments/refund', {
-            paymentId: paymentRefundRequest.paymentId,
-            reason: paymentRefundRequest.reason
-        });
+    refundPayment(paymentId: string, amount: number, reason: string): Observable<Payment> {
+        const request: PaymentRefundRequest = {
+            paymentId: paymentId,
+            amount: amount,
+            reason: reason ? reason : undefined
+        };
+
+        return this.apiService.post<Payment>('payments/refund', request);
     }
 
     getPaymentById(paymentId: string): Observable<Payment> {
@@ -64,10 +55,5 @@ export class PaymentService {
 
     getPaymentsOfUser(): Observable<Payment[]> {
         return this.apiService.get<Payment[]>('payments/user');
-    }
-
-    clearPaymentForm(): void {
-        this.contactInfo.set(null);
-        this.paymentInfo.set(null);
     }
 }

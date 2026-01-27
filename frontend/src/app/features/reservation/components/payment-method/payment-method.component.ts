@@ -9,7 +9,7 @@ import { PaymentMethod } from '../../enums/payment-method.enum';
 export class PaymentMethodComponent {
   methodChange = output<PaymentMethod>();
 
-  selectedMethod = signal<PaymentMethod>(PaymentMethod.VISA);
+  selectedMethod = signal<PaymentMethod>(PaymentMethod.CARD);
 
   selectMethod(method: PaymentMethod): void {
     this.selectedMethod.set(method);

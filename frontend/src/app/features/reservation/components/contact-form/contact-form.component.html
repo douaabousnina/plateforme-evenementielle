@@ -6,17 +6,12 @@
 
     <form class="space-y-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-            <app-form-input [label]="'Prénom'" [placeholder]="'Jean'" [value]="fields.firstName.value()"
-                [name]="'firstName'" [error]="fields.firstName.error()" [forceShowError]="showErrors()"
-                (blurred)="onFieldBlur('firstName', $event)" />
-            <app-form-input [label]="'Nom'" [placeholder]="'Dupont'" [value]="fields.lastName.value()"
-                [name]="'lastName'" [error]="fields.lastName.error()" [forceShowError]="showErrors()"
-                (blurred)="onFieldBlur('lastName', $event)" />
+            <app-form-input [value]="contactInfo.firstName" [disabled]="true" [label]="'Prénom'" [name]="'firstName'" />
+
+            <app-form-input [value]="contactInfo.lastName" [disabled]="true" [label]="'Nom'" [name]="'lastName'" />
         </div>
 
-        <app-form-input [label]="'Email'" [type]="'email'" [placeholder]="'jean.dupont@email.com'"
-            [value]="fields.email.value()" [name]="'email'" [error]="fields.email.error()"
-            [forceShowError]="showErrors()" [helpText]="'Vos billets seront envoyés à cette adresse.'"
-            (blurred)="onFieldBlur('email', $event)" />
+        <app-form-input [value]="contactInfo.email" [disabled]="true" [name]="'email'" [label]="'Email'" />
+
     </form>
 </section>

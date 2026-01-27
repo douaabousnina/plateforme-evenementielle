@@ -3,8 +3,8 @@ POST http://localhost:3000/reservations/lock
 Content-Type: application/json
 
 {
-  "eventId": "b1f5d3c4-1234-4f2e-9876-abcdef123456",
-  "seatIds": ["A10"]
+  "eventId": "550e8400-e29b-41d4-a716-446655440005",
+  "seatIds": ["5b348769-43ef-4199-ade4-54374ed20f7b"]
 }
 
 ###

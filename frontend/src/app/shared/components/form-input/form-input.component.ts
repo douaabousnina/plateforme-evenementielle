@@ -7,7 +7,7 @@ import { Component, input, output, signal } from '@angular/core';
 })
 export class FormInputComponent {
     label = input.required<string>();
-    placeholder = input.required<string>();
+    placeholder = input<string>();
     type = input<string>('text');
     value = input.required<string>();
     name = input.required<string>();

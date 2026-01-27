@@ -43,6 +43,7 @@ export class SeatSelectionPage {
     )
   );
 
+  seats = this.seatService.seats;
   selectedSeats = this.cartService.reservedSeats;
   subtotal = this.cartService.subtotal;
   serviceFee = this.cartService.serviceFee;
