@@ -1,45 +1,96 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-// import { User } from '../../users/entities/user.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index
+} from 'typeorm'; //  ManyToOne,JoinColumn
+import { EventStatus } from '../enums/event-status.enum';
+import { EventCategory } from '../enums/event-category.enum';
 
-export enum EventStatus {
-  DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
-  SOLD_OUT = 'SOLD_OUT',
-  CANCELLED = 'CANCELLED',
-}
-
-@Entity()
+@Entity('events')
 export class Event {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  organizerId: string;
-
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   title: string;
 
-  @Column('text')
+  @Column({ type: 'text' })
   description: string;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: EventCategory,
+    default: EventCategory.OTHER
+  })
+  @Index()
+  category: EventCategory;
+
+  @Column({ type: 'timestamp' })
+  @Index()
+  date: Date;
+
+  @Column({ type: 'varchar', length: 500 })
   location: string;
 
-  @Column()
-  startDate: Date;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  venueName: string;
 
-  @Column()
-  endDate: Date;
+  @Column({ type: 'varchar', length: 100 })
+  city: string;
 
-  @Column()
-  image: string;
+  @Column({ type: 'varchar', length: 100 })
+  country: string;
 
-  @Column({ type: 'enum', enum: EventStatus, default: EventStatus.DRAFT })
+  @Column({
+    type: 'enum',
+    enum: EventStatus,
+    default: EventStatus.DRAFT
+  })
+  @Index()
   status: EventStatus;
 
-  @Column()
-  totalSeats: number;
+  @Column({ type: 'int' })
+  totalCapacity: number;
 
-  @Column()
+  @Column({ type: 'int' })
   availableSeats: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  basePrice: number;
+
+  @Column({ type: 'text', array: true, nullable: true })
+  images: string[];
+
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  bannerImage: string;
+
+  @Column({ type: 'jsonb' })
+  seatingPlan: object;
+
+  @Column({ type: 'int', default: 5 })
+  maxTicketsPerUser: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  salesStartDate: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  salesEndDate: Date;
+
+  @Column({ type: 'uuid' })
+  @Index()
+  organizerId: string;
+
+  // Uncomment when User entity is available
+  // @ManyToOne(() => User, (user) => user.events)
+  // @JoinColumn({ name: 'organizerId' })
+  // organizer: User;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
