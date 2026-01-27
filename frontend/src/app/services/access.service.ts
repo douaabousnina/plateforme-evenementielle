@@ -31,6 +31,13 @@ export class AccessService {
   }
 
   /**
+   * Get scan history for an event (alias)
+   */
+  getScanHistory(eventId: string): Observable<ScanLog[]> {
+    return this.getEventScanHistory(eventId);
+  }
+
+  /**
    * Get scan history for a controller
    */
   getControllerScanHistory(controllerId: string): Observable<ScanLog[]> {
@@ -51,6 +58,9 @@ export class AccessService {
     return this.http.get(`${this.apiUrl}/stats/${eventId}`);
   }
 
+  getAllEventStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/stats`);
+  }
   /**
    * Get ticket by ID
    */

@@ -19,7 +19,6 @@ interface EventStatsWithScans extends EventStats {
 })
 export class ScanHistoryComponent implements OnInit {
   eventStats: EventStatsWithScans[] = [];
-  allScans: ScanLog[] = [];
   loading = true;
   selectedEventId: string | null = null;
 
@@ -31,56 +30,55 @@ export class ScanHistoryComponent implements OnInit {
 
   loadScanHistory(): void {
     this.loading = true;
-    this.accessService.getAllScanHistory().subscribe({
-      next: (scans) => {
-        this.allScans = scans.map(scan => ({
-          ...scan,
-          scannedAt: new Date(scan.scannedAt),
-          timestamp: new Date(scan.timestamp)
+    // Use backend stats endpoint instead of calculating manually
+    this.accessService.getAllEventStats().subscribe({
+      next: (stats) => {
+        // Convert dates and map to component format
+        this.eventStats = stats.map((stat: any) => ({
+          eventId: stat.eventId,
+          eventName: stat.eventName,
+          totalScans: stat.total,
+          uniqueScans: stat.uniqueTickets,
+          duplicateScans: stat.total - stat.uniqueTickets,
+          lastScan: stat.lastScan ? new Date(stat.lastScan) : null,
+          scans: [] // Will be loaded on demand when event is expanded
         }));
-        this.calculateEventStats();
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading scan history:', error);
+        console.error('Error loading scan statistics:', error);
         this.loading = false;
       }
     });
   }
 
-  calculateEventStats(): void {
-    const eventMap = new Map<string, ScanLog[]>();
-    
-    this.allScans.forEach(scan => {
-      const eventId = scan.eventId || 'unknown';
-      if (!eventMap.has(eventId)) {
-        eventMap.set(eventId, []);
-      }
-      eventMap.get(eventId)!.push(scan);
-    });
-
-    this.eventStats = Array.from(eventMap.entries()).map(([eventId, scans]) => {
-      const sortedScans = scans.sort((a, b) => b.scannedAt.getTime() - a.scannedAt.getTime());
-      const uniqueTickets = new Set(scans.map(s => s.ticketId));
-      
-      return {
-        eventId,
-        eventName: scans[0].eventName || `Event ${eventId}`,
-        totalScans: scans.length,
-        uniqueScans: uniqueTickets.size,
-        duplicateScans: scans.length - uniqueTickets.size,
-        lastScan: sortedScans[0]?.scannedAt || null,
-        scans: sortedScans
-      };
-    }).sort((a, b) => {
-      if (!a.lastScan) return 1;
-      if (!b.lastScan) return -1;
-      return b.lastScan.getTime() - a.lastScan.getTime();
-    });
+  loadEventScans(eventId: string): void {
+    // Load detailed scans for a specific event when expanded
+    const event = this.eventStats.find(e => e.eventId === eventId);
+    if (event && event.scans.length === 0) {
+      this.accessService.getScanHistory(eventId).subscribe({
+        next: (scans: ScanLog[]) => {
+          event.scans = scans.map((scan: any) => ({
+            ...scan,
+            scannedAt: new Date(scan.scannedAt),
+            timestamp: new Date(scan.timestamp)
+          })).sort((a: any, b: any) => b.scannedAt.getTime() - a.scannedAt.getTime());
+        },
+        error: (error: any) => {
+          console.error('Error loading event scans:', error);
+        }
+      });
+    }
   }
 
   toggleEvent(eventId: string): void {
-    this.selectedEventId = this.selectedEventId === eventId ? null : eventId;
+    const wasExpanded = this.selectedEventId === eventId;
+    this.selectedEventId = wasExpanded ? null : eventId;
+    
+    // Load scans when expanding an event
+    if (!wasExpanded) {
+      this.loadEventScans(eventId);
+    }
   }
 
   isEventExpanded(eventId: string): boolean {
@@ -89,5 +87,9 @@ export class ScanHistoryComponent implements OnInit {
 
   getTotalUniqueTickets(): number {
     return this.eventStats.reduce((sum, e) => sum + e.uniqueScans, 0);
+  }
+
+  getTotalScans(): number {
+    return this.eventStats.reduce((sum, e) => sum + e.totalScans, 0);
   }
 }

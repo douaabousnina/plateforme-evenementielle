@@ -22,7 +22,7 @@
       <!-- Summary Stats -->
       <app-scan-stats-summary
         [totalEvents]="eventStats.length"
-        [totalScans]="allScans.length"
+        [totalScans]="getTotalScans()"
         [uniqueTickets]="getTotalUniqueTickets()">
       </app-scan-stats-summary>
 

@@ -65,12 +65,14 @@ export class AccessController {
     return this.accessService.getAllScanLogs();
   }
 
+
+
   /**
-   * Get scan statistics for an event
+   * Get scan statistics for all events
    */
-  @Get('stats/:eventId')
-  async getScanStats(@Param('eventId') eventId: string) {
-    return this.accessService.getScanStats(eventId);
+  @Get('stats')
+  async getAllEventStats() {
+    return this.accessService.getAllEventStats();
   }
 
   /**

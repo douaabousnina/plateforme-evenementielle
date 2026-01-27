@@ -1,0 +1,358 @@
+/* Scanner Page */
+.scanner-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+}
+
+.scanner-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Header */
+.scanner-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.scanner-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.scanner-subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Scanner Settings */
+.scanner-settings {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.setting-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.camera-select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+}
+
+.camera-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Scanner View */
+.scanner-view {
+  position: relative;
+}
+
+.camera-container {
+  position: relative;
+  background: #000;
+  border-radius: 1rem;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.qr-scanner {
+  width: 100%;
+  height: 100%;
+}
+
+/* Scan Frame Overlay */
+.scan-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  pointer-events: none;
+}
+
+.frame-corner {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 4px solid #fff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.frame-corner.top-left {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 1rem;
+}
+
+.frame-corner.top-right {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 1rem;
+}
+
+.frame-corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 1rem;
+}
+
+.frame-corner.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 1rem;
+}
+
+.scan-instruction {
+  position: absolute;
+  bottom: -3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 0.875rem;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Scanning Overlay */
+.scanning-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: white;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Permission/No Camera Errors */
+.permission-error,
+.no-camera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.permission-error h3,
+.no-camera h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.permission-error p,
+.no-camera p {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+/* Scan Result */
+.scan-result {
+  margin-top: 1.5rem;
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-icon {
+  margin-bottom: 1rem;
+}
+
+.result-icon .material-symbols-outlined {
+  font-size: 4rem;
+}
+
+.result-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.result-details {
+  text-align: left;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-size: 0.875rem;
+}
+
+.result-details p {
+  margin-bottom: 0.5rem;
+}
+
+.result-details p:last-child {
+  margin-bottom: 0;
+}
+
+.result-details code {
+  font-family: 'Courier New', monospace;
+  background: #e5e7eb;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.result-message {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* Status Colors */
+.scan-result.success {
+  border: 3px solid #10b981;
+}
+
+.scan-result.success .result-icon .material-symbols-outlined {
+  color: #10b981;
+}
+
+.scan-result.success .result-title {
+  color: #10b981;
+}
+
+.scan-result.warning {
+  border: 3px solid #f59e0b;
+}
+
+.scan-result.warning .result-icon .material-symbols-outlined {
+  color: #f59e0b;
+}
+
+.scan-result.warning .result-title {
+  color: #f59e0b;
+}
+
+.scan-result.error {
+  border: 3px solid #ef4444;
+}
+
+.scan-result.error .result-icon .material-symbols-outlined {
+  color: #ef4444;
+}
+
+.scan-result.error .result-title {
+  color: #ef4444;
+}
+
+/* Controller Info */
+.controller-info {
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.info-item .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .scanner-page {
+    padding: 1rem;
+  }
+
+  .scanner-title {
+    font-size: 1.5rem;
+  }
+
+  .scan-frame {
+    width: 220px;
+    height: 220px;
+  }
+
+  .controller-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

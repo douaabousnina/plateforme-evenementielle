@@ -153,27 +153,57 @@ export class AccessService {
     return this.scanLogRepository.find({ order: { scannedAt: 'DESC' } });
   }
 
+
+
   /**
-   * Get scan statistics for an event
+   * Get scan statistics for all events
    */
-  async getScanStats(eventId: string): Promise<{
+  async getAllEventStats(): Promise<Array<{
+    eventId: string;
+    eventName: string;
     total: number;
     valid: number;
     alreadyScanned: number;
     invalid: number;
     fake: number;
     expired: number;
-  }> {
-    const logs = await this.getScanHistory(eventId);
+    uniqueTickets: number;
+    lastScan: Date | null;
+  }>> {
+    const allLogs = await this.getAllScanLogs();
+    const eventMap = new Map<string, ScanLog[]>();
     
-    return {
-      total: logs.length,
-      valid: logs.filter(l => l.status === ScanStatus.VALID).length,
-      alreadyScanned: logs.filter(l => l.status === ScanStatus.ALREADY_SCANNED).length,
-      invalid: logs.filter(l => l.status === ScanStatus.INVALID).length,
-      fake: logs.filter(l => l.status === ScanStatus.FAKE).length,
-      expired: logs.filter(l => l.status === ScanStatus.EXPIRED).length,
-    };
+    // Group logs by eventId
+    allLogs.forEach(log => {
+      const eventId = log.eventId || 'unknown';
+      if (!eventMap.has(eventId)) {
+        eventMap.set(eventId, []);
+      }
+      eventMap.get(eventId)!.push(log);
+    });
+
+    // Calculate stats for each event
+    return Array.from(eventMap.entries()).map(([eventId, logs]) => {
+      const sortedLogs = logs.sort((a, b) => b.scannedAt.getTime() - a.scannedAt.getTime());
+      const uniqueTickets = new Set(logs.map(l => l.ticketId));
+      
+      return {
+        eventId,
+        eventName: logs[0].eventName || `Event ${eventId}`,
+        total: logs.length,
+        valid: logs.filter(l => l.status === ScanStatus.VALID).length,
+        alreadyScanned: logs.filter(l => l.status === ScanStatus.ALREADY_SCANNED).length,
+        invalid: logs.filter(l => l.status === ScanStatus.INVALID).length,
+        fake: logs.filter(l => l.status === ScanStatus.FAKE).length,
+        expired: logs.filter(l => l.status === ScanStatus.EXPIRED).length,
+        uniqueTickets: uniqueTickets.size,
+        lastScan: sortedLogs[0]?.scannedAt || null,
+      };
+    }).sort((a, b) => {
+      if (!a.lastScan) return 1;
+      if (!b.lastScan) return -1;
+      return b.lastScan.getTime() - a.lastScan.getTime();
+    });
   }
 
   /**
@@ -218,7 +248,13 @@ export class AccessService {
       throw new Error('Ticket not found');
     }
 
-    return this.generateQRCode(ticketId, ticket.eventId, ticket.userId);
+    const { qrCode, qrToken } = await this.generateQRCode(ticketId, ticket.eventId, ticket.userId);
+    
+    // Update the ticket with the new token
+    ticket.qrToken = qrToken;
+    await this.ticketRepository.save(ticket);
+
+    return { qrCode, qrToken };
   }
 
   /**

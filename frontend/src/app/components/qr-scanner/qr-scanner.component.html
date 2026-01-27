@@ -1,0 +1,107 @@
+<div class="scanner-page">
+  <div class="scanner-container">
+    <!-- Header -->
+    <div class="scanner-header">
+      <h1 class="scanner-title">Scanner QR Code</h1>
+      <p class="scanner-subtitle">Scannez les billets pour valider l'entrée</p>
+    </div>
+
+    <!-- Scanner Settings -->
+    <div class="scanner-settings" *ngIf="hasDevices && availableDevices.length > 1">
+      <label for="camera-select" class="setting-label">
+        <span class="material-symbols-outlined">videocam</span>
+        Caméra
+      </label>
+      <select 
+        id="camera-select" 
+        class="camera-select"
+        (change)="onCameraChange(availableDevices[$any($event.target).selectedIndex])">
+        <option 
+          *ngFor="let device of availableDevices" 
+          [value]="device.deviceId"
+          [selected]="currentDevice?.deviceId === device.deviceId">
+          {{ device.label || 'Caméra' }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Scanner View -->
+    <div class="scanner-view">
+      <div class="camera-container">
+        <zxing-scanner
+          [device]="currentDevice"
+          (scanSuccess)="onScanSuccess($event)"
+          (scanError)="onScanError($event)"
+          (camerasFound)="onCamerasFound($event)"
+          (permissionResponse)="onHasPermission($event)"
+          [formats]="allowedFormats"
+          class="qr-scanner">
+        </zxing-scanner>
+
+        <!-- Permission Denied -->
+        <div *ngIf="hasPermission === false" class="permission-error">
+          <span class="material-symbols-outlined error-icon">videocam_off</span>
+          <h3>Accès caméra refusé</h3>
+          <p>Veuillez autoriser l'accès à la caméra pour scanner les QR codes</p>
+        </div>
+
+        <!-- No Camera -->
+        <div *ngIf="hasPermission && !hasDevices" class="no-camera">
+          <span class="material-symbols-outlined error-icon">no_photography</span>
+          <h3>Aucune caméra détectée</h3>
+          <p>Veuillez connecter une caméra pour continuer</p>
+        </div>
+
+        <!-- Scanning Indicator -->
+        <div *ngIf="isScanning" class="scanning-overlay">
+          <div class="spinner"></div>
+          <p>Validation en cours...</p>
+        </div>
+
+        <!-- Scan Frame Overlay -->
+        <div class="scan-frame" *ngIf="hasPermission && hasDevices && !scanResult && !scanError">
+          <div class="frame-corner top-left"></div>
+          <div class="frame-corner top-right"></div>
+          <div class="frame-corner bottom-left"></div>
+          <div class="frame-corner bottom-right"></div>
+          <p class="scan-instruction">Placez le QR code dans le cadre</p>
+        </div>
+      </div>
+
+      <!-- Scan Result -->
+      <div *ngIf="scanResult" class="scan-result" [ngClass]="getStatusClass()">
+        <div class="result-icon">
+          <span class="material-symbols-outlined">{{ getStatusIcon() }}</span>
+        </div>
+        <h3 class="result-title">{{ getStatusText() }}</h3>
+        <div class="result-details">
+          <p><strong>Événement:</strong> {{ scanResult.ticket?.eventName }}</p>
+          <p><strong>Billet ID:</strong> <code>{{ scanResult.ticket?.id }}</code></p>
+          <p *ngIf="scanResult.ticket?.seat"><strong>Place:</strong> {{ scanResult.ticket?.seat }}</p>
+          <p *ngIf="scanResult.message" class="result-message">{{ scanResult.message }}</p>
+        </div>
+      </div>
+
+      <!-- Scan Error -->
+      <div *ngIf="scanError" class="scan-result error">
+        <div class="result-icon">
+          <span class="material-symbols-outlined">error</span>
+        </div>
+        <h3 class="result-title">Erreur</h3>
+        <p class="result-message">{{ scanError }}</p>
+      </div>
+    </div>
+
+    <!-- Controller Info -->
+    <div class="controller-info">
+      <div class="info-item">
+        <span class="material-symbols-outlined">person</span>
+        <span>Contrôleur: {{ scannedBy }}</span>
+      </div>
+      <div class="info-item">
+        <span class="material-symbols-outlined">location_on</span>
+        <span>Lieu: {{ location }}</span>
+      </div>
+    </div>
+  </div>
+</div>
