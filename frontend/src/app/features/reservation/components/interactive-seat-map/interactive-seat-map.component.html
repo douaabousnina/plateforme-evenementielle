@@ -34,140 +34,60 @@
         <!-- Seats Visualization -->
         <div class="absolute top-32 left-1/2 -translate-x-1/2 flex flex-col gap-12 scale-90 origin-top">
 
-            <!-- Dynamic Sections -->
-            @for (section of sections(); track section) {
-            @if (section === 'Fosse Or') {
-            <!-- Fosse Or Section -->
-            <div class="flex flex-col items-center gap-2">
+            @for (section of sections(); track section.config.name) {
+            <div class="flex flex-col items-center gap-2" [class.mt-4]="section.config.layout === 'triple'"
+                [class.mt-8]="section.config.name === 'Balcon'" [style.opacity]="section.config.style?.opacity || 1"
+                [class.hover:opacity-100]="section.config.style?.opacity"
+                [class.transition-opacity]="section.config.style?.opacity">
+
+                <!-- Section Header -->
                 <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
-                    {{ section }} - {{ getPriceForSection(section) }}€
+                    {{ section.config.name }} - {{ getPriceForSection(section.config.name) }}€
                 </div>
-                @for (row of fosseOrRows(); track $index) {
-                <div class="flex gap-2">
-                    @for (seat of row; track seat.id) {
-                    <button [disabled]="seat.status === 'sold'" [class.border-2]="seat.status === 'available'"
-                        [class.border-primary/50]="seat.status === 'available'"
-                        [class.bg-white]="seat.status === 'available'"
-                        [class.dark:bg-slate-700]="seat.status === 'available'"
-                        [class.hover:bg-primary/20]="seat.status === 'available'"
-                        [class.bg-primary]="seat.status === 'selected'" [class.shadow-lg]="seat.status === 'selected'"
-                        [class.shadow-primary/40]="seat.status === 'selected'"
-                        [class.ring-2]="seat.status === 'selected'" [class.ring-offset-2]="seat.status === 'selected'"
-                        [class.ring-primary]="seat.status === 'selected'"
-                        [class.ring-offset-white]="seat.status === 'selected'"
-                        [class.dark:ring-offset-slate-800]="seat.status === 'selected'"
-                        [class.bg-slate-200]="seat.status === 'sold'" [class.dark:bg-slate-600]="seat.status === 'sold'"
-                        [class.cursor-not-allowed]="seat.status === 'sold'" (click)="onSeatClick(seat)"
-                        [title]="section + ' - Rang ' + seat.row + ' - Place ' + seat.number"
-                        class="w-5 h-5 rounded-full transition-all"></button>
+
+                <!-- Layout Container -->
+                <div [ngClass]="section.config.layout === 'triple' ? 'flex gap-3 items-end' : 'flex flex-col gap-2'">
+                    @for (subsection of section.subsections; track $index) {
+                    <div class="flex flex-col gap-2"
+                        [style.transform]="subsection.rotation ? 'rotate(' + subsection.rotation + 'deg) translateY(0.5rem)' : 'none'">
+
+                        @for (row of subsection.seats; track $index) {
+                        <div class="flex gap-2">
+                            @for (seat of row; track seat.id) {
+                            <button [disabled]="seat.status === SeatStatus.SOLD"
+                                [class.border-2]="seat.status === SeatStatus.AVAILABLE" [ngClass]="{
+                                    'border-primary/50 bg-white dark:bg-slate-700 hover:bg-primary/20': seat.status === SeatStatus.AVAILABLE,
+                                    'bg-primary shadow-lg shadow-primary/40 ring-2 ring-offset-2 ring-primary ring-offset-white dark:ring-offset-slate-800': seat.status === SeatStatus.LOCKED,
+                                    'bg-slate-200 dark:bg-slate-600 cursor-not-allowed': seat.status === SeatStatus.SOLD
+                                }" (click)="onSeatClick(seat)"
+                                [title]="section.config.name + ' - Rang ' + seat.row + ' - Place ' + seat.number"
+                                class="w-5 h-5 rounded-full transition-all">
+                            </button>
+                            }
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Balcon Status Indicators -->
+                @if (section.config.name === 'Balcon') {
+                <div class="flex gap-1 justify-center mt-2">
+                    @for (status of [{label: 'B1', available: true}, {label: 'B2', available: false}, {label: 'B3',
+                    available: true}]; track status.label) {
+                    <div class="flex gap-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-full px-4">
+                        <span class="text-xs text-slate-400">Section {{ status.label }}</span>
+                        <div class="w-2 h-2 rounded-full mx-1 self-center"
+                            [ngClass]="status.available ? 'bg-green-400' : 'bg-slate-400'"></div>
+                        <span class="text-xs font-bold"
+                            [ngClass]="status.available ? 'text-green-600 dark:text-green-400' : 'text-slate-400'">
+                            {{ status.available ? 'Disponible' : 'Complet' }}
+                        </span>
+                    </div>
                     }
                 </div>
                 }
             </div>
-            } @else if (section === 'Catégorie 1') {
-            <!-- Catégorie 1 Section -->
-            <div class="flex flex-col items-center gap-2 mt-4">
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
-                    {{ section }} - {{ getPriceForSection(section) }}€
-                </div>
-                <div class="flex gap-3 items-end">
-                    <!-- Left Section -->
-                    <div class="flex flex-col gap-2 rotate-6 transform translate-y-2">
-                        @for (row of cat1LeftRows(); track $index) {
-                        <div class="flex gap-2">
-                            @for (seat of row; track seat.id) {
-                            <button [disabled]="seat.status === 'sold'" [class.border-2]="seat.status === 'available'"
-                                [class.border-purple-400/50]="seat.status === 'available'"
-                                [class.hover:bg-purple-400/20]="seat.status === 'available'"
-                                [class.bg-primary]="seat.status === 'selected'"
-                                [class.shadow-lg]="seat.status === 'selected'"
-                                [class.bg-slate-200]="seat.status === 'sold'"
-                                [class.dark:bg-slate-600]="seat.status === 'sold'" (click)="onSeatClick(seat)"
-                                [title]="section + ' - Rang ' + seat.row + ' - Place ' + seat.number"
-                                class="w-5 h-5 rounded-full transition-all"></button>
-                            }
-                        </div>
-                        }
-                    </div>
-
-                    <!-- Center Section -->
-                    <div class="flex flex-col gap-2">
-                        @for (row of cat1CenterRows(); track $index) {
-                        <div class="flex gap-2">
-                            @for (seat of row; track seat.id) {
-                            <button [disabled]="seat.status === 'sold'" [class.border-2]="seat.status === 'available'"
-                                [class.border-purple-400/50]="seat.status === 'available'"
-                                [class.hover:bg-purple-400/20]="seat.status === 'available'"
-                                [class.bg-primary]="seat.status === 'selected'"
-                                [class.shadow-lg]="seat.status === 'selected'"
-                                [class.bg-slate-200]="seat.status === 'sold'"
-                                [class.dark:bg-slate-600]="seat.status === 'sold'" (click)="onSeatClick(seat)"
-                                [title]="section + ' - Rang ' + seat.row + ' - Place ' + seat.number"
-                                class="w-5 h-5 rounded-full transition-all"></button>
-                            }
-                        </div>
-                        }
-                    </div>
-
-                    <!-- Right Section -->
-                    <div class="flex flex-col gap-2 -rotate-6 transform translate-y-2">
-                        @for (row of cat1RightRows(); track $index) {
-                        <div class="flex gap-2">
-                            @for (seat of row; track seat.id) {
-                            <button [disabled]="seat.status === 'sold'" [class.border-2]="seat.status === 'available'"
-                                [class.border-purple-400/50]="seat.status === 'available'"
-                                [class.hover:bg-purple-400/20]="seat.status === 'available'"
-                                [class.bg-primary]="seat.status === 'selected'"
-                                [class.shadow-lg]="seat.status === 'selected'"
-                                [class.bg-slate-200]="seat.status === 'sold'"
-                                [class.dark:bg-slate-600]="seat.status === 'sold'" (click)="onSeatClick(seat)"
-                                [title]="section + ' - Rang ' + seat.row + ' - Place ' + seat.number"
-                                class="w-5 h-5 rounded-full transition-all"></button>
-                            }
-                        </div>
-                        }
-                    </div>
-                </div>
-            </div>
-            } @else if (section === 'Balcon') {
-            <!-- Balcon Section -->
-            <div class="flex flex-col items-center gap-2 mt-8 opacity-70 hover:opacity-100 transition-opacity">
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
-                    {{ section }} - {{ getPriceForSection(section) }}€
-                </div>
-                @for (row of balconRows(); track $index) {
-                <div class="flex gap-2 justify-center">
-                    @for (seat of row; track seat.id) {
-                    <button [disabled]="seat.status === 'sold'" [class.border-2]="seat.status === 'available'"
-                        [class.border-blue-400/50]="seat.status === 'available'"
-                        [class.hover:bg-blue-400/20]="seat.status === 'available'"
-                        [class.bg-primary]="seat.status === 'selected'" [class.shadow-lg]="seat.status === 'selected'"
-                        [class.bg-slate-200]="seat.status === 'sold'" [class.dark:bg-slate-600]="seat.status === 'sold'"
-                        (click)="onSeatClick(seat)"
-                        [title]="section + ' - Rang ' + seat.row + ' - Place ' + seat.number"
-                        class="w-5 h-5 rounded-full transition-all"></button>
-                    }
-                </div>
-                }
-            </div>
-            <div class="flex gap-1 justify-center">
-                <div class="flex gap-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-full px-4">
-                    <span class="text-xs text-slate-400">Section B1</span>
-                    <div class="w-2 h-2 rounded-full bg-green-400 mx-1 self-center"></div>
-                    <span class="text-xs text-green-600 dark:text-green-400 font-bold">Disponible</span>
-                </div>
-                <div class="flex gap-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-full px-4">
-                    <span class="text-xs text-slate-400">Section B2</span>
-                    <div class="w-2 h-2 rounded-full bg-slate-400 mx-1 self-center"></div>
-                    <span class="text-xs text-slate-400 font-bold">Complet</span>
-                </div>
-                <div class="flex gap-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-full px-4">
-                    <span class="text-xs text-slate-400">Section B3</span>
-                    <div class="w-2 h-2 rounded-full bg-green-400 mx-1 self-center"></div>
-                    <span class="text-xs text-green-600 dark:text-green-400 font-bold">Disponible</span>
-                </div>
-            </div>
-            }
             }
         </div>
     </div>

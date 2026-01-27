@@ -1,94 +1,95 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { Event } from '../models/event.model';
-import { Order, OrderItem } from '../models/order.model';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Seat } from '../models/reservation.model';
+import { SeatStatus } from '../enums/reservation.enum';
+import { SERVICE_FEE_RATE, MAX_SEATS_PER_ORDER } from '../constants/reservations.constants';
+import { SeatService } from './seat.service';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-    private currentEvent = signal<Event | null>(null);
-    private orderItems = signal<OrderItem[]>([]);
-    private reservedSeats = signal<Seat[]>([]);
-    private serviceFeeRate = signal<number>(0.035);
+    private seatService = inject(SeatService);
 
-    event = this.currentEvent.asReadonly();
-    items = this.orderItems.asReadonly();
+    reservedSeats = signal<Seat[]>([]);
+    errorMessage = signal<string | null>(null);
 
     subtotal = computed(() => {
-        const itemsTotal = this.orderItems().reduce((sum, item) => sum + item.totalPrice, 0);
-        const seatsTotal = this.reservedSeats().reduce((sum, seat) => sum + seat.price, 0);
-        return itemsTotal + seatsTotal;
+        return this.reservedSeats().reduce((sum, seat) => sum + Number(seat.price), 0);
     });
 
     serviceFee = computed(() => {
-        return Math.round(this.subtotal() * this.serviceFeeRate() * 100) / 100;
+        return Math.round(this.subtotal() * SERVICE_FEE_RATE);
     });
 
     total = computed(() => {
         return this.subtotal() + this.serviceFee();
     });
 
-    itemCount = computed(() => {
-        return this.orderItems().reduce((sum, item) => sum + item.quantity, 0);
+    seatCount = computed(() => {
+        return this.reservedSeats().length;
     });
 
-    order = computed<Order | null>(() => {
-        const event = this.currentEvent();
-        if (!event) return null;
-
-        return {
-            event,
-            items: this.orderItems(),
-            seats: this.reservedSeats(),
-            subtotal: this.subtotal(),
-            serviceFee: this.serviceFee(),
-            total: this.total(),
-            reservationTime: new Date()
-        };
-    });
-
-    setEvent(event: Event): void {
-        this.currentEvent.set(event);
-    }
 
     setSeats(seats: Seat[]): void {
         this.reservedSeats.set(seats);
     }
 
-    addItem(item: OrderItem): void {
-        const items = [...this.orderItems()];
-        const existingIndex = items.findIndex(i => i.ticketType === item.ticketType);
 
-        if (existingIndex >= 0) {
-            items[existingIndex].quantity += item.quantity;
-            items[existingIndex].totalPrice = items[existingIndex].quantity * items[existingIndex].unitPrice;
+    toggleSeat(seat: Seat): boolean {
+        const isSelected = this.isSeatSelected(seat.id);
+
+        if (isSelected) {
+            this.removeSeat(seat.id);
+            return true;
         } else {
-            items.push(item);
+            return this.addSeat(seat);
+        }
+    }
+
+    addSeat(seat: Seat): boolean {
+        if (this.reservedSeats().length >= MAX_SEATS_PER_ORDER) {
+            this.errorMessage.set(`Maximum ${MAX_SEATS_PER_ORDER} billets par commande`);
+            return false;
         }
 
-        this.orderItems.set(items);
+        const current = this.reservedSeats();
+        if (!current.find(s => s.id === seat.id)) {
+            this.reservedSeats.set([...current, seat]);
+            this.seatService.updateSeatStatus(seat.id, SeatStatus.LOCKED);
+            this.errorMessage.set(null);
+        }
+        return true;
     }
 
-    removeItem(ticketType: string): void {
-        this.orderItems.update(items => items.filter(i => i.ticketType !== ticketType));
+    removeSeat(seatId: string): void {
+        this.reservedSeats.update(seats => seats.filter(s => s.id !== seatId));
+        this.seatService.updateSeatStatus(seatId, SeatStatus.AVAILABLE);
+        this.errorMessage.set(null);
     }
 
-    updateItemQuantity(ticketType: string, quantity: number): void {
-        this.orderItems.update(items =>
-            items.map(item =>
-                item.ticketType === ticketType
-                    ? { ...item, quantity, totalPrice: quantity * item.unitPrice }
-                    : item
-            )
-        );
+    isSeatSelected(seatId: string): boolean {
+        return this.reservedSeats().some(s => s.id === seatId);
     }
 
-    clear(): void {
-        this.orderItems.set([]);
+    clearCart(): void {
+        const selectedIds = this.reservedSeats().map(s => s.id);
         this.reservedSeats.set([]);
-        this.currentEvent.set(null);
+
+        // Update all seat statuses back to available
+        selectedIds.forEach(id => {
+            this.seatService.updateSeatStatus(id, SeatStatus.AVAILABLE);
+        });
+
+        this.errorMessage.set(null);
+    }
+
+    
+    validateCart(): { isValid: boolean; error?: string } {
+        if (this.reservedSeats().length === 0) {
+            return { isValid: false, error: 'Please select at least one seat.' };
+        }
+        return { isValid: true };
     }
 
     hasItems(): boolean {
-        return this.orderItems().length > 0;
+        return this.reservedSeats().length > 0;
     }
 }

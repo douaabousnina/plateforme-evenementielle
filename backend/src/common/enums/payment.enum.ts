@@ -1,11 +1,11 @@
 export enum PaymentStatus {
-  PENDING = 'pending',
-  SUCCESS = 'success',
-  FAILED = 'failed',
-  REFUNDED = 'refunded',
+  PENDING = 'PENDING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
 }
 
 export enum PaymentMethod {
-  VISA = 'visa',
-  MASTERCARD = 'mastercard',
+  VISA = 'VISA',
+  MASTERCARD = 'MASTERCARD',
 }

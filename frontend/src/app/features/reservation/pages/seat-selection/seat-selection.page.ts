@@ -1,18 +1,18 @@
 import { Component, signal, computed, inject, effect } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 import { InteractiveSeatMapComponent } from '../../components/interactive-seat-map/interactive-seat-map.component';
 import { SeatCartSummaryComponent } from '../../components/seat-cart-summary/seat-cart-summary.component';
-import { TimerService } from '../../../../core/services/timer.service';
 import { SeatService } from '../../services/seat.service';
 import { ReservationService } from '../../services/reservation.service';
 import { EventService } from '../../services/event.service';
 import { Seat } from '../../models/reservation.model';
-import { Event } from '../../models/event.model';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
 import { BreadcrumbComponent } from '../../../../shared/components/breadcrumb/breadcrumb.component';
-import { BreadcrumbStep } from '../../../../core/models/breadcrumb.model';
 import { CartService } from '../../services/cart.service';
+import { createBreadcrumbSteps } from '../../../../core/config/breadcrumb.config';
 
 @Component({
   selector: 'app-seat-selection-page',
@@ -27,152 +27,90 @@ import { CartService } from '../../services/cart.service';
   templateUrl: './seat-selection.page.html'
 })
 export class SeatSelectionPage {
-  router = inject(Router);
-  activatedRoute = inject(ActivatedRoute);
-  timerService = inject(TimerService);
-  eventService = inject(EventService);
-  seatService = inject(SeatService);
-  reservationService = inject(ReservationService);
-  cartService = inject(CartService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
-  loadingSeats = signal<boolean>(false);
-  loadingReservation = signal<boolean>(false);
-  errorMessage = signal<string | null>(null);
-  eventId = signal<string>('');
+  private eventService = inject(EventService);
+  private seatService = inject(SeatService);
+  private reservationService = inject(ReservationService);
+  private cartService = inject(CartService);
 
-  currentEvent = signal<Event | null>(null);
-  seats = this.seatService.seats;
-  selectedSeats = signal<Seat[]>([]);
+  breadcrumbSteps = signal(createBreadcrumbSteps('seatSelection'));
 
-  breadcrumbSteps = signal<BreadcrumbStep[]>([
-    { label: 'Sélection', route: '/seat-selection', completed: false, active: true, stepNumber: 1 },
-    { label: 'Paiement', route: '/payment', completed: false, active: false, stepNumber: 2 },
-    { label: 'Confirmation', route: '/confirmation', completed: false, active: false, stepNumber: 3 }
-  ]);
-
-  subtotal = computed(() =>
-    this.selectedSeats().reduce((sum, seat) => sum + seat.price, 0)
+  eventId = toSignal(
+    this.activatedRoute.paramMap.pipe(
+      map(params => params.get('eventId'))
+    )
   );
 
-  serviceFee = computed(() =>
-    Math.round(this.subtotal() * 0.035 * 100) / 100
-  );
+  selectedSeats = this.cartService.reservedSeats;
+  subtotal = this.cartService.subtotal;
+  serviceFee = this.cartService.serviceFee;
+  total = this.cartService.total;
 
-  total = computed(() =>
-    this.subtotal() + this.serviceFee()
-  );
+  currentEvent = this.eventService.currentEvent;
+
+  loadingSeats = this.seatService.loading;
+  loadingReservation = this.reservationService.loading;
+
+  errorMessage = computed(() => {
+    // Check cart errors
+    const cartError = this.cartService.errorMessage();
+    if (cartError) return cartError;
+
+    // check API errors
+    if (this.eventService.error()) return this.eventService.error();
+    if (this.seatService.error()) return this.seatService.error();
+    if (this.reservationService.error()) return this.reservationService.error();
+
+    return null;
+  });
 
   constructor() {
-    this.timerService.start();
-
-    effect(() => {
-      this.activatedRoute.paramMap.subscribe(params => {
-        const id = params.get('eventId') || '';
-        this.eventId.set(id);
-      });
-    });
-
     effect(() => {
       const id = this.eventId();
-      if (!id) {
-        this.errorMessage.set('Event ID is required');
-        return;
-      }
-      this.loadEventAndSeats(id);
-    });
-  }
 
-  private loadEventAndSeats(eventId: string): void {
-    // Load event
-    this.eventService.getEventById(eventId).subscribe({
-      next: (event: any) => {
-        this.currentEvent.set(event);
-      },
-      error: (error: any) => {
-        this.errorMessage.set('Failed to load event details');
-        console.error('Error loading event:', error);
+      if (id) {
+        this.loadData(id);
       }
     });
-
-    // Load seats
-    this.loadingSeats.set(true);
-    this.seatService.getSeatsByEventId(eventId).subscribe({
-      next: (seats: any) => {
-        // this.seats.set(seats); // Removed: handled by service signal
-        this.loadingSeats.set(false);
-        console.log(seats);
-      },
-      error: () => {
-        this.errorMessage.set('Failed to load seats');
-        this.loadingSeats.set(false);
-      }
-    });
-
   }
 
-  handleSeatSelection(seat: Seat): void {
-    const isSelected = this.selectedSeats().some(s => s.id === seat.id);
-
-    if (isSelected) {
-      // Deselect
-      this.handleRemoveSeat(seat.id);
-    } else {
-      // Select
-      if (this.selectedSeats().length >= 10) {
-        this.errorMessage.set('Maximum 10 billets par commande');
-        return;
-      }
-      this.selectedSeats.update(seats => [...seats, seat]);
-      this.seatService.updateSeatStatus(seat.id, 'selected');
-    }
+  private loadData(eventId: string): void {
+    this.seatService.loadSeatsByEventId(eventId).subscribe();
+    this.eventService.loadEventById(eventId).subscribe();
   }
 
-  handleRemoveSeat(seatId: string): void {
-    this.selectedSeats.update(seats => seats.filter(s => s.id !== seatId));
-    this.seatService.updateSeatStatus(seatId, 'available');
-  }
+  handleSeatSelection(seat: Seat): void { this.cartService.toggleSeat(seat); }
 
-  handleClearCart(): void {
-    const selectedIds = this.selectedSeats().map(s => s.id);
-    this.selectedSeats.set([]);
-    selectedIds.forEach(id => {
-      this.seatService.updateSeatStatus(id, 'available');
-    });
-  }
+  handleRemoveSeat(seatId: string): void { this.cartService.removeSeat(seatId); }
+
+  handleClearCart(): void { this.cartService.clearCart(); }
 
   handleProceedToPayment(): void {
-    if (this.selectedSeats().length === 0) {
-      this.errorMessage.set('Veuillez sélectionner au moins une place');
+    const eventId = this.eventId();
+    if (!eventId) {
+      this.cartService.errorMessage.set('Event ID is required');
       return;
     }
 
-    this.loadingReservation.set(true);
-    this.errorMessage.set(null);
+    // Validate cart
+    const validation = this.cartService.validateCart();
+    if (!validation.isValid) {
+      this.cartService.errorMessage.set(validation.error || 'Cart is not valid');
+      return;
+    }
 
-    // Lock seats on backend
     const seatIds = this.selectedSeats().map(s => s.id);
+
     this.reservationService.lockSeats({
-      eventId: this.eventId(),
+      eventId: eventId,
       seatIds: seatIds
     }).subscribe({
-      next: (reservation: any) => {
-        this.loadingReservation.set(false);
-
-        // Populate cart service before navigation
-        if (this.currentEvent()) {
-          this.cartService.setEvent(this.currentEvent()!);
-          this.cartService.setSeats(this.selectedSeats());
-        }
-
-        // Navigate to payment with reservation ID
+      next: (reservation) => {
         this.router.navigate(['/payment'], {
           state: { reservationId: reservation.id }
         });
-      },
-      error: (error: any) => {
-        this.loadingReservation.set(false);
-        this.errorMessage.set(error?.error?.message || 'Failed to lock seats. Please try again.');
-        console.error('Error locking seats:', error);
       }
     });
   }

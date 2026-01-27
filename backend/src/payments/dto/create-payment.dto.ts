@@ -1,14 +1,9 @@
-import { IsUUID, IsEnum, IsString, Length, IsNotEmpty } from 'class-validator';
-import { PaymentMethod } from 'src/common/enums/payment.enum';
+import { IsUUID, IsString, Length, IsNotEmpty } from 'class-validator';
 
 export class CreatePaymentDto {
     @IsUUID()
     @IsNotEmpty()
     reservationId: string;
-
-    @IsEnum(PaymentMethod)
-    @IsNotEmpty()
-    method: PaymentMethod;
 
     @IsString()
     @IsNotEmpty()
@@ -18,4 +13,14 @@ export class CreatePaymentDto {
     @IsString()
     @IsNotEmpty()
     cardHolder: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(3, 4)
+    cvc: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(5, 5)
+    expiryDate: string;
 }

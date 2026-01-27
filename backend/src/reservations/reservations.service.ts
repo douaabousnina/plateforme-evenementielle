@@ -30,14 +30,14 @@ export class ReservationsService {
         // check seat availability
         const takenSeats = await this.seatRepo.find({
             where: {
-                seatId: In(dto.seatIds),
+                id: In(dto.seatIds),
                 status: In([SeatStatus.LOCKED, SeatStatus.SOLD]),
             },
         });
 
         if (takenSeats.length > 0) {
             throw new ConflictException(
-                `Seats already taken: ${takenSeats.map(s => s.seatId).join(', ')}`
+                `Seats already taken: ${takenSeats.map(s => s.id).join(', ')}`
             );
         }
 
@@ -45,13 +45,15 @@ export class ReservationsService {
         const expiresAt = new Date(Date.now() + RESERVATION_EXPIRATION_MINUTES * 60 * 1000);
         const totalPrice = dto.seatIds.length * DEFAULT_SEAT_PRICE;
 
-        const seats = dto.seatIds.map(seatId =>
-            this.seatRepo.create({
-                seatId,
-                price: DEFAULT_SEAT_PRICE,
-                status: SeatStatus.LOCKED,
-            }),
-        );
+        const seats = await this.seatRepo.find({
+            where: {
+                id: In(dto.seatIds),
+            },
+        });
+
+        seats.forEach(seat => {
+            seat.status = SeatStatus.LOCKED;
+        });
 
         const reservation = this.reservationRepo.create({
             userId,
@@ -152,5 +154,12 @@ export class ReservationsService {
 
         this.isExpiringWorking = false;
         return expired.length;
+    }
+
+    async findSeatsByEventId(eventId: string) {
+        return this.seatRepo.find({
+            where: { eventId },
+            order: { section: 'ASC', row: 'ASC', number: 'ASC' },
+        });
     }
 }

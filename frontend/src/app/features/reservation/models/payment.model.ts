@@ -1,9 +1,7 @@
-import { Order } from "./order.model";
+import { PaymentMethod } from "../enums/payment-method.enum";
 
 export type ContactField = 'firstName' | 'lastName' | 'email';
 export type PaymentField = 'cardNumber' | 'expiryDate' | 'cvc' | 'cardholderName';
-export type PaymentMethodType = 'card' | 'paypal';
-
 
 export interface ContactInfo {
     firstName: string;
@@ -18,23 +16,31 @@ export interface PaymentInfo {
     cardholderName: string;
 }
 
-export enum PaymentMethod {
-    CreditCard = 'credit_card',
-    PayPal = 'paypal'
+export interface Payment {
+    id: string;
+    userId: string;
+    reservationId: string;
+    amount: number;
+    method: PaymentMethod;
+    cardLast4: string;
+    status: string;
+
+    createdAt?: Date;
+    updatedAt?: Date;
 }
+
 
 export interface PaymentRequest {
     reservationId: string;
-    amount: number;
-    orderId: string;
-    contactInfo: ContactInfo;
-    paymentMethod: PaymentInfo;
+    cardNumber: string;
+    cardHolder: string;
+    cvc: string;
+    expiryDate: string;
 }
 
-export interface PaymentResponse {
-    success: boolean;
-    transactionId: string;
-    confirmationCode: string;
-    qrCode: string;
-    order?: Order;
+export interface PaymentRefundRequest {
+    paymentId: string;
+    amount: number;
+    reason?:string;
 }
+

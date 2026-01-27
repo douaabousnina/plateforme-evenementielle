@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { FormInputComponent } from '../../../../shared/components/form-input/form-input.component';
 import { PaymentMethodComponent } from '../payment-method/payment-method.component';
-import { PaymentField, PaymentInfo, PaymentMethodType } from '../../models/payment.model';
+import { PaymentField, PaymentInfo } from '../../models/payment.model';
 import { BaseFormComponent } from '../../../../shared/components/form/base-form.component';
+import { PaymentMethod } from '../../enums/payment-method.enum';
 
 @Component({
     selector: 'app-payment-form',
@@ -11,8 +12,10 @@ import { BaseFormComponent } from '../../../../shared/components/form/base-form.
     templateUrl: './payment-form.component.html',
 })
 export class PaymentFormComponent extends BaseFormComponent<PaymentInfo> {
-    selectedMethod = signal<PaymentMethodType>('card');
+    selectedMethod = signal<PaymentMethod>(PaymentMethod.CARD);
     fieldNames: PaymentField[] = ['cardNumber', 'expiryDate', 'cvc', 'cardholderName'];
+
+    protected readonly PaymentMethod = PaymentMethod;
 
     fields = {
         cardNumber: { value: signal(''), error: signal('') },
@@ -21,19 +24,8 @@ export class PaymentFormComponent extends BaseFormComponent<PaymentInfo> {
         cardholderName: { value: signal(''), error: signal('') },
     };
 
-    // public getters for template
-    cardNumberValue() { return this.fields.cardNumber.value(); }
-    cardNumberError() { return this.fields.cardNumber.error(); }
-    expiryDateValue() { return this.fields.expiryDate.value(); }
-    expiryDateError() { return this.fields.expiryDate.error(); }
-    cvcValue() { return this.fields.cvc.value(); }
-    cvcError() { return this.fields.cvc.error(); }
-    cardholderNameValue() { return this.fields.cardholderName.value(); }
-    cardholderNameError() { return this.fields.cardholderName.error(); }
-
-    onMethodChange(method: PaymentMethodType): void {
+    onMethodChange(method: PaymentMethod): void {
         this.selectedMethod.set(method);
-        console.log('Payment method changed:', method);
     }
 
     buildFormData(): PaymentInfo {

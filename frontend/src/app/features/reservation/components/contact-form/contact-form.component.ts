@@ -18,14 +18,6 @@ export class ContactFormComponent extends BaseFormComponent<ContactInfo> {
     email: { value: signal(''), error: signal('') },
   };
 
-  // public getters for template
-  firstNameValue() { return this.fields.firstName.value(); }
-  firstNameError() { return this.fields.firstName.error(); }
-  lastNameValue() { return this.fields.lastName.value(); }
-  lastNameError() { return this.fields.lastName.error(); }
-  emailValue() { return this.fields.email.value(); }
-  emailError() { return this.fields.email.error(); }
-
   buildFormData(): ContactInfo {
     return {
       firstName: this.fields.firstName.value(),

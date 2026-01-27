@@ -26,6 +26,7 @@ export class PaymentsController {
 
     @Get()
     findMine() {
+        // TODO: get userId from JWT
         const userId = 'sample-user-id';
         return this.paymentsService.findByUser(userId);
     }

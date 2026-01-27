@@ -15,26 +15,27 @@
 
     <app-payment-method (methodChange)="onMethodChange($event)" />
 
-    @if (selectedMethod() === 'card') {
+    @if (selectedMethod() === PaymentMethod.CARD) {
     <form class="space-y-5">
-        <app-form-input [label]="'Numéro de carte'" [placeholder]="'0000 0000 0000 0000'" [value]="cardNumberValue()"
-            [name]="'cardNumber'" [error]="cardNumberError()" [icon]="'credit_card'" [maxlength]="19"
-            [forceShowError]="showErrors()" (blurred)="onFieldBlur('cardNumber', $event)" />
+        <app-form-input [label]="'Numéro de carte'" [placeholder]="'0000 0000 0000 0000'"
+            [value]="fields.cardNumber.value()" [name]="'cardNumber'" [error]="fields.cardNumber.error()"
+            [icon]="'credit_card'" [maxlength]="19" [forceShowError]="showErrors()"
+            (blurred)="onFieldBlur('cardNumber', $event)" />
 
         <div class="grid grid-cols-2 gap-5">
-            <app-form-input [label]="'Date d\'expiration'" [placeholder]="'MM / AA'" [value]="expiryDateValue()"
-                [name]="'expiryDate'" [error]="expiryDateError()" [maxlength]="7" [forceShowError]="showErrors()"
-                (blurred)="onFieldBlur('expiryDate', $event)" />
-            <app-form-input [label]="'CVC'" [placeholder]="'123'" [value]="cvcValue()" [name]="'cvc'"
-                [error]="cvcError()" [maxlength]="3" [helpText]="'3 chiffres au dos de la carte'" [helpIcon]="'help'"
-                [forceShowError]="showErrors()" (blurred)="onFieldBlur('cvc', $event)" />
+            <app-form-input [label]="'Date d\'expiration'" [placeholder]="'MM / AA'" [value]="fields.expiryDate.value()"
+                [name]="'expiryDate'" [error]="fields.expiryDate.error()" [maxlength]="7"
+                [forceShowError]="showErrors()" (blurred)="onFieldBlur('expiryDate', $event)" />
+            <app-form-input [label]="'CVC'" [placeholder]="'123'" [value]="fields.cvc.value()" [name]="'cvc'"
+                [error]="fields.cvc.error()" [maxlength]="3" [helpText]="'3 chiffres au dos de la carte'"
+                [helpIcon]="'help'" [forceShowError]="showErrors()" (blurred)="onFieldBlur('cvc', $event)" />
         </div>
 
-        <app-form-input [label]="'Nom sur la carte'" [placeholder]="'Jean Dupont'" [value]="cardholderNameValue()"
-            [name]="'cardholderName'" [error]="cardholderNameError()" [forceShowError]="showErrors()"
-            (blurred)="onFieldBlur('cardholderName', $event)" />
+        <app-form-input [label]="'Nom sur la carte'" [placeholder]="'Jean Dupont'"
+            [value]="fields.cardholderName.value()" [name]="'cardholderName'" [error]="fields.cardholderName.error()"
+            [forceShowError]="showErrors()" (blurred)="onFieldBlur('cardholderName', $event)" />
     </form>
-    } @else if (selectedMethod() === 'paypal') {
+    } @else if (selectedMethod() === PaymentMethod.PAYPAL) {
     <div
         class="p-8 flex flex-col items-center text-center gap-4 bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-900/30 rounded-2xl">
         <div

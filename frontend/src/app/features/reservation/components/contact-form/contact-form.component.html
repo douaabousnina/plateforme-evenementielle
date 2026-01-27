@@ -6,15 +6,17 @@
 
     <form class="space-y-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-            <app-form-input [label]="'Prénom'" [placeholder]="'Jean'" [value]="firstNameValue()" [name]="'firstName'"
-                [error]="firstNameError()" [forceShowError]="showErrors()"
+            <app-form-input [label]="'Prénom'" [placeholder]="'Jean'" [value]="fields.firstName.value()"
+                [name]="'firstName'" [error]="fields.firstName.error()" [forceShowError]="showErrors()"
                 (blurred)="onFieldBlur('firstName', $event)" />
-            <app-form-input [label]="'Nom'" [placeholder]="'Dupont'" [value]="lastNameValue()" [name]="'lastName'"
-                [error]="lastNameError()" [forceShowError]="showErrors()" (blurred)="onFieldBlur('lastName', $event)" />
+            <app-form-input [label]="'Nom'" [placeholder]="'Dupont'" [value]="fields.lastName.value()"
+                [name]="'lastName'" [error]="fields.lastName.error()" [forceShowError]="showErrors()"
+                (blurred)="onFieldBlur('lastName', $event)" />
         </div>
 
         <app-form-input [label]="'Email'" [type]="'email'" [placeholder]="'jean.dupont@email.com'"
-            [value]="emailValue()" [name]="'email'" [error]="emailError()" [forceShowError]="showErrors()"
-            [helpText]="'Vos billets seront envoyés à cette adresse.'" (blurred)="onFieldBlur('email', $event)" />
+            [value]="fields.email.value()" [name]="'email'" [error]="fields.email.error()"
+            [forceShowError]="showErrors()" [helpText]="'Vos billets seront envoyés à cette adresse.'"
+            (blurred)="onFieldBlur('email', $event)" />
     </form>
 </section>

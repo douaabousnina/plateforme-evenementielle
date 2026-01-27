@@ -9,7 +9,8 @@ import { Payment } from './entities/payment.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { RefundPaymentDto } from './dto/refund-payment.dto';
 import { ReservationsService } from 'src/reservations/reservations.service';
-import { PaymentStatus } from 'src/common/enums/payment.enum';
+import { PaymentMethod, PaymentStatus } from 'src/common/enums/payment.enum';
+import { ReservationStatus } from 'src/common/enums/reservation.enum';
 
 @Injectable()
 export class PaymentsService {
@@ -27,20 +28,22 @@ export class PaymentsService {
 
     if (!reservation) throw new NotFoundException('Reservation not found');
 
-    if (reservation.status !== 'pending') {
+    if (reservation.status !== ReservationStatus.PENDING) {
       throw new BadRequestException('Reservation not payable');
     }
+
 
     const payment = this.paymentRepo.create({
       userId,
       reservationId: reservation.id,
       amount: reservation.totalPrice,
-      method: dto.method,
+      method: this.generateMethod(parseInt(dto.cardNumber.slice(-1))),
       cardLast4: dto.cardNumber.slice(-4),
       status: PaymentStatus.PENDING,
     });
 
     // mocking bank
+    // supposé we check avec dto.cvc / dto.expiryDate ..
     const success = Math.random() > 0.2;
 
     payment.status = success
@@ -82,5 +85,9 @@ export class PaymentsService {
     const payment = await this.paymentRepo.findOne({ where: { id } });
     if (!payment) throw new NotFoundException('Payment not found');
     return payment;
+  }
+
+  private generateMethod(cardNumber: number): PaymentMethod {
+    return cardNumber % 2 === 0 ? PaymentMethod.VISA : PaymentMethod.MASTERCARD;
   }
 }

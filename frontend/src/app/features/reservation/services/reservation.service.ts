@@ -1,117 +1,49 @@
-import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { inject, Injectable, signal } from '@angular/core';
+import { Observable } from 'rxjs';
+import { tap, finalize } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
-
-export interface ReservedSeat {
-  seatId: string;
-  price: number;
-  status: 'LOCKED' | 'SOLD' | 'AVAILABLE';
-}
-
-export interface Reservation {
-  id: string;
-  userId: string;
-  eventId: string;
-  seats: ReservedSeat[];
-  totalPrice: number;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED';
-  expiresAt: Date;
-  createdAt?: Date;
-}
-
-export interface LockSeatsRequest {
-  eventId: string;
-  seatIds: string[];
-}
+import { LockSeatsRequest, Reservation } from '../models/reservation.model';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationService {
-  private currentReservation = signal<Reservation | null>(null);
-  private http: HttpClient;
+  private apiService = inject(ApiService);
 
-  reservation = this.currentReservation.asReadonly();
-  private reservationSubject = new BehaviorSubject<Reservation | null>(null);
-  reservation$ = this.reservationSubject.asObservable();
+  currentReservation = signal<Reservation | null>(null);
+  reservations = signal<Reservation[]>([]); // in case of get all
+  loading = this.apiService.loading;
+  error = this.apiService.error;
 
-  constructor(private apiService: ApiService, http: HttpClient) {
-    this.http = http;
-  }
-
-  /**
-   * Lock seats and create a pending reservation
-   */
   lockSeats(request: LockSeatsRequest): Observable<Reservation> {
     return this.apiService.post<Reservation>('reservations/lock', request).pipe(
-      tap(reservation => {
-        this.currentReservation.set(reservation);
-        this.reservationSubject.next(reservation);
-      })
+      tap(reservation => this.currentReservation.set(reservation)),
     );
   }
 
-  /**
-   * Confirm a reservation after successful payment
-   */
   confirmReservation(reservationId: string): Observable<Reservation> {
-    return this.apiService.patch<Reservation>(
-      `reservations/${reservationId}/confirm`,
-      {}
-    ).pipe(
-      tap(reservation => {
-        this.currentReservation.set(reservation);
-        this.reservationSubject.next(reservation);
-      })
+    return this.apiService.patch<Reservation>(`reservations/${reservationId}/confirm`).pipe(
+      tap(reservation => this.currentReservation.set(reservation)),
     );
   }
 
-  /**
-   * Cancel a pending reservation
-   */
   cancelReservation(reservationId: string): Observable<Reservation> {
-    return this.apiService.patch<Reservation>(
-      `reservations/${reservationId}/cancel`,
-      {}
-    ).pipe(
-      tap(reservation => {
-        this.currentReservation.set(reservation);
-        this.reservationSubject.next(reservation);
-      })
+    return this.apiService.patch<Reservation>(`reservations/${reservationId}/cancel`).pipe(
+      tap(reservation => this.currentReservation.set(reservation)),
     );
   }
 
-  /**
-   * Get a single reservation by ID
-   */
   getReservation(reservationId: string): Observable<Reservation> {
     return this.apiService.get<Reservation>(`reservations/${reservationId}`).pipe(
-      tap(reservation => {
-        this.currentReservation.set(reservation);
-        this.reservationSubject.next(reservation);
-      })
+      tap(reservation => this.currentReservation.set(reservation)),
     );
   }
 
-  /**
-   * Get all reservations for a user
-   */
   getUserReservations(userId: string): Observable<Reservation[]> {
-    return this.apiService.get<Reservation[]>(`reservations/user/${userId}`);
+    return this.apiService.get<Reservation[]>(`reservations/user/${userId}`).pipe(
+      tap(reservations => this.reservations.set(reservations)),
+    );
   }
 
-  /**
-   * Clear current reservation
-   */
   clearReservation(): void {
     this.currentReservation.set(null);
-    this.reservationSubject.next(null);
-  }
-
-  /**
-   * Get current reservation value
-   */
-  getCurrentReservation(): Reservation | null {
-    return this.currentReservation();
   }
 }

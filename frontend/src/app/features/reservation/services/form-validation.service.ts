@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+export type fieldRule = Record<string, { pattern?: RegExp }>;
+export type fieldErrorMessage = Record<string, { required: string; pattern: string }>;
+
+@Injectable({ providedIn: 'root' })
 export class FormValidationService {
-  private rules: Record<string, { pattern?: RegExp }> = {
+  private rules: fieldRule = {
     email: { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
-    cardNumber: { pattern: /^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/ },
+    cardNumber: { pattern: /^\d{16}$/ },
     expiryDate: { pattern: /^\d{2}\s?\/\s?\d{2}$/ },
     cvc: { pattern: /^\d{3}$/ }
   };
 
-  private messages: Record<string, { required: string; pattern: string }> = {
+  private errorMessages: fieldErrorMessage = {
     firstName: { required: 'Le prénom est requis', pattern: '' },
     lastName: { required: 'Le nom est requis', pattern: '' },
     email: { required: 'L\'email est requis', pattern: 'Email invalide' },
@@ -23,7 +24,7 @@ export class FormValidationService {
 
   validate(value: string, fieldType: string, trim: boolean = false): { isValid: boolean; error: string } {
     const val = trim ? value.trim() : value;
-    const msgs = this.messages[fieldType as keyof typeof this.messages];
+    const msgs = this.errorMessages[fieldType as keyof fieldErrorMessage];
 
     if (!msgs) return { isValid: true, error: '' };
 
@@ -31,7 +32,7 @@ export class FormValidationService {
       return { isValid: false, error: msgs.required };
     }
 
-    const rule = this.rules[fieldType as keyof typeof this.rules];
+    const rule = this.rules[fieldType as keyof fieldRule];
     if (rule?.pattern && !rule.pattern.test(val)) {
       return { isValid: false, error: msgs.pattern };
     }

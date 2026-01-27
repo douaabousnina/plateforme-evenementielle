@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
@@ -7,7 +7,7 @@ import { ReservationService } from '../../services/reservation.service';
 import { PaymentService } from '../../services/payment.service';
 import { OrderDetailsComponent } from '../../components/order-details/order-details.component';
 import { BreadcrumbComponent } from '../../../../shared/components/breadcrumb/breadcrumb.component';
-import { BreadcrumbStep } from '../../../../core/models/breadcrumb.model';
+import { createBreadcrumbSteps } from '../../../../core/config/breadcrumb.config';
 
 @Component({
   selector: 'app-confirmation-page',
@@ -26,11 +26,7 @@ export class ConfirmationPage {
   private reservationService = inject(ReservationService);
   private paymentService = inject(PaymentService);
 
-  breadcrumbSteps = signal<BreadcrumbStep[]>([
-    { label: 'Sélection', route: '/seat-selection', completed: true, active: false, stepNumber: 1 },
-    { label: 'Paiement', route: '/payment', completed: true, active: false, stepNumber: 2 },
-    { label: 'Confirmation', route: '/confirmation', completed: false, active: true, stepNumber: 3 }
-  ]);
+  breadcrumbSteps = signal(createBreadcrumbSteps('confirmation'));
 
   confirmationCode = signal<string>('');
   transactionId = signal<string>('');
@@ -57,35 +53,31 @@ export class ConfirmationPage {
   });
 
   constructor() {
-    effect(() => {
-      const navigation = this.router.currentNavigation();
-      const state = navigation?.extras?.state;
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state || history.state;
 
-      if (state?.['confirmationCode']) {
-        this.confirmationCode.set(state['confirmationCode']);
-        this.transactionId.set(state['transactionId'] || '');
-        this.qrCode.set(state['qrCode'] || '');
+    if (state?.['confirmationCode']) {
+      this.confirmationCode.set(state['confirmationCode']);
+      this.transactionId.set(state['transactionId'] || '');
+      this.qrCode.set(state['qrCode'] || '');
 
-        if (state?.['reservation']) {
-          this.reservation.set(state['reservation']);
-          this.isLoading.set(false);
-          this.errorMessage.set(null);
-        }
-      } else {
-        // Fallback
-        const currentReservation = this.reservationService.getCurrentReservation();
-        if (currentReservation) {
-          this.reservation.set(currentReservation);
-        } else {
-          this.errorMessage.set('No confirmation data found. Please complete the payment process.');
-        }
+      if (state?.['reservation']) {
+        this.reservation.set(state['reservation']);
         this.isLoading.set(false);
+        this.errorMessage.set(null);
       }
-    });
+    } else {
+      const currentReservation = this.reservationService.currentReservation();
+      if (currentReservation) {
+        this.reservation.set(currentReservation);
+      } else {
+        this.errorMessage.set('No confirmation data found. Please complete the payment process.');
+      }
+      this.isLoading.set(false);
+    }
   }
 
   downloadTickets(): void {
-    // TODO ...
     console.log('download tickets for:', this.confirmationCode());
   }
 
@@ -97,4 +89,3 @@ export class ConfirmationPage {
     this.router.navigate(['/my-tickets']);
   }
 }
-

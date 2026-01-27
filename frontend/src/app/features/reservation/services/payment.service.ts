@@ -1,18 +1,21 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { PaymentRequest, PaymentResponse, ContactInfo, PaymentInfo } from '../models/payment.model';
+import { catchError, tap } from 'rxjs/operators';
+import { PaymentRequest, Payment, ContactInfo, PaymentInfo, PaymentRefundRequest } from '../models/payment.model';
 import { ApiService } from '../../../core/services/api.service';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-    private contactInfo = signal<ContactInfo | null>(null);
-    private paymentInfo = signal<PaymentInfo | null>(null);
+    private apiService = inject(ApiService);
+    private route = inject(Router);
 
-    contact = this.contactInfo.asReadonly();
-    payment = this.paymentInfo.asReadonly();
+    // TODO: contact info normalement auth service
+    contactInfo = signal<ContactInfo | null>(null);
+    paymentInfo = signal<PaymentInfo | null>(null);
 
-    constructor(private apiService: ApiService) { }
+    loading = this.apiService.loading;
+    error = this.apiService.error;
 
     setContactInfo(info: ContactInfo): void {
         this.contactInfo.set(info);
@@ -22,45 +25,48 @@ export class PaymentService {
         this.paymentInfo.set(info);
     }
 
-    /**
-     * Process payment through backend API
-     */
-    processPayment(request: PaymentRequest): Observable<PaymentResponse> {
-        return this.apiService.post<PaymentResponse>('payments/process', {
-            reservationId: request.reservationId,
-            amount: request.amount,
-            orderId: request.orderId,
-            contactInfo: request.contactInfo,
-            paymentMethod: request.paymentMethod
-        }).pipe(
+    processPayment(reservationId: string, contactInfo: ContactInfo, paymentInfo: PaymentInfo): Observable<Payment> {
+        this.loading.set(true);
+
+        this.setContactInfo(contactInfo);
+        this.setPaymentInfo(paymentInfo);
+
+        const request: PaymentRequest = {
+            reservationId: reservationId,
+            cardNumber: paymentInfo.cardNumber,
+            cardHolder: paymentInfo.cardholderName,
+            cvc: paymentInfo.cvc,
+            expiryDate: paymentInfo.expiryDate
+        };
+
+        return this.apiService.post<Payment>('payments', request).pipe(
             tap(response => {
-                if (response.success) {
-                    // Clear payment data after successful payment
-                    this.contactInfo.set(null);
-                    this.paymentInfo.set(null);
+                if (response.status === 'success') {
+                    // TODO: toast
+                    this.route.navigate(['/reservation/confirmation'], {
+                        state: { reservationId }
+                    });
                 }
             })
         );
     }
 
-    /**
-     * Refund a payment
-     */
-    refundPayment(transactionId: string, reason?: string): Observable<any> {
-        return this.apiService.post<any>('payments/refund', {
-            transactionId,
-            reason
+    refundPayment(paymentRefundRequest: PaymentRefundRequest): Observable<Payment> {
+        return this.apiService.post<Payment>('payments/refund', {
+            paymentId: paymentRefundRequest.paymentId,
+            reason: paymentRefundRequest.reason
         });
     }
 
-    /**
-     * Get payment status
-     */
-    getPaymentStatus(transactionId: string): Observable<any> {
-        return this.apiService.get<any>(`payments/${transactionId}`);
+    getPaymentById(paymentId: string): Observable<Payment> {
+        return this.apiService.get<Payment>(`payments/${paymentId}`);
     }
 
-    clearPaymentData(): void {
+    getPaymentsOfUser(): Observable<Payment[]> {
+        return this.apiService.get<Payment[]>('payments/user');
+    }
+
+    clearPaymentForm(): void {
         this.contactInfo.set(null);
         this.paymentInfo.set(null);
     }

@@ -45,4 +45,10 @@ export class ReservationsController {
     async findByUser(@Param('userId') userId: string) {
         return this.reservationsService.findByUser(userId);
     }
+
+    // GET SEATS BY EVENT
+    @Get('seats/event/:eventId')
+    async findSeatsByEventId(@Param('eventId') eventId: string) {
+        return this.reservationsService.findSeatsByEventId(eventId);
+    }
 }

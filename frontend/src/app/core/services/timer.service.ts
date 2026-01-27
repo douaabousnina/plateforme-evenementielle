@@ -1,8 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TimerService {
-    private remainingSeconds = signal<number>(600);
+    private remainingSeconds = signal<number>(250);
     private intervalId: any = null;
 
     minutes = computed(() => Math.floor(this.remainingSeconds() / 60));
@@ -16,7 +16,7 @@ export class TimerService {
 
     isExpired = computed(() => this.remainingSeconds() <= 0);
 
-    start(durationInSeconds: number = 600): void {
+    start(durationInSeconds: number = 250): void {
         this.stop();
         this.remainingSeconds.set(durationInSeconds);
 
@@ -40,6 +40,6 @@ export class TimerService {
 
     reset(): void {
         this.stop();
-        this.remainingSeconds.set(600);
+        this.remainingSeconds.set(250);
     }
 }

@@ -1,6 +1,5 @@
-
 import { Component, signal, output } from '@angular/core';
-import { PaymentMethodType } from '../../models/payment.model';
+import { PaymentMethod } from '../../enums/payment-method.enum';
 
 @Component({
   selector: 'app-payment-method',
@@ -8,12 +7,15 @@ import { PaymentMethodType } from '../../models/payment.model';
   templateUrl: './payment-method.component.html',
 })
 export class PaymentMethodComponent {
-  methodChange = output<PaymentMethodType>();
+  methodChange = output<PaymentMethod>();
 
-  selectedMethod = signal<PaymentMethodType>('card');
+  selectedMethod = signal<PaymentMethod>(PaymentMethod.VISA);
 
-  selectMethod(method: PaymentMethodType): void {
+  selectMethod(method: PaymentMethod): void {
     this.selectedMethod.set(method);
     this.methodChange.emit(method);
   }
+
+  // Expose enum to template
+  protected readonly PaymentMethod = PaymentMethod;
 }
