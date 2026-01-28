@@ -1,0 +1,128 @@
+:host {
+	display: block;
+	height: 100%;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+	width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	background-color: rgba(99, 102, 241, 0.3);
+	border-radius: 10px;
+	transition: background-color 0.2s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(99, 102, 241, 0.5);
+}
+
+/* Dark mode scrollbar */
+:host-context(.dark) .custom-scrollbar::-webkit-scrollbar-thumb {
+	background-color: rgba(139, 92, 246, 0.3);
+}
+
+:host-context(.dark) .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(139, 92, 246, 0.5);
+}
+
+/* Animations */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-fadeIn {
+	animation: fadeIn 0.5s ease-out;
+}
+
+/* Smooth transitions */
+* {
+	transition-property: background-color, border-color, color, fill, stroke;
+	transition-duration: 200ms;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Utility classes */
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+	user-select: none;
+}
+
+.icon-filled {
+	font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Hover effects enhancement */
+button {
+	cursor: pointer;
+	user-select: none;
+}
+
+button:active {
+	transform: scale(0.98);
+}
+
+/* Loading skeleton */
+@keyframes shimmer {
+	0% {
+		background-position: -1000px 0;
+	}
+	100% {
+		background-position: 1000px 0;
+	}
+}
+
+.animate-pulse {
+	background: linear-gradient(
+		90deg,
+		rgba(148, 163, 184, 0.1) 0%,
+		rgba(148, 163, 184, 0.2) 50%,
+		rgba(148, 163, 184, 0.1) 100%
+	);
+	background-size: 1000px 100%;
+	animation: shimmer 2s infinite;
+}
+
+:host-context(.dark) .animate-pulse {
+	background: linear-gradient(
+		90deg,
+		rgba(255, 255, 255, 0.05) 0%,
+		rgba(255, 255, 255, 0.1) 50%,
+		rgba(255, 255, 255, 0.05) 100%
+	);
+}
+
+/* Responsive improvements */
+@media (max-width: 1024px) {
+	.custom-scrollbar {
+		padding-bottom: 80px;
+	}
+}
+
+/* Focus states for accessibility */
+button:focus-visible {
+	outline: 2px solid var(--primary, #330fe6);
+	outline-offset: 2px;
+}
+
+/* Ensure content doesn't overflow */
+.overflow-hidden {
+	overflow: hidden;
+}

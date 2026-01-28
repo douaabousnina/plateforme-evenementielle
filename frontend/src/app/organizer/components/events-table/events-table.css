@@ -1,0 +1,7 @@
+:host { display:block }
+.size-10 { width:40px; height:40px }
+.rounded-2xl { border-radius: 1rem }
+.bg-cover { background-size: cover }
+.bg-center { background-position: center }
+.w-full { width:100% }
+.text-sm { font-size:0.875rem }
