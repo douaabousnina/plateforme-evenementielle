@@ -1,4 +1,4 @@
-import { Component, signal, effect, inject } from '@angular/core';
+import { Component, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccessService } from '../../services/access.service';
 import { ScanLog } from '../../models/access.model';
@@ -32,8 +32,10 @@ export class ScanHistoryComponent {
   selectedEventId = signal<string | null>(null);
 
   constructor() {
-    // Load scan history on component initialization
-    this.loadScanHistory();
+    // Load scan history using effect for reactive initialization
+    effect(() => {
+      this.loadScanHistory();
+    }, { allowSignalWrites: true });
   }
 
   loadScanHistory(): void {

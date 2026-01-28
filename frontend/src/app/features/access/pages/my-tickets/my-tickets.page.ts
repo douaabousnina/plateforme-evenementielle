@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccessService } from '../../services/access.service';
 import { Ticket, TicketStatus } from '../../models/access.model';
@@ -68,7 +68,9 @@ export class MyTicketsComponent {
   });
 
   constructor() {
-    this.loadTickets();
+    effect(() => {
+      this.loadTickets();
+    }, { allowSignalWrites: true });
   }
 
   loadTickets(): void {
