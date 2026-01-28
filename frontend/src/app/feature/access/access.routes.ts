@@ -5,7 +5,7 @@ import { ScanHistoryComponent } from './components/scan-history/scan-history.com
 import { QrScannerComponent } from './components/qr-scanner/qr-scanner.component';
 
 export const accessRoutes: Routes = [
-  { path: '', redirectTo: 'my-tickets', pathMatch: 'full' },
+
   { path: 'my-tickets', component: MyTicketsComponent },
   { path: 'scanner', component: QrScannerComponent },
   { path: 'scan-history', component: ScanHistoryComponent },
