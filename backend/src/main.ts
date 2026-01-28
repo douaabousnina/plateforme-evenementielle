@@ -19,13 +19,13 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Event Platform API')
     .setDescription('API documentation for the Event Ticketing Platform')
-    .setVersion('1.0')
+    // .setVersion('1.0')
     .addTag('Events')
     .addBearerAuth()
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  // const document = SwaggerModule.createDocument(app, config);
+  // SwaggerModule.setup('api/docs', app, document);
 
   // Enable CORS for frontend
   app.enableCors({
