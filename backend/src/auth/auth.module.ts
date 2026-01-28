@@ -7,12 +7,12 @@ import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { RolesGuard } from './roles.guard';
-import { env } from 'process';
+
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: 'superSecretKeyForJWTSigning2024!@$%^&*',
+      secret: process.env.JWT_SECRET,
        signOptions: { expiresIn: '1h' },
     }),
     forwardRef(() => UsersModule)

@@ -2,6 +2,7 @@ import { Role } from "../../common/enums/role.enum";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Preference } from "../../common/enums/preference.enum";
 //import { Reservation } from "../../reservations/entities/reservation.entity";
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
