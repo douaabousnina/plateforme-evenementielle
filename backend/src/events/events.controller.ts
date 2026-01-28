@@ -202,6 +202,7 @@ export class EventsController {
     return await this.eventsService.remove(id, organizerId);
   }
 
+  // TODO
   /**
    * INTERNAL ENDPOINT - Update available seats (Called by Reservations module)
    * PATCH /events/:id/seats/reserve

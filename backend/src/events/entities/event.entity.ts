@@ -79,7 +79,8 @@ export class Event {
   @Column({ type: 'timestamp', nullable: true })
   salesEndDate: Date;
 
-  @Column({ type: 'uuid' })
+  // @Column({ type: 'uuid' })
+  @Column()
   @Index()
   organizerId: string;
 

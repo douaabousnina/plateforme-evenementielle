@@ -71,12 +71,14 @@ export class CreateEventDto {
   @ApiProperty({ type: [String], required: false })
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
+  // @IsUrl({}, { each: true })
+  @IsString({ each: true })
   images?: string[];
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsUrl()
+  // @IsUrl()
+  @IsString()
   bannerImage?: string;
 
   @ApiProperty({ type: SeatingPlanDto })
