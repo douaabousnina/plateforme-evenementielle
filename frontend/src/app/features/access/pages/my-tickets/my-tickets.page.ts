@@ -5,11 +5,12 @@ import { Ticket, TicketStatus } from '../../models/access.model';
 import { TicketCardComponent } from '../../components/ticket-card/ticket-card.component';
 import { TicketFiltersComponent, FilterTab } from '../../components/ticket-filters/ticket-filters.component';
 import { QrModalComponent } from '../../components/qr-modal/qr-modal.component';
+import { HeaderComponent } from '../../../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-my-tickets',
   standalone: true,
-  imports: [CommonModule, TicketCardComponent, TicketFiltersComponent, QrModalComponent],
+  imports: [CommonModule, TicketCardComponent, TicketFiltersComponent, QrModalComponent, HeaderComponent],
   templateUrl: './my-tickets.page.html',
   styleUrls: ['./my-tickets.page.css']
 })

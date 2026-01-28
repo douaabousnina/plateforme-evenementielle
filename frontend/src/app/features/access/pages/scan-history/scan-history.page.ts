@@ -5,6 +5,7 @@ import { ScanLog } from '../../models/access.model';
 import { ScanStatsSummaryComponent } from '../../components/scan-stats-summary/scan-stats-summary.component';
 import { EventStatsCardComponent, EventStats } from '../../components/event-stats-card/event-stats-card.component';
 import { ScanDetailsTableComponent } from '../../components/scan-details-table/scan-details-table.component';
+import { HeaderComponent } from '../../../../shared/components/header/header.component';
 
 interface EventStatsWithScans extends EventStats {
   scans: ScanLog[];
@@ -13,7 +14,7 @@ interface EventStatsWithScans extends EventStats {
 @Component({
   selector: 'app-scan-history',
   standalone: true,
-  imports: [CommonModule, ScanStatsSummaryComponent, EventStatsCardComponent, ScanDetailsTableComponent],
+  imports: [CommonModule, ScanStatsSummaryComponent, EventStatsCardComponent, ScanDetailsTableComponent, HeaderComponent],
   templateUrl: './scan-history.page.html',
   styleUrls: ['./scan-history.page.css']
 })
