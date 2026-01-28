@@ -18,6 +18,8 @@ export class Payment extends BaseEntity {
     @Column()
     userId: string;
     
+    // many => in case of retry (because we allow failed payments)
+    // du coup on aura pas besoin de refaire une nouvelle réservation
     @ManyToOne(() => Reservation, { onDelete: 'CASCADE' })
     @JoinColumn({name: "reservationId"})
     reservation: Reservation;

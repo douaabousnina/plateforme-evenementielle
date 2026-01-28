@@ -47,14 +47,14 @@
     </div>
 
     <!-- Button -->
-    <button (click)="onSubmit()" [disabled]="!acceptTerms() || isProcessing()"
-        [class.opacity-50]="!acceptTerms() || isProcessing()"
-        [class.cursor-not-allowed]="!acceptTerms() || isProcessing()" class="mt-8 w-full bg-primary hover:bg-blue-700 disabled:hover:bg-primary
+    <button (click)="onSubmit()" [disabled]="!acceptTerms() || loading()"
+        [class.opacity-50]="!acceptTerms() || loading()"
+        [class.cursor-not-allowed]="!acceptTerms() || loading()" class="mt-8 w-full bg-primary hover:bg-blue-700 disabled:hover:bg-primary
            text-white font-bold text-lg rounded-xl h-14 shadow-lg
            shadow-blue-900/10 hover:shadow-blue-900/20 transition-all
            transform active:scale-[0.99] flex items-center justify-center gap-3">
 
-        @if (isProcessing()) {
+        @if (loading()) {
         <span class="material-symbols-outlined animate-spin">progress_activity</span>
         <span>Traitement en cours...</span>
         } @else {

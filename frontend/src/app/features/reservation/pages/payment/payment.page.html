@@ -13,10 +13,9 @@
             <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
                 <app-contact-form [contactInfo]="contactInfo()" />
 
-                <app-payment-form [triggerValidation]="triggerValidation()"
-                    (validationStatus)="onPaymentValidation($event)" (formData)="onPaymentData($event)" />
+                <app-payment-form (validationStatus)="onPaymentValidation($event)" (formData)="onPaymentData($event)" />
 
-                <app-validation-section [amount]="totalAmount()" [isProcessing]="isProcessing()"
+                <app-validation-section [amount]="cartTotal()" [loading]="loading()"
                     (submitPayment)="handlePayment()">
                 </app-validation-section>
 

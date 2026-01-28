@@ -8,5 +8,5 @@ import { DatePipe, DecimalPipe } from '@angular/common';
   templateUrl: './order-details.component.html',
 })
 export class OrderDetailsComponent {
-  order = input<any>();
+  order = input<any>();  
 }

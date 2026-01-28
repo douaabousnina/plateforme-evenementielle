@@ -5,18 +5,15 @@ import { SeatSelectionPage } from "./pages/seat-selection/seat-selection.page";
 
 export const reservationRoutes: Routes = [
     {
-        path: 'payment',
+        path: 'payment/:reservationId',
         component: PaymentPage,
-        title: 'Paiement - EventPlatform'
     },
     {
-        path: 'confirmation',
+        path: 'confirmation/:reservationId',
         component: ConfirmationPage,
-        title: 'Confirmation - EventPlatform'
     },
     {
         path: 'seat-selection/:eventId',
         component: SeatSelectionPage,
-        title: 'Sélection des places - EventPlatform'
     },
 ];

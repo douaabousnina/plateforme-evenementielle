@@ -109,7 +109,7 @@ export class SeatSelectionPage {
       seatIds: seatIds
     }).subscribe({
       next: (reservation) => {
-        this.router.navigate(['/payment'], {
+        this.router.navigate(['/payment/', reservation.id], {
           state: { reservationId: reservation.id }
         });
       }

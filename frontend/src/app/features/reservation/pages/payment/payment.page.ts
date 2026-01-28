@@ -1,5 +1,5 @@
 import { Component, signal, inject, effect, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TimerService } from '../../../../core/services/timer.service';
 import { ValidationSectionComponent } from '../../components/validation-section/validation-section.component';
 import { PaymentFormComponent } from '../../components/payment-form/payment-form.component';
@@ -13,7 +13,6 @@ import { PaymentService } from '../../services/payment.service';
 import { createBreadcrumbSteps } from '../../../../core/config/breadcrumb.config';
 import { ContactInfo, PaymentInfo } from '../../models/payment.model';
 import { TimerComponent } from '../../components/timer/timer.component';
-import { ReservationStatus } from '../../enums/reservation.enum';
 
 @Component({
   selector: 'app-payment-page',
@@ -31,15 +30,14 @@ import { ReservationStatus } from '../../enums/reservation.enum';
 })
 export class PaymentPage {
   private router = inject(Router);
-
+  private route = inject(ActivatedRoute);
   private cartService = inject(CartService);
   private reservationService = inject(ReservationService);
   private paymentService = inject(PaymentService);
   private timerService = inject(TimerService);
 
   breadcrumbSteps = signal(createBreadcrumbSteps('payment'));
-
-  reservationId = signal<string | null>(history.state?.reservationId || null);
+  reservationId = signal<string | null>(this.route.snapshot.paramMap.get('reservationId'));
 
   // TODO: mock data => auth service
   contactInfo = signal<ContactInfo>({
@@ -49,7 +47,6 @@ export class PaymentPage {
   });
 
   paymentInfo = signal<PaymentInfo | null>(null);
-
   paymentValid = signal<boolean>(false);
   triggerValidation = signal<boolean>(false);
 
@@ -57,19 +54,15 @@ export class PaymentPage {
   cartServiceFee = this.cartService.serviceFee;
   cartTotal = this.cartService.total;
   selectedSeats = this.cartService.reservedSeats;
-
-  totalAmount = this.cartService.total;
-
-  isProcessing = computed(
-    () => this.paymentService.loading() || this.reservationService.loading()
-  );
+  loading = computed(() => this.reservationService.loading() || this.paymentService.loading());
 
   constructor() {
     effect(() => {
       if (!this.reservationId()) {
         // TODO: toast ou bien navigate to event
-        this.router.navigate(['/']);
-        return;
+        // this.router.navigate(['/']);
+        // return;
+        alert("no res id");
       }
       this.timerService.start();
     });
@@ -84,13 +77,11 @@ export class PaymentPage {
   }
 
   handlePayment(): void {
-    this.triggerValidation.set(true);
-
     if (!this.paymentValid()) {
       return;
     }
 
-    if (this.isProcessing()) {
+    if (this.paymentService.loading()) {
       return;
     }
 

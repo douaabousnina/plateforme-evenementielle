@@ -35,4 +35,13 @@ export class PaymentsController {
     findOne(@Param('id') id: string) {
         return this.paymentsService.findOne(id);
     }
+
+    @Get('reservation/:reservationId/successful')
+    findSuccessfulByReservationId(
+        @Param('reservationId') reservationId: string,
+    ) {
+        return this.paymentsService.findSuccessfulByReservationId(
+            reservationId,
+        );
+    }
 }

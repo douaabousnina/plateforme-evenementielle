@@ -21,9 +21,9 @@
             <p class="text-lg text-gray-600 dark:text-gray-300 mb-2">
                 Votre paiement a été traité avec succès
             </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <!-- <p class="text-sm text-gray-500 dark:text-gray-400">
                 Numéro de confirmation: <span class="font-mono font-bold text-primary">{{ confirmationCode() }}</span>
-            </p>
+            </p> -->
         </div>
 
         <!-- Main Content Grid -->
@@ -138,17 +138,5 @@
             </button>
         </div>
 
-        <!-- Support -->
-        <div class="mt-12 text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                Besoin d'aide ? Consultez notre
-                <a routerLink="#" class="text-primary font-bold hover:underline">centre d'aide</a>
-                ou contactez notre
-                <a routerLink="#" class="text-primary font-bold hover:underline">support client</a>
-            </p>
-            <p class="text-xs text-gray-400">
-                Transaction sécurisée • ID: {{ transactionId() }}
-            </p>
-        </div>
     </main>
 </div>

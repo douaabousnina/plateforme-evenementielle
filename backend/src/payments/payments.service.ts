@@ -89,6 +89,14 @@ export class PaymentsService {
     return payment;
   }
 
+  async findSuccessfulByReservationId(reservationId: string) {
+    const payment = await this.paymentRepo.findOne({
+      where: { reservationId, status: PaymentStatus.SUCCESS },
+    });
+    if (!payment) throw new NotFoundException('Successful payment not found for this reservation');
+    return payment;
+  }
+
   private generateMethod(cardNumber: string): PaymentMethod {
     if (!cardNumber) {
       throw new BadRequestException('Card number is required');
@@ -108,5 +116,6 @@ export class PaymentsService {
 
     throw new BadRequestException(`Unsupported card type.`);
   }
+
 
 }

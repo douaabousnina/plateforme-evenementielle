@@ -9,7 +9,7 @@ import { DecimalPipe } from '@angular/common';
 })
 export class ValidationSectionComponent {
   amount = input.required<number>();
-  isProcessing = input<boolean>(false);
+  loading = input<boolean>(false);
 
   submitPayment = output<void>();
 
@@ -17,7 +17,7 @@ export class ValidationSectionComponent {
   sendReminder = signal<boolean>(true);
 
   onSubmit(): void {
-    if (this.acceptTerms() && !this.isProcessing()) {
+    if (this.acceptTerms() && !this.loading()) {
       this.submitPayment.emit();
     }
   }
