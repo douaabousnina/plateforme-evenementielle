@@ -5,16 +5,15 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  //@Get()
-  //getHello(): string {
-  //return this.appService.getHello();
-  //}
-
   @Get()
-  getRoot() {
-    return {
-      message: 'Event Platform backend is running',
-      docs: '/api/docs',
-    };
+  getHello(): string {
+    return this.appService.getHello();
   }
+
+  //@Get()
+  //getRoot() {
+  //  return {
+  //    message: 'Event Platform backend is running',
+  //    docs: '/api/docs',
+  //  };
 }
