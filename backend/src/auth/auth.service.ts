@@ -32,23 +32,15 @@ export class AuthService {
       refreshToken: this.jwtService.sign(payload),
     };
   }
-  async register(email: string, password: string, preferences ?: Preference []) {
+  async register(email: string, password: string, preferences ?: Preference [],role?: Role) {
     let dto: CreateUserDto;
-    if (email === 'admin@plateforme.com') {
 
-  dto = {
-    email,
-    password,
-    preferences,
-    role: Role.ORGANIZER,
-  };}
-  else {
      dto = {
     email,
     password,
     preferences,
-    role: Role. CLIENT,
-  };}
+    role: role ? Role.CLIENT:Role.ORGANIZER,
+  };
    const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
       throw new UnauthorizedException('Email already in use');

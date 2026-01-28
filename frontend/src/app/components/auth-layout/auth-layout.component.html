@@ -16,7 +16,8 @@
       <p class="subtitle">
         Complétez vos informations pour une expérience personnalisée.
       </p>
-
+      <app-roles [selectedRole]="role"
+  (roleChange)="role = $event"></app-roles>
       <app-auth-form></app-auth-form>
     </div>
   </div>

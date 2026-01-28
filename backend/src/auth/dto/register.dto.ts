@@ -1,5 +1,6 @@
 import { IsArray,  IsEmail, IsOptional, MinLength,IsEnum } from 'class-validator';
 import { Preference } from '../../common/enums/preference.enum';
+import { Role } from '../../common/enums/role.enum';
 
 export class RegisterDto {
   @IsEmail()
@@ -12,4 +13,7 @@ export class RegisterDto {
   @IsArray()
   @IsEnum(Preference, { each: true })
   preferences?: Preference[];
+   @IsEnum(Role)
+  @IsOptional()
+  role?: Role;
 }

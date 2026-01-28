@@ -17,4 +17,5 @@ export class CreateUserDto {
   @IsArray()
   @IsEnum(Preference, { each: true })
   preferences?: Preference[];
+
 }

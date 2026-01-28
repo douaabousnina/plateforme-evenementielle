@@ -1,0 +1,33 @@
+
+.roles-selector {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  display: flex;
+  background-color: #e7e9f3;
+  border-radius: 9999px;
+  padding: 4px;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+
+
+
+/* Pill */
+.role-pill {
+  flex:1;
+    background-color: #e7e9f3;
+  border: none;   
+  padding: 10px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4b589b;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.role-pill.active {
+  background-color: #ffffff;
+  color: #0f33e6;
+  box-shadow: 0 4px 10px rgba(15, 51, 230, 0.15);
+}

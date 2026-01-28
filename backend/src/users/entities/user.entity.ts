@@ -34,6 +34,8 @@ export class User {
   phoneNumber: string;
   /*@OneToMany(() => Reservation, (r) => r.user)
   reservations: Reservation[];*/
+  /*  @OneToMany(() => Event, (event) => event.organizer)
+  events: Event[];*/
     @CreateDateColumn({update:false})
     createdAt: Date;
 }

@@ -9,8 +9,8 @@
   border: none;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-
   box-shadow: 0 10px 25px rgba(15, 51, 230, 0.25);
+    font-family: 'Plus Jakarta Sans', sans-serif;
 
   &:hover {
     transform: translateY(-1px);

@@ -15,11 +15,11 @@ async function createAdmin() {
       return;
     }
     
-
-    const adminUser = await usersService.create({
+    const hash= await bcrypt.hash('admin123456', 10);
+     await usersService.create({
       email: 'admin@plateforme.com',
-      password: 'admin123456',
-      role: Role.ORGANIZER, 
+      password: hash,
+      role: Role.ADMIN, 
       preferences: []
     });
 
