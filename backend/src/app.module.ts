@@ -6,27 +6,31 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '../.env',
+    }),
     TypeOrmModule.forRoot({
-      type: 'postgres',  
-      host: 'localhost',  
-      port: 5432, 
-      username: 'postgres', 
-      password: 'maryem222',  
-      database: 'users',  
-      entities: [User],  
-      synchronize: true,  
-      logging: true,  
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: +(process.env.DB_PORT || 5432),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+      retryAttempts: 10,
+      retryDelay: 3000,
+
+      synchronize: true,
     }),
     
     AuthModule,
     UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
-
 })
-export class AppModule {}
+export class AppModule { }

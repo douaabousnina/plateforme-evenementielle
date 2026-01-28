@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthLayoutComponent } from '../../components/auth-layout/auth-layout.component';
+import { AuthLayoutComponent } from '../../features/auth-users/components/auth-layout/auth-layout.component';
 
 @Component({
   selector: 'app-register',
