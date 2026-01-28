@@ -11,7 +11,6 @@ import { AccessModule } from './access/access.module';
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env',
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
@@ -14,86 +14,80 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
   templateUrl: './qr-scanner.page.html',
   styleUrls: ['./qr-scanner.page.css']
 })
-export class QrScannerComponent implements OnInit {
-  hasDevices = false;
-  hasPermission = false;
-  availableDevices: MediaDeviceInfo[] = [];
-  currentDevice?: MediaDeviceInfo;
+export class QrScannerComponent {
+  private readonly accessService = inject(AccessService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  hasDevices = signal(false);
+  hasPermission = signal(false);
+  availableDevices = signal<MediaDeviceInfo[]>([]);
+  currentDevice = signal<MediaDeviceInfo | undefined>(undefined);
   
-  isScanning = false;
-  scanResult: CheckInResponse | null = null;
-  scanError: string | null = null;
+  isScanning = signal(false);
+  scanResult = signal<CheckInResponse | null>(null);
+  scanError = signal<string | null>(null);
   
   // Scanner settings
   scannedBy = 'Controller-001'; // Mock controller ID
   location = 'Main Entrance';
   
   // QR Code format
-  allowedFormats = [BarcodeFormat.QR_CODE];
-  
-  constructor(
-    private readonly accessService: AccessService,
-    private readonly cdr: ChangeDetectorRef
-  ) {}
-
-  ngOnInit(): void {
-    // Component will initialize camera access when template loads
-  }
+  readonly allowedFormats = [BarcodeFormat.QR_CODE];
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
-    this.availableDevices = devices;
-    this.hasDevices = Boolean(devices && devices.length);
+    this.availableDevices.set(devices);
+    this.hasDevices.set(Boolean(devices && devices.length));
     
     // Select the back camera by default if available
     const backCamera = devices.find(device => 
       /back|rear|environment/gi.test(device.label)
     );
-    this.currentDevice = backCamera || devices[0];
+    this.currentDevice.set(backCamera || devices[0]);
   }
 
   onCameraChange(device: MediaDeviceInfo): void {
-    this.currentDevice = device;
+    this.currentDevice.set(device);
   }
 
   onHasPermission(has: boolean): void {
-    this.hasPermission = has;
+    this.hasPermission.set(has);
   }
 
   onScanSuccess(qrData: string): void {
-    if (this.isScanning) {
+    if (this.isScanning()) {
       return; // Prevent multiple scans
     }
 
     alert('QR Detected: ' + qrData.substring(0, 50));
     console.log('QR Code scanned:', qrData);
-    this.isScanning = true;
-    this.scanError = null;
-    this.scanResult = null;
+    this.isScanning.set(true);
+    this.scanError.set(null);
+    this.scanResult.set(null);
 
     // Call backend to validate and check in
     this.accessService.checkIn(qrData, this.scannedBy, this.location, this.getDeviceInfo())
       .subscribe({
         next: (response) => {
           console.log('Check-in response:', response);
-          this.scanResult = response;
-          this.isScanning = false;
+          this.scanResult.set(response);
+          this.isScanning.set(false);
           this.cdr.detectChanges();
           
           // Auto-reset after 6 seconds
           setTimeout(() => {
-            this.scanResult = null;
+            this.scanResult.set(null);
             this.cdr.detectChanges();
           }, 6000);
         },
         error: (error) => {
           console.error('Check-in error:', error);
-          this.scanError = error.error?.message || error.message || 'Erreur lors du scan. Vérifiez que le backend est accessible.';
-          this.isScanning = false;
+          this.scanError.set(error.error?.message || error.message || 'Erreur lors du scan. Vérifiez que le backend est accessible.');
+          this.isScanning.set(false);
           this.cdr.detectChanges();
           
           // Auto-reset error after 6 seconds
           setTimeout(() => {
-            this.scanError = null;
+            this.scanError.set(null);
             this.cdr.detectChanges();
           }, 6000);
         }
@@ -109,9 +103,10 @@ export class QrScannerComponent implements OnInit {
   }
 
   getStatusClass(): string {
-    if (!this.scanResult) return '';
+    const result = this.scanResult();
+    if (!result) return '';
     
-    switch (this.scanResult.status) {
+    switch (result.status) {
       case 'valid':
         return 'success';
       case 'already_scanned':
@@ -126,9 +121,10 @@ export class QrScannerComponent implements OnInit {
   }
 
   getStatusIcon(): string {
-    if (!this.scanResult) return '';
+    const result = this.scanResult();
+    if (!result) return '';
     
-    switch (this.scanResult.status) {
+    switch (result.status) {
       case 'valid':
         return 'check_circle';
       case 'already_scanned':
@@ -143,9 +139,10 @@ export class QrScannerComponent implements OnInit {
   }
 
   getStatusText(): string {
-    if (!this.scanResult) return '';
+    const result = this.scanResult();
+    if (!result) return '';
     
-    switch (this.scanResult.status) {
+    switch (result.status) {
       case 'valid':
         return 'Billet Valide';
       case 'already_scanned':
@@ -157,7 +154,7 @@ export class QrScannerComponent implements OnInit {
       case 'fake':
         return 'Faux Billet';
       default:
-        return this.scanResult.status;
+        return result.status;
     }
   }
 }

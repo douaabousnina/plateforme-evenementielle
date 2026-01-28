@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScanLog } from '../../models/access.model';
 
@@ -10,7 +10,7 @@ import { ScanLog } from '../../models/access.model';
   styleUrls: ['./scan-details-table.component.css']
 })
 export class ScanDetailsTableComponent {
-  @Input() scans: ScanLog[] = [];
+  scans = input<ScanLog[]>([]);
 
   formatDateTime(date: Date): string {
     return date.toLocaleDateString('fr-FR', {

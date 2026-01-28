@@ -1,59 +1,68 @@
 <div class="ticket-card">
   <!-- Event Image -->
   <div class="ticket-image">
-    <img *ngIf="ticket.eventImage" 
-         [src]="ticket.eventImage" 
-         [alt]="ticket.eventName"
-         class="event-image">
-    <div *ngIf="!ticket.eventImage" 
-         class="event-placeholder">
-      <span class="material-symbols-outlined placeholder-icon">confirmation_number</span>
-    </div>
+    @if (ticket().eventImage) {
+      <img [src]="ticket().eventImage" 
+           [alt]="ticket().eventName"
+           class="event-image">
+    } @else {
+      <div class="event-placeholder">
+        <span class="material-symbols-outlined placeholder-icon">confirmation_number</span>
+      </div>
+    }
     
     <!-- Category Badge -->
     <div class="category-badge">
-      <span class="material-symbols-outlined badge-icon">{{ getCategoryIcon(ticket.category) }}</span>
-      <span class="badge-text">{{ ticket.category }}</span>
+      <span class="material-symbols-outlined badge-icon">{{ getCategoryIcon(ticket().category) }}</span>
+      <span class="badge-text">{{ ticket().category }}</span>
     </div>
   </div>
 
   <!-- Ticket Details -->
   <div class="ticket-details">
     <!-- Event Name -->
-    <h3 class="event-name">{{ ticket.eventName }}</h3>
+    <h3 class="event-name">{{ ticket().eventName }}</h3>
     
     <!-- Date & Time -->
     <div class="event-info">
       <span class="material-symbols-outlined info-icon">schedule</span>
-      <span class="info-text-bold">{{ formatDate(ticket.eventDate) }}</span>
+      <span class="info-text-bold">{{ formatDate(ticket().eventDate) }}</span>
       <span class="info-separator">•</span>
-      <span>{{ formatTime(ticket.eventDate) }}</span>
+      <span>{{ formatTime(ticket().eventDate) }}</span>
     </div>
 
     <!-- Location -->
     <div class="event-info location">
       <span class="material-symbols-outlined info-icon">location_on</span>
-      <span>{{ ticket.eventLocation }}</span>
+      <span>{{ ticket().eventLocation }}</span>
     </div>
 
     <!-- Seating Info -->
     <div class="seating-info">
-      <div *ngIf="ticket.gate" class="seat-detail">
-        <p class="seat-label">Porte</p>
-        <p class="seat-value">{{ ticket.gate }}</p>
-      </div>
-      <div *ngIf="ticket.row" class="seat-detail">
-        <p class="seat-label">Rangée</p>
-        <p class="seat-value">{{ ticket.row }}</p>
-      </div>
-      <div *ngIf="ticket.seat" class="seat-detail">
-        <p class="seat-label">Siège</p>
-        <p class="seat-value">{{ ticket.seat }}</p>
-      </div>
-      <div *ngIf="ticket.zone" class="seat-detail">
-        <p class="seat-label">Zone</p>
-        <p class="seat-value">{{ ticket.zone }}</p>
-      </div>
+      @if (ticket().gate) {
+        <div class="seat-detail">
+          <p class="seat-label">Porte</p>
+          <p class="seat-value">{{ ticket().gate }}</p>
+        </div>
+      }
+      @if (ticket().row) {
+        <div class="seat-detail">
+          <p class="seat-label">Rangée</p>
+          <p class="seat-value">{{ ticket().row }}</p>
+        </div>
+      }
+      @if (ticket().seat) {
+        <div class="seat-detail">
+          <p class="seat-label">Siège</p>
+          <p class="seat-value">{{ ticket().seat }}</p>
+        </div>
+      }
+      @if (ticket().zone) {
+        <div class="seat-detail">
+          <p class="seat-label">Zone</p>
+          <p class="seat-value">{{ ticket().zone }}</p>
+        </div>
+      }
     </div>
 
     <!-- QR Code & Price -->
@@ -61,7 +70,7 @@
       <!-- QR Code Preview -->
       <button (click)="onQrClick()" 
               class="qr-button">
-        <img [src]="ticket.qrCode" 
+        <img [src]="ticket().qrCode" 
              alt="QR Code" 
              class="qr-preview">
         <span class="qr-button-text">Voir QR</span>
@@ -69,8 +78,8 @@
 
       <!-- Price -->
       <div class="price-section">
-        <p class="price">{{ ticket.price }}€</p>
-        <p class="order-id">{{ ticket.orderId }}</p>
+        <p class="price">{{ ticket().price }}€</p>
+        <p class="order-id">{{ ticket().orderId }}</p>
       </div>
     </div>
   </div>

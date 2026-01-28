@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CheckInResponse, ScanLog, Ticket } from '../models/access.model';
@@ -7,9 +7,8 @@ import { CheckInResponse, ScanLog, Ticket } from '../models/access.model';
   providedIn: 'root'
 })
 export class AccessService {
-  private apiUrl = 'http://localhost:3000/access';
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:3000/access';
 
   /**
    * Check in a ticket by scanning QR code

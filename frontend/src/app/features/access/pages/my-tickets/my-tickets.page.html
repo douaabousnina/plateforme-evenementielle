@@ -10,39 +10,46 @@
 
     <!-- Ticket Filters -->
     <app-ticket-filters 
-      [activeTab]="activeTab"
-      [counts]="ticketCounts"
+      [activeTab]="activeTab()"
+      [counts]="ticketCounts()"
       (tabChange)="onTabChange($event)">
     </app-ticket-filters>
 
     <!-- Loading State -->
-    <div *ngIf="loading" class="loading-state">
-      <div class="spinner"></div>
-    </div>
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+      </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="!loading && filteredTickets.length === 0" class="empty-state">
-      <span class="material-symbols-outlined empty-icon">confirmation_number</span>
-      <p class="empty-text">Aucun billet dans cette catégorie</p>
-    </div>
+    @if (!loading() && filteredTickets().length === 0) {
+      <div class="empty-state">
+        <span class="material-symbols-outlined empty-icon">confirmation_number</span>
+        <p class="empty-text">Aucun billet dans cette catégorie</p>
+      </div>
+    }
 
     <!-- Tickets Grid -->
-    <div *ngIf="!loading && filteredTickets.length > 0" 
-         class="tickets-grid">
-      <app-ticket-card 
-        *ngFor="let ticket of filteredTickets"
-        [ticket]="ticket"
-        (qrClick)="openQRModal($event)">
-      </app-ticket-card>
-    </div>
+    @if (!loading() && filteredTickets().length > 0) {
+      <div class="tickets-grid">
+        @for (ticket of filteredTickets(); track ticket.id) {
+          <app-ticket-card 
+            [ticket]="ticket"
+            (qrClick)="openQRModal($event)">
+          </app-ticket-card>
+        }
+      </div>
+    }
   </div>
 
   <!-- QR Modal -->
-  <app-qr-modal 
-    *ngIf="selectedTicket"
-    [ticket]="selectedTicket"
-    [show]="showQRModal"
-    (closeModal)="closeQRModal()"
-    (refresh)="onQrRefresh($event)">
-  </app-qr-modal>
+  @if (selectedTicket()) {
+    <app-qr-modal 
+      [ticket]="selectedTicket()!"
+      [show]="showQRModal()"
+      (closeModal)="closeQRModal()"
+      (refresh)="onQrRefresh($event)">
+    </app-qr-modal>
+  }
 </div>

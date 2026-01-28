@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Ticket } from '../../models/access.model';
 
@@ -10,11 +10,11 @@ import { Ticket } from '../../models/access.model';
   styleUrls: ['./ticket-card.component.css']
 })
 export class TicketCardComponent {
-  @Input() ticket!: Ticket;
-  @Output() qrClick = new EventEmitter<Ticket>();
+  ticket = input.required<Ticket>();
+  qrClick = output<Ticket>();
 
   onQrClick(): void {
-    this.qrClick.emit(this.ticket);
+    this.qrClick.emit(this.ticket());
   }
 
   formatDate(date: Date): string {

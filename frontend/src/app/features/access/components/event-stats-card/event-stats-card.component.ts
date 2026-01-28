@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface EventStats {
@@ -18,9 +18,9 @@ export interface EventStats {
   styleUrls: ['./event-stats-card.component.css']
 })
 export class EventStatsCardComponent {
-  @Input() event!: EventStats;
-  @Input() isExpanded = false;
-  @Output() toggleExpand = new EventEmitter<void>();
+  event = input.required<EventStats>();
+  isExpanded = input<boolean>(false);
+  toggleExpand = output<void>();
 
   onToggle(): void {
     this.toggleExpand.emit();

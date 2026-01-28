@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Ticket } from '../../models/access.model';
 import { AccessService } from '../../services/access.service';
@@ -11,31 +11,35 @@ import { AccessService } from '../../services/access.service';
   styleUrls: ['./qr-modal.component.css']
 })
 export class QrModalComponent {
-  @Input() ticket!: Ticket;
-  @Input() show = false;
-  @Output() closeModal = new EventEmitter<void>();
-  @Output() refresh = new EventEmitter<Ticket>();
+  private readonly accessService = inject(AccessService);
 
-  refreshing = false;
+  ticket = input.required<Ticket>();
+  show = input<boolean>(false);
+  closeModal = output<void>();
+  refresh = output<Ticket>();
 
-  constructor(private readonly accessService: AccessService) {}
+  refreshing = signal(false);
 
   onClose(): void {
     this.closeModal.emit();
   }
 
   onRefreshQR(): void {
-    this.refreshing = true;
-    this.accessService.refreshQRCode(this.ticket.id).subscribe({
+    this.refreshing.set(true);
+    const currentTicket = this.ticket();
+    this.accessService.refreshQRCode(currentTicket.id).subscribe({
       next: (response) => {
-        this.ticket.qrCode = response.qrCode;
-        this.ticket.qrToken = response.qrToken;
-        this.refreshing = false;
-        this.refresh.emit(this.ticket);
+        const updatedTicket = {
+          ...currentTicket,
+          qrCode: response.qrCode,
+          qrToken: response.qrToken
+        };
+        this.refreshing.set(false);
+        this.refresh.emit(updatedTicket);
       },
       error: (error) => {
         console.error('Error refreshing QR code:', error);
-        this.refreshing = false;
+        this.refreshing.set(false);
       }
     });
   }
