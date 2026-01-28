@@ -10,8 +10,8 @@ import { CheckInResponse } from '../../models/access.model';
   selector: 'app-qr-scanner',
   standalone: true,
   imports: [CommonModule, FormsModule, ZXingScannerModule],
-  templateUrl: './qr-scanner.component.html',
-  styleUrls: ['./qr-scanner.component.css']
+  templateUrl: './qr-scanner.page.html',
+  styleUrls: ['./qr-scanner.page.css']
 })
 export class QrScannerComponent implements OnInit {
   hasDevices = false;

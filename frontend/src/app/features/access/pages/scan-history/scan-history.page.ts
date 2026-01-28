@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccessService } from '../../services/access.service';
 import { ScanLog } from '../../models/access.model';
-import { ScanStatsSummaryComponent } from '../scan-stats-summary/scan-stats-summary.component';
-import { EventStatsCardComponent, EventStats } from '../event-stats-card/event-stats-card.component';
-import { ScanDetailsTableComponent } from '../scan-details-table/scan-details-table.component';
+import { ScanStatsSummaryComponent } from '../../components/scan-stats-summary/scan-stats-summary.component';
+import { EventStatsCardComponent, EventStats } from '../../components/event-stats-card/event-stats-card.component';
+import { ScanDetailsTableComponent } from '../../components/scan-details-table/scan-details-table.component';
 
 interface EventStatsWithScans extends EventStats {
   scans: ScanLog[];
@@ -14,8 +14,8 @@ interface EventStatsWithScans extends EventStats {
   selector: 'app-scan-history',
   standalone: true,
   imports: [CommonModule, ScanStatsSummaryComponent, EventStatsCardComponent, ScanDetailsTableComponent],
-  templateUrl: './scan-history.component.html',
-  styleUrls: ['./scan-history.component.css']
+  templateUrl: './scan-history.page.html',
+  styleUrls: ['./scan-history.page.css']
 })
 export class ScanHistoryComponent implements OnInit {
   eventStats: EventStatsWithScans[] = [];

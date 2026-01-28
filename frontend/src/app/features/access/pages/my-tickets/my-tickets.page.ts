@@ -2,16 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccessService } from '../../services/access.service';
 import { Ticket, TicketStatus } from '../../models/access.model';
-import { TicketCardComponent } from '../ticket-card/ticket-card.component';
-import { TicketFiltersComponent, FilterTab } from '../ticket-filters/ticket-filters.component';
-import { QrModalComponent } from '../qr-modal/qr-modal.component';
+import { TicketCardComponent } from '../../components/ticket-card/ticket-card.component';
+import { TicketFiltersComponent, FilterTab } from '../../components/ticket-filters/ticket-filters.component';
+import { QrModalComponent } from '../../components/qr-modal/qr-modal.component';
 
 @Component({
   selector: 'app-my-tickets',
   standalone: true,
   imports: [CommonModule, TicketCardComponent, TicketFiltersComponent, QrModalComponent],
-  templateUrl: './my-tickets.component.html',
-  styleUrls: ['./my-tickets.component.css']
+  templateUrl: './my-tickets.page.html',
+  styleUrls: ['./my-tickets.page.css']
 })
 export class MyTicketsComponent implements OnInit {
   tickets: Ticket[] = [];
