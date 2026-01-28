@@ -1,0 +1,22 @@
+<div class="lg:col-span-1 w-full">
+    <div
+        class="flex items-center justify-between gap-4 p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/50 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div
+                class="size-10 flex items-center justify-center bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-200 rounded-full">
+                <span class="material-symbols-outlined">timer</span>
+            </div>
+            <div>
+                <p class="text-slate-900 dark:text-white text-sm font-bold">Temps restant</p>
+                <p class="text-slate-500 dark:text-slate-400 text-xs">Vos billets sont réservés
+                    temporairement</p>
+            </div>
+        </div>
+        <div
+            class="flex items-center gap-1 bg-white dark:bg-slate-900 px-3 py-1.5 rounded-full border border-orange-100 dark:border-orange-900/30">
+            <span class="text-orange-600 dark:text-orange-400 font-mono font-bold text-lg">
+                {{ timerService.formattedTime() }}
+            </span>
+        </div>
+    </div>
+</div>

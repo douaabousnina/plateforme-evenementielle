@@ -1,0 +1,65 @@
+<div
+    class="bg-white dark:bg-[#1a1d2d] rounded-xl p-6 shadow-sm border border-[#e7e9f3] dark:border-gray-800 sticky top-24">
+    <h3 class="text-lg font-bold text-[#0d101c] dark:text-white mb-4 text-center">
+        Votre billet électronique
+    </h3>
+
+    <!-- QR Code -->
+    <div class="bg-white p-6 rounded-xl mb-4 flex items-center justify-center border-4 border-dashed border-gray-200">
+        <div class="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
+            <!-- Simple QR Code Pattern (placeholder) -->
+            <svg viewBox="0 0 200 200" class="w-full h-full">
+                <rect width="200" height="200" fill="white" />
+                <!-- Corners -->
+                <rect x="10" y="10" width="50" height="50" fill="black" />
+                <rect x="20" y="20" width="30" height="30" fill="white" />
+                <rect x="140" y="10" width="50" height="50" fill="black" />
+                <rect x="150" y="20" width="30" height="30" fill="white" />
+                <rect x="10" y="140" width="50" height="50" fill="black" />
+                <rect x="20" y="150" width="30" height="30" fill="white" />
+                <!-- Pattern -->
+                <rect x="80" y="30" width="10" height="10" fill="black" />
+                <rect x="100" y="30" width="10" height="10" fill="black" />
+                <rect x="30" y="80" width="10" height="10" fill="black" />
+                <rect x="50" y="80" width="10" height="10" fill="black" />
+                <rect x="80" y="80" width="40" height="40" fill="black" />
+                <rect x="90" y="90" width="20" height="20" fill="white" />
+                <rect x="140" y="80" width="10" height="10" fill="black" />
+                <rect x="160" y="80" width="10" height="10" fill="black" />
+                <rect x="80" y="140" width="10" height="10" fill="black" />
+                <rect x="100" y="140" width="10" height="10" fill="black" />
+                <rect x="140" y="140" width="10" height="10" fill="black" />
+                <rect x="160" y="140" width="10" height="10" fill="black" />
+            </svg>
+        </div>
+    </div>
+
+    <div class="text-center space-y-2 mb-6">
+        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            Code de confirmation
+        </p>
+        <p class="text-xl font-mono font-extrabold text-primary">
+            {{ confirmationCode() }}
+        </p>
+    </div>
+
+    <!-- Download Button -->
+    <button
+        class="w-full bg-[#f8f9fc] dark:bg-[#131625] hover:bg-gray-100 dark:hover:bg-[#1a1d2d] border border-gray-200 dark:border-gray-700 text-[#0d101c] dark:text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined">download</span>
+        <span>Télécharger le QR code</span>
+    </button>
+
+    <!-- Info -->
+    <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-lg">
+        <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[20px]">
+                warning
+            </span>
+            <p class="text-xs text-amber-900 dark:text-amber-200">
+                <span class="font-bold block mb-1">Important</span>
+                Présentez ce QR code à l'entrée. Ne le partagez avec personne.
+            </p>
+        </div>
+    </div>
+</div>

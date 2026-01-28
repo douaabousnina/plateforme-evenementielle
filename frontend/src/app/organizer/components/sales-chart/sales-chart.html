@@ -1,0 +1,36 @@
+<div class="sales-chart">
+	<div class="chart-header">
+		<h2>Évolution des ventes</h2>
+		<p class="text-sm text-slate-500">Aperçu des 30 derniers jours</p>
+	</div>
+	<div class="relative w-full h-64">
+		<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 300">
+			<defs>
+				<linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+					<stop offset="0%" stop-color="#330fe6" stop-opacity="0.3"></stop>
+					<stop offset="100%" stop-color="#330fe6" stop-opacity="0"></stop>
+				</linearGradient>
+			</defs>
+			<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="0" y2="0"></line>
+			<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="75" y2="75"></line>
+			<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="150" y2="150"></line>
+			<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="225" y2="225"></line>
+			<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="300" y2="300"></line>
+			<path d="M0,250 Q100,200 200,220 T400,150 T600,180 T800,80 T1000,100 V300 H0 Z" fill="url(#chartGradient)"></path>
+			<path d="M0,250 Q100,200 200,220 T400,150 T600,180 T800,80 T1000,100" fill="none" stroke="#330fe6" stroke-linecap="round" stroke-width="3" vector-effect="non-scaling-stroke"></path>
+			<circle class="fill-white stroke-primary" cx="200" cy="220" r="4" stroke-width="2"></circle>
+			<circle class="fill-white stroke-primary" cx="400" cy="150" r="4" stroke-width="2"></circle>
+			<circle class="fill-white stroke-primary" cx="600" cy="180" r="4" stroke-width="2"></circle>
+			<circle class="fill-white stroke-primary" cx="800" cy="80" r="4" stroke-width="2"></circle>
+		</svg>
+	</div>
+	<div class="x-axis flex justify-between mt-4 text-xs font-medium text-slate-400">
+		<span>01 Nov</span>
+		<span>05 Nov</span>
+		<span>10 Nov</span>
+		<span>15 Nov</span>
+		<span>20 Nov</span>
+		<span>25 Nov</span>
+		<span>30 Nov</span>
+	</div>
+</div>

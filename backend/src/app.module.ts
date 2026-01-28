@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ReservationsModule } from './reservations/reservations.module'
+import { PaymentsModule } from './payments/payments.module';
 import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      /**
-       * Look for environment files in both the backend folder (when running locally)
-       * and the project root (when running via docker-compose).
-       */
-      envFilePath: ['.env', '../.env'],
+      envFilePath: '../.env',
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -23,9 +23,12 @@ import { EventsModule } from './events/events.module';
       autoLoadEntities: true,
       retryAttempts: 10,
       retryDelay: 3000,
+
       synchronize: true,
     }),
-    EventsModule,
+    ReservationsModule,
+    PaymentsModule,
+    EventsModule
   ],
 })
-export class AppModule {}
+export class AppModule { }

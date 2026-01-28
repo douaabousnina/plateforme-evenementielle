@@ -1,0 +1,2 @@
+export const RESERVATION_EXPIRATION_MINUTES = 5;
+export const DEFAULT_SEAT_PRICE = 30;

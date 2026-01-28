@@ -1,21 +1,18 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global validation pipe for all DTOs
+  // Enable global validation
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // strip unknown properties
-      forbidNonWhitelisted: true, // throw if unknown properties are sent
-      transform: true, // auto-transform payloads to DTO classes (e.g. dates, numbers)
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    })
   );
 
   // Swagger / OpenAPI configuration
@@ -30,12 +27,16 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = process.env.PORT ?? 3000;
-  await app.listen(port);
-  // eslint-disable-next-line no-console
-  console.log(`Backend running on http://localhost:${port}`);
-  // eslint-disable-next-line no-console
-  console.log(`Swagger docs available at http://localhost:${port}/api/docs`);
-}
+  // Enable CORS for frontend
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
+  await app.listen(process.env.PORT ?? 3000);
+  console.log(`✓ Server running on http://localhost:${process.env.PORT ?? 3000}`);
+}
 bootstrap();
+
