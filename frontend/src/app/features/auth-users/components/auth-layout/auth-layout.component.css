@@ -9,7 +9,7 @@
       rgba(59, 75, 155, 0.27),
       rgba(15, 51, 230, 0.416)
     ),
-    url('../../../assets/home.png') no-repeat center center;
+    url('../../../../../assets/home.png') no-repeat center center;
 
   display: flex;
   align-items: center;

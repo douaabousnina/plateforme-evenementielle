@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 
-import { RegisterComponent } from './pages/register/register.component';
+import { RegisterComponent } from './features/auth-users/pages/register/register.component';
 
 @Component({
   selector: 'app-root',

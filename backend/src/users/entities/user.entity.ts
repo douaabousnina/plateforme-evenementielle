@@ -4,27 +4,27 @@ import { Preference } from "../../common/enums/preference.enum";
 //import { Reservation } from "../../reservations/entities/reservation.entity";
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
-    @Column({ unique: true })
-    email: string;
-    @Column()
-    password: string
-    @Column({
-        type:'enum',
-        enum:Role,default:Role.CLIENT
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column({ unique: true })
+  email: string;
+  @Column()
+  password: string
+  @Column({
+    type: 'enum',
+    enum: Role, default: Role.CLIENT
 
-    })role:Role;
-    @Column({default:0})
-    loyaltyPoints:number;
-      @Column({
+  }) role: Role;
+  @Column({ default: 0 })
+  loyaltyPoints: number;
+  @Column({
     type: 'enum',
     enum: Preference,
     array: true,
     default: [],
   })
   preferences: Preference[];
-    @Column({ nullable: true })
+  @Column({ nullable: true })
   name: string;
 
   @Column({ nullable: true })
@@ -36,6 +36,6 @@ export class User {
   reservations: Reservation[];*/
   /*  @OneToMany(() => Event, (event) => event.organizer)
   events: Event[];*/
-    @CreateDateColumn({update:false})
-    createdAt: Date;
+  @CreateDateColumn({ update: false })
+  createdAt: Date;
 }
