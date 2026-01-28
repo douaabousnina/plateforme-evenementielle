@@ -5,8 +5,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ReservationsModule } from './reservations/reservations.module'
 import { PaymentsModule } from './payments/payments.module';
 import { AccessModule } from './access/access.module';
-import { Ticket } from './access/entities/ticket.entity';
-import { ScanLog } from './access/entities/scan-log.entity';
 
 @Module({
   imports: [
@@ -30,6 +28,7 @@ import { ScanLog } from './access/entities/scan-log.entity';
     }),
     ReservationsModule,
     PaymentsModule,
+    AccessModule
   ],
 })
 export class AppModule { }
