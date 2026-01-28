@@ -4,7 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReservationsModule } from './reservations/reservations.module'
 import { PaymentsModule } from './payments/payments.module';
+import { EventsModule } from './events/events.module';
 import { AccessModule } from './access/access.module';
+
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { AccessModule } from './access/access.module';
     }),
     ReservationsModule,
     PaymentsModule,
+    EventsModule,
     AccessModule
   ],
 })

@@ -1,0 +1,72 @@
+<div class="lg:col-span-2 flex flex-col gap-4">
+  <div class="flex items-center justify-between px-1">
+    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Événements actifs</h2>
+    <a class="text-sm font-bold text-primary hover:text-primary/80 transition-colors" href="#">Tout voir</a>
+  </div>
+  
+  @if (eventService.loading()) {
+    <div class="rounded-2xl p-8 text-center bg-white dark:bg-[#1a1d2d]">
+      <p class="text-slate-500 dark:text-text-secondary">Chargement...</p>
+    </div>
+  }
+  
+  @if (eventService.eventsData(); as data) {
+    <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-[#1a1d2d] shadow-sm">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-text-secondary text-xs uppercase font-semibold">
+          <tr>
+            <th class="px-6 py-4">Événement</th>
+            <th class="px-6 py-4 text-center">Date</th>
+            <th class="px-6 py-4 text-center">Billets restants</th>
+            <th class="px-6 py-4 text-center">Statut</th>
+            <th class="px-6 py-4 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+          @for (event of data.events; track event.id) {
+            <tr class="group hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="size-10 rounded-lg bg-cover bg-center flex-shrink-0" 
+                       [style.background-image]="'url(' + event.image + ')'">
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                      {{ event.title }}
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-text-secondary">{{ event.location }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-center text-sm text-slate-600 dark:text-slate-300">
+                {{ formatDate(event.startDate) }}
+              </td>
+              <td class="px-6 py-4 text-center">
+                <div class="flex flex-col items-center gap-1">
+                  <span class="text-sm font-bold text-slate-900 dark:text-white">
+                    {{ event.availableSeats }}/{{ event.totalSeats }}
+                  </span>
+                  <div class="w-16 h-1 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full {{ getProgressColor(event.status, event.availableSeats, event.totalSeats) }}" 
+                         [style.width]="getProgressWidth(event.availableSeats, event.totalSeats)">
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-center">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getStatusClass(event.status, event.availableSeats, event.totalSeats) }}">
+                  {{ getDisplayStatus(event.status, event.availableSeats) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button class="text-slate-400 hover:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">more_vert</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
