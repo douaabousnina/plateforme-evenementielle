@@ -1,0 +1,32 @@
+<div class="flex p-1 bg-[#f6f6f8] dark:bg-[#131625] rounded-lg mb-6 w-full max-w-md">
+    <button (click)="selectMethod(PaymentMethod.CARD)" [class.bg-white]="selectedMethod() === PaymentMethod.CARD"
+        [class.dark:bg-[#2a2d3d]]="selectedMethod() === PaymentMethod.CARD"
+        [class.text-primary]="selectedMethod() === PaymentMethod.CARD"
+        [class.font-bold]="selectedMethod() === PaymentMethod.CARD"
+        [class.shadow-sm]="selectedMethod() === PaymentMethod.CARD"
+        [class.border]="selectedMethod() === PaymentMethod.CARD"
+        [class.border-gray-200]="selectedMethod() === PaymentMethod.CARD"
+        [class.dark:border-gray-600]="selectedMethod() === PaymentMethod.CARD"
+        [class.text-gray-500]="selectedMethod() !== PaymentMethod.CARD"
+        [class.dark:text-gray-400]="selectedMethod() !== PaymentMethod.CARD"
+        [class.font-medium]="selectedMethod() !== PaymentMethod.CARD"
+        class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded text-sm hover:text-[#0d101c] dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-[20px]">credit_card</span>
+        Carte Bancaire
+    </button>
+    <button (click)="selectMethod(PaymentMethod.PAYPAL)" [class.bg-white]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.dark:bg-[#2a2d3d]]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.text-primary]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.font-bold]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.shadow-sm]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.border]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.border-gray-200]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.dark:border-gray-600]="selectedMethod() === PaymentMethod.PAYPAL"
+        [class.text-gray-500]="selectedMethod() !== PaymentMethod.PAYPAL"
+        [class.dark:text-gray-400]="selectedMethod() !== PaymentMethod.PAYPAL"
+        [class.font-medium]="selectedMethod() !== PaymentMethod.PAYPAL"
+        class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded text-sm hover:text-[#0d101c] dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+        PayPal
+    </button>
+</div>

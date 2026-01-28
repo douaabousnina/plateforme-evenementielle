@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
-
-import { accessRoutes } from './feature/access/access.routes';
+import { reservationRoutes } from './features/reservation/reservation.routes';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/access', pathMatch: 'full' },
-  { path: 'access', children: accessRoutes },
+    ...reservationRoutes
 ];

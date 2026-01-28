@@ -1,0 +1,94 @@
+<div class="flex flex-col gap-6">
+
+    <!-- Map Controls/Legend -->
+    <div
+        class="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-6 text-sm font-medium">
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-full border-2 border-primary/50 bg-white dark:bg-slate-700"></div>
+                <span class="text-slate-600 dark:text-slate-300">Disponible</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-full bg-primary shadow-sm shadow-primary/30"></div>
+                <span class="text-slate-600 dark:text-slate-300">Sélectionné</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-600 cursor-not-allowed"></div>
+                <span class="text-slate-400 dark:text-slate-500">Vendu</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Map Container -->
+    <div
+        class="relative w-full h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden group cursor-grab active:cursor-grabbing">
+
+        <!-- Stage Indicator -->
+        <div
+            class="absolute top-8 left-1/2 -translate-x-1/2 w-3/4 h-16 bg-slate-100 dark:bg-slate-700 rounded-b-[4rem] flex items-center justify-center border-b-4 border-slate-200 dark:border-slate-600 z-10">
+            <span class="text-slate-400 dark:text-slate-500 font-bold tracking-[0.2em] uppercase text-sm">
+                Scène
+            </span>
+        </div>
+
+        <!-- Seats Visualization -->
+        <div class="absolute top-32 left-1/2 -translate-x-1/2 flex flex-col gap-12 scale-90 origin-top">
+
+            @for (section of sections(); track section.config.name) {
+            <div class="flex flex-col items-center gap-2" [class.mt-4]="section.config.layout === 'triple'"
+                [class.mt-8]="section.config.name === 'Balcon'" [style.opacity]="section.config.style?.opacity || 1"
+                [class.hover:opacity-100]="section.config.style?.opacity"
+                [class.transition-opacity]="section.config.style?.opacity">
+
+                <!-- Section Header -->
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    {{ section.config.name }} - {{ getPriceForSection(section.config.name) }}€
+                </div>
+
+                <!-- Layout Container -->
+                <div [ngClass]="section.config.layout === 'triple' ? 'flex gap-3 items-end' : 'flex flex-col gap-2'">
+                    @for (subsection of section.subsections; track $index) {
+                    <div class="flex flex-col gap-2"
+                        [style.transform]="subsection.rotation ? 'rotate(' + subsection.rotation + 'deg) translateY(0.5rem)' : 'none'">
+
+                        @for (row of subsection.seats; track $index) {
+                        <div class="flex gap-2">
+                            @for (seat of row; track seat.id) {
+                            <button [disabled]="seat.status === SeatStatus.SOLD"
+                                [class.border-2]="seat.status === SeatStatus.AVAILABLE" [ngClass]="{
+                                    'border-primary/50 bg-white dark:bg-slate-700 hover:bg-primary/20': seat.status === SeatStatus.AVAILABLE,
+                                    'bg-primary shadow-lg shadow-primary/40 ring-2 ring-offset-2 ring-primary ring-offset-white dark:ring-offset-slate-800': seat.status === SeatStatus.LOCKED,
+                                    'bg-slate-200 dark:bg-slate-600 cursor-not-allowed': seat.status === SeatStatus.SOLD
+                                }" (click)="onSeatClick(seat)"
+                                [title]="section.config.name + ' - Rang ' + seat.row + ' - Place ' + seat.number"
+                                class="w-5 h-5 rounded-full transition-all">
+                            </button>
+                            }
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Balcon Status Indicators -->
+                @if (section.config.name === 'Balcon') {
+                <div class="flex gap-1 justify-center mt-2">
+                    @for (status of [{label: 'B1', available: true}, {label: 'B2', available: false}, {label: 'B3',
+                    available: true}]; track status.label) {
+                    <div class="flex gap-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-full px-4">
+                        <span class="text-xs text-slate-400">Section {{ status.label }}</span>
+                        <div class="w-2 h-2 rounded-full mx-1 self-center"
+                            [ngClass]="status.available ? 'bg-green-400' : 'bg-slate-400'"></div>
+                        <span class="text-xs font-bold"
+                            [ngClass]="status.available ? 'text-green-600 dark:text-green-400' : 'text-slate-400'">
+                            {{ status.available ? 'Disponible' : 'Complet' }}
+                        </span>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>
