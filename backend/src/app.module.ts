@@ -7,7 +7,11 @@ import { EventsModule } from './events/events.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env',
+      /**
+       * Look for environment files in both the backend folder (when running locally)
+       * and the project root (when running via docker-compose).
+       */
+      envFilePath: ['.env', '../.env'],
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
