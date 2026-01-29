@@ -1,1 +1,6 @@
 .env
+.idea
+.github
+./*/node_modules
+./*/.angular
+./*/.vscode
