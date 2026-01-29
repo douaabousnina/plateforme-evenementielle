@@ -1,0 +1,36 @@
+<div class="ticket-filters">
+  <div class="filters-tabs">
+    <!-- Upcoming Tab -->
+    <button (click)="onTabClick('upcoming')"
+            [class.active]="activeTab() === 'upcoming'"
+            class="filter-tab">
+      <span class="material-symbols-outlined tab-icon">event_upcoming</span>
+      <span>À venir</span>
+      <span class="tab-badge" [class.active]="activeTab() === 'upcoming'">
+        {{ counts().upcoming }}
+      </span>
+    </button>
+
+    <!-- Past Tab -->
+    <button (click)="onTabClick('past')"
+            [class.active]="activeTab() === 'past'"
+            class="filter-tab">
+      <span class="material-symbols-outlined tab-icon">history</span>
+      <span>Passés</span>
+      <span class="tab-badge" [class.active]="activeTab() === 'past'">
+        {{ counts().past }}
+      </span>
+    </button>
+
+    <!-- Cancelled Tab -->
+    <button (click)="onTabClick('cancelled')"
+            [class.active]="activeTab() === 'cancelled'"
+            class="filter-tab">
+      <span class="material-symbols-outlined tab-icon">cancel</span>
+      <span>Annulés</span>
+      <span class="tab-badge" [class.active]="activeTab() === 'cancelled'">
+        {{ counts().cancelled }}
+      </span>
+    </button>
+  </div>
+</div>

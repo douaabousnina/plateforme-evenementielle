@@ -1,0 +1,87 @@
+<div
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col">
+
+    <app-header />
+
+    <main class="flex-1 flex justify-center py-6 px-4 md:px-8 lg:px-12 xl:px-40">
+        <div class="layout-content-container flex flex-col max-w-[1400px] flex-1 gap-6">
+
+            <app-breadcrumb [steps]="breadcrumbSteps()" />
+
+            <!-- Error Alert -->
+            @if (errorMessage()) {
+            <div
+                class="flex items-center gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50">
+                <span class="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
+                <span class="text-red-700 dark:text-red-300 text-sm">{{ errorMessage() }}</span>
+            </div>
+            }
+
+            <!-- Page Header -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start px-4">
+
+                <!-- Event Details -->
+                @if (currentEvent()) {
+                <div class="lg:col-span-2 flex flex-col gap-2">
+                    <h1
+                        class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
+                        {{ currentEvent()!.name }}
+                    </h1>
+                    <div
+                        class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-base md:text-lg font-normal">
+                        <span class="material-symbols-outlined text-xl">location_on</span>
+                        <span>{{ currentEvent()!.location }}</span>
+                        <span class="w-1 h-1 rounded-full bg-slate-400"></span>
+                        <span class="material-symbols-outlined text-xl">calendar_month</span>
+                        <span>{{ currentEvent()!.date | date: 'EEE d MMM' }}</span>
+                    </div>
+                </div>
+                }
+                @if (!currentEvent()) {
+                <div class="lg:col-span-2 flex flex-col gap-2">
+                    <div class="h-10 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                    <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded w-2/3 animate-pulse"></div>
+                </div>
+                }
+            </div>
+
+            <!-- Loading State -->
+            @if (loadingSeats()) {
+            <div class="flex items-center justify-center py-12">
+                <div class="flex flex-col items-center gap-3">
+                    <div
+                        class="size-8 border-4 border-slate-200 dark:border-slate-700 border-t-primary rounded-full animate-spin">
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400">Chargement des places...</p>
+                </div>
+            </div>
+            }
+
+            <!-- Main Content Grid -->
+            @if (!loadingSeats()) {
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 px-4 mt-2">
+
+                <!-- LEFT: Seat Map (8 cols) -->
+                <div class="lg:col-span-8">
+                    @if (seats().length > 0) {
+                    <app-interactive-seat-map [seats]="seats()" [selectedSeats]="selectedSeats()"
+                        (seatSelected)="handleSeatSelection($event)" />
+                    } @else {
+                    <div class="text-center py-12 text-slate-500 dark:text-slate-400">
+                        <p>Aucune place disponible</p>
+                    </div>
+                    }
+                </div>
+
+                <!-- RIGHT: Cart Summary (4 cols) -->
+                <div class="lg:col-span-4">
+                    <app-seat-cart-summary [selectedSeats]="selectedSeats()" [total]="total()" [subtotal]="subtotal()"
+                        [serviceFee]="serviceFee()" [isLoading]="loadingReservation()"
+                        (removeSeat)="handleRemoveSeat($event)" (clearCart)="handleClearCart()"
+                        (proceedToPayment)="handleProceedToPayment()" />
+                </div>
+            </div>
+            }
+        </div>
+    </main>
+</div>

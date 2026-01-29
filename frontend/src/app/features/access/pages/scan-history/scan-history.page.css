@@ -1,0 +1,91 @@
+﻿/* Main Container */
+.scan-history-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 50%, #faf5ff 100%);
+}
+
+.scan-history-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Header */
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  line-height: 2.25rem;
+}
+
+.page-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.empty-icon {
+  color: #d1d5db;
+  font-size: 3.75rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.empty-text {
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+/* Stats Container */
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Media Queries */
+@media (min-width: 640px) {
+  .scan-history-container {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .scan-history-container {
+    padding: 2rem 2rem;
+  }
+}

@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ReservationsModule } from './reservations/reservations.module'
+import { PaymentsModule } from './payments/payments.module';
+import { EventsModule } from './events/events.module';
+import { AccessModule } from './access/access.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,12 +13,12 @@ import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env',
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -28,9 +33,10 @@ import { ScheduleModule } from '@nestjs/schedule';
 
       synchronize: true,
     }),
-    
-    AuthModule,
-    UsersModule,
+    ReservationsModule,
+    PaymentsModule,
+    EventsModule,
+    AccessModule
   ],
 })
 export class AppModule { }

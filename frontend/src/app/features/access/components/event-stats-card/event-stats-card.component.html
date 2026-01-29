@@ -1,0 +1,48 @@
+<div class="event-card">
+  <!-- Event Header (Clickable) -->
+  <div 
+    (click)="onToggle()"
+    (keydown.enter)="onToggle()"
+    (keydown.space)="onToggle()"
+    tabindex="0"
+    role="button"
+    class="event-header">
+    <div class="event-content">
+      <div>
+        <div class="event-title-row">
+          <h3 class="event-title">{{ event().eventName }}</h3>
+          <span class="event-id">ID: {{ event().eventId }}</span>
+        </div>
+        <div class="event-stats">
+          <div class="stat-item">
+            <span class="material-symbols-outlined stat-icon">qr_code_scanner</span>
+            <span><strong>{{ event().totalScans }}</strong> scans</span>
+          </div>
+          <div class="stat-item">
+            <span class="material-symbols-outlined stat-icon">confirmation_number</span>
+            <span><strong>{{ event().uniqueScans }}</strong> billets uniques</span>
+          </div>
+          @if (event().duplicateScans > 0) {
+            <div class="stat-item warning">
+              <span class="material-symbols-outlined stat-icon">warning</span>
+              <span><strong>{{ event().duplicateScans }}</strong> doublons</span>
+            </div>
+          }
+          @if (event().lastScan) {
+            <div class="stat-item last-scan">
+              <span class="material-symbols-outlined stat-icon">schedule</span>
+              <span>{{ formatDateTime(event().lastScan!) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+      <span class="material-symbols-outlined expand-icon" 
+            [class.expanded]="isExpanded()">
+        expand_more
+      </span>
+    </div>
+  </div>
+
+  <!-- Content Slot for Expandable Details -->
+  <ng-content></ng-content>
+</div>

@@ -1,0 +1,36 @@
+<div class="scan-details">
+  <h4 class="details-title">Détails des Scans</h4>
+  
+  <!-- Scans Table -->
+  <div class="table-container">
+    <table class="scans-table">
+      <thead class="table-header">
+        <tr>
+          <th class="header-cell">Billet ID</th>
+          <th class="header-cell">Contrôleur</th>
+          <th class="header-cell">Date & Heure</th>
+          <th class="header-cell">Lieu</th>
+          <th class="header-cell-center">Statut</th>
+        </tr>
+      </thead>
+      <tbody class="table-body">
+        @for (scan of scans(); track scan.ticketId) {
+          <tr class="table-row">
+            <td class="table-cell">
+              <span class="ticket-id">{{ scan.ticketId }}</span>
+            </td>
+            <td class="table-cell cell-text">{{ scan.scannedBy || 'N/A' }}</td>
+            <td class="table-cell cell-text">{{ formatDateTime(scan.scannedAt) }}</td>
+            <td class="table-cell cell-text">{{ scan.location || 'N/A' }}</td>
+            <td class="table-cell-center">
+              <span [class]="getStatusBadgeClass(scan.status)" 
+                    class="status-badge">
+                {{ getStatusText(scan.status) }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

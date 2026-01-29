@@ -1,0 +1,55 @@
+<app-header/>
+
+<div class="my-tickets-page">
+  <div class="my-tickets-container">
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="page-title">Mes Billets</h1>
+      <p class="page-subtitle">Retrouvez tous vos billets d'événements</p>
+    </div>
+
+    <!-- Ticket Filters -->
+    <app-ticket-filters 
+      [activeTab]="activeTab()"
+      [counts]="ticketCounts()"
+      (tabChange)="onTabChange($event)">
+    </app-ticket-filters>
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading() && filteredTickets().length === 0) {
+      <div class="empty-state">
+        <span class="material-symbols-outlined empty-icon">confirmation_number</span>
+        <p class="empty-text">Aucun billet dans cette catégorie</p>
+      </div>
+    }
+
+    <!-- Tickets Grid -->
+    @if (!loading() && filteredTickets().length > 0) {
+      <div class="tickets-grid">
+        @for (ticket of filteredTickets(); track ticket.id) {
+          <app-ticket-card 
+            [ticket]="ticket"
+            (qrClick)="openQRModal($event)">
+          </app-ticket-card>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- QR Modal -->
+  @if (selectedTicket()) {
+    <app-qr-modal 
+      [ticket]="selectedTicket()!"
+      [show]="showQRModal()"
+      (closeModal)="closeQRModal()"
+      (refresh)="onQrRefresh($event)">
+    </app-qr-modal>
+  }
+</div>

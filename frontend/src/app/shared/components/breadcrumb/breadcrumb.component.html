@@ -1,0 +1,24 @@
+<nav class="flex flex-wrap items-center gap-3 mb-8 text-sm">
+    @for (step of steps(); track step.stepNumber; let isLast = $last) {
+    @if (step.completed) {
+    <a [routerLink]="step.route" class="flex items-center gap-2 text-primary font-medium hover:underline">
+        <span class="material-symbols-outlined text-[20px]">check_circle</span>
+        {{ step.label }}
+    </a>
+    } @else if (step.active) {
+    <div
+        class="flex items-center gap-2 text-[#0d101c] dark:text-white font-bold px-3 py-1 bg-white dark:bg-[#1a1d2d] rounded-full shadow-sm">
+        <span class="flex items-center justify-center w-5 h-5 bg-primary text-white text-xs rounded-full">
+            {{ step.stepNumber }}
+        </span>
+        {{ step.label }}
+    </div>
+    } @else {
+    <span class="text-gray-400 dark:text-gray-500 font-medium">{{ step.label }}</span>
+    }
+
+    @if (!isLast) {
+    <span class="material-symbols-outlined text-gray-400 text-[16px]">chevron_right</span>
+    }
+    }
+</nav>

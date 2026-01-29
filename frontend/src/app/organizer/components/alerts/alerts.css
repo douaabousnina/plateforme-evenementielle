@@ -1,0 +1,5 @@
+:host { display:block }
+.size-8 { width:32px; height:32px }
+.size-24 { width:96px; height:96px }
+.rounded-2xl { border-radius: 1rem }
+.bg-gradient-to-br { background-image: linear-gradient(45deg,var(--primary),#5a36ff) }

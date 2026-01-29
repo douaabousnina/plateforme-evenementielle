@@ -1,0 +1,77 @@
+<!-- QR Modal Overlay -->
+@if (show()) {
+<div (click)="onClose()"
+     class="modal-overlay">
+  
+  <!-- Modal Content -->
+  <div (click)="$event.stopPropagation()" 
+       class="modal-content">
+    
+    <!-- Header -->
+    <div class="modal-header">
+      <button (click)="onClose()" 
+              class="close-button">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      
+      <h2 class="modal-title">{{ ticket().eventName }}</h2>
+      <p class="modal-subtitle">{{ formatDate(ticket().eventDate) }} • {{ formatTime(ticket().eventDate) }}</p>
+    </div>
+
+    <!-- QR Code -->
+    <div class="qr-section">
+      <div class="qr-container">
+        <img [src]="ticket().qrCode" 
+             alt="QR Code" 
+             class="qr-image">
+        
+        <!-- Refresh Overlay -->
+        @if (refreshing()) {
+          <div class="refresh-overlay">
+            <div class="spinner"></div>
+          </div>
+        }
+      </div>
+
+      <!-- Ticket Info -->
+      <div class="ticket-info">
+        <div class="info-row">
+          <span class="info-label">Commande</span>
+          <span class="info-value">{{ ticket().orderId }}</span>
+        </div>
+        
+        @if (ticket().seat) {
+          <div class="info-row">
+            <span class="info-label">Place</span>
+            <span class="info-value">
+              {{ ticket().gate ? 'Porte ' + ticket().gate : '' }}
+              {{ ticket().row ? ' • Rangée ' + ticket().row : '' }}
+              {{ ticket().seat ? ' • Siège ' + ticket().seat : '' }}
+            </span>
+          </div>
+        }
+
+        <div class="info-row">
+          <span class="info-label">Prix</span>
+          <span class="info-price">{{ ticket().price }}€</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="modal-actions">
+      <button (click)="onRefreshQR()" 
+              [disabled]="refreshing()"
+              class="refresh-button">
+        <span class="material-symbols-outlined">refresh</span>
+        <span class="button-text">{{ refreshing() ? 'Actualisation...' : 'Rafraîchir QR' }}</span>
+      </button>
+      
+      <button (click)="onClose()" 
+              class="close-action-button">
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>
+}

@@ -1,0 +1,3 @@
+export const SERVICE_FEE_RATE = 0.035;
+export const RESERVATION_EXPIRATION_MINUTES = 5;
+export const MAX_SEATS_PER_ORDER = 10;

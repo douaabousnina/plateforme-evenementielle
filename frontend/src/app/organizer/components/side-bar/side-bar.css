@@ -1,0 +1,108 @@
+:host {
+  display: block;
+}
+
+/* Navigation Links */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: #64748b;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Dark mode nav link */
+:host-context(.dark) .nav-link {
+  color: #9a91ca;
+}
+
+/* Hover state */
+.nav-link:hover {
+  background-color: #f1f5f9;
+  color: #330fe6;
+}
+
+:host-context(.dark) .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #8b5cf6;
+}
+
+/* Active state */
+.nav-link.nav-active {
+  background-color: rgba(51, 15, 230, 0.1);
+  color: #330fe6;
+  font-weight: 600;
+}
+
+:host-context(.dark) .nav-link.nav-active {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+
+/* Icon color on hover/active */
+.nav-link:hover .material-symbols-outlined,
+.nav-link.nav-active .material-symbols-outlined {
+  color: #330fe6;
+}
+
+:host-context(.dark) .nav-link:hover .material-symbols-outlined,
+:host-context(.dark) .nav-link.nav-active .material-symbols-outlined {
+  color: #8b5cf6;
+}
+
+/* Active indicator */
+.nav-link.nav-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background-color: #330fe6;
+  border-radius: 0 3px 3px 0;
+}
+
+:host-context(.dark) .nav-link.nav-active::before {
+  background-color: #8b5cf6;
+}
+
+/* Material Icons */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+.nav-link.nav-active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Button animations */
+button {
+  cursor: pointer;
+  user-select: none;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  aside {
+    width: 80px;
+  }
+
+  .nav-link span:not(.material-symbols-outlined) {
+    display: none;
+  }
+
+  .profile-info,
+  .alert p {
+    display: none;
+  }
+}

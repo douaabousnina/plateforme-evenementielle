@@ -1,0 +1,54 @@
+.ticket-filters {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--gray-200);
+  padding: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filters-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  color: var(--gray-600);
+  cursor: pointer;
+}
+
+.filter-tab:hover {
+  background: var(--primary-light);
+}
+
+.filter-tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+.tab-icon {
+  font-size: 1.25rem;
+}
+
+.tab-badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--gray-200);
+}
+
+.tab-badge.active {
+  background: rgba(255, 255, 255, 0.2);
+}

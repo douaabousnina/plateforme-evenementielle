@@ -1,0 +1,27 @@
+### Create a payment
+POST http://localhost:3000/payments
+Content-Type: application/json
+
+{
+  "reservationId": "1f826af7-b6e2-48f6-adc7-27b59ca3b440",
+  "cardNumber": "5111111111111111",
+  "cardHolder": "John Doe",
+  "expiryDate": "12/25",
+  "cvc": "123"
+}
+
+### Refund a payment
+POST http://localhost:3000/payments/refund
+Content-Type: application/json
+
+{
+  "paymentId": "55bab047-1ff9-48b2-8365-8385a39bd560",
+  "amount": 90.00,
+  "reason": "Cancelled event"
+}
+
+### Get my payments
+GET http://localhost:3000/payments
+
+### Get payment by id
+GET http://localhost:3000/payments/55bab047-1ff9-48b2-8365-8385a39bd560
