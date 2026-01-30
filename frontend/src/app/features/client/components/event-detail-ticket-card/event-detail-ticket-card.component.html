@@ -1,0 +1,60 @@
+@let e = event();
+@let options = ticketOptions();
+<section class="sticky top-24 bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-2xl shadow-black/50">
+  <div class="flex justify-between items-center mb-6 pb-6 border-b border-slate-700">
+    <div>
+      <p class="text-slate-400 text-sm font-medium">{{ fromLabel() }}</p>
+      <p class="text-3xl text-white font-bold">{{ e.priceFrom | number:'1.2-2' }} {{ e.priceCurrency }}</p>
+    </div>
+    @if (e.isAvailable) {
+      <div class="bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/20">
+        {{ availableLabel() }}
+      </div>
+    }
+  </div>
+  <div class="space-y-4 mb-8">
+    @for (opt of options; track opt.id) {
+      <label
+        class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors"
+        [class.border-primary]="selectedId === opt.id"
+        [class.bg-primary/10]="selectedId === opt.id"
+        [class.border-slate-700]="selectedId !== opt.id"
+        [class.hover:border-white/30]="selectedId !== opt.id"
+        [class.bg-slate-900]="selectedId !== opt.id">
+        <div class="flex items-center gap-3">
+          <input
+            type="radio"
+            [name]="'ticket-' + e.id"
+            [value]="opt.id"
+            [checked]="selectedId === opt.id || (opt.isDefault && !selectedTicketId())"
+            (change)="selectTicket(opt.id)"
+            class="w-5 h-5 text-primary bg-transparent border-white/30 focus:ring-primary focus:ring-offset-0"
+          />
+          <div>
+            <p class="text-white font-bold text-sm">{{ opt.name }}</p>
+            <p class="text-slate-400 text-xs">{{ opt.description }}</p>
+          </div>
+        </div>
+        <span class="text-white font-bold text-sm">{{ opt.price }}{{ opt.currency }}</span>
+      </label>
+    }
+  </div>
+  <div class="flex items-center justify-between mb-6 text-sm">
+    <span class="text-slate-400">{{ quantityLabel() }}</span>
+    <div class="flex items-center gap-3 bg-slate-900 rounded-lg p-1 border border-slate-700">
+      <button type="button" class="w-8 h-8 flex items-center justify-center text-white hover:bg-white/10 rounded-md transition-colors" (click)="decrement()">−</button>
+      <span class="text-white font-bold w-4 text-center">{{ quantity() }}</span>
+      <button type="button" class="w-8 h-8 flex items-center justify-center text-white hover:bg-white/10 rounded-md transition-colors" (click)="increment()">+</button>
+    </div>
+  </div>
+  <button
+    type="button"
+    class="w-full py-4 bg-primary hover:opacity-90 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-primary/30 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+    [disabled]="!e.isAvailable"
+    (click)="onReserve()">
+    {{ reserveLabel() }}
+  </button>
+  <p class="text-center text-slate-400 text-xs mt-4 flex items-center justify-center gap-1">
+    <span class="material-symbols-outlined text-xs">lock</span> {{ secureLabel() }}
+  </p>
+</section>

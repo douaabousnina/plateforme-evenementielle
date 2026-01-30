@@ -81,6 +81,7 @@ export class Event extends BaseEntity {
     enum: EventStatus,
     default: EventStatus.DRAFT,
   })
+  @Index()git branch
   status: EventStatus;
 
   // Organizer

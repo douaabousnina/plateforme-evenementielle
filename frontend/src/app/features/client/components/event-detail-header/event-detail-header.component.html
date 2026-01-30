@@ -1,0 +1,32 @@
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-700 bg-slate-900/95 backdrop-blur-md px-6 sm:px-10 py-3 shadow-lg">
+  <div class="flex items-center gap-6 lg:gap-8">
+    <a routerLink="/client/marketplace" class="flex items-center gap-4 text-white cursor-pointer">
+      <div class="size-8 text-primary">
+        <span class="material-symbols-outlined text-[32px]">local_activity</span>
+      </div>
+      <h2 class="text-white text-lg font-bold leading-tight tracking-tight">{{ appName }}</h2>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 lg:gap-9">
+      @for (item of navItems; track item.route) {
+        <a [routerLink]="item.route" class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal">
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+  </div>
+  <div class="flex flex-1 justify-end gap-4 sm:gap-6 items-center">
+    <label class="hidden sm:flex flex-col min-w-40 max-w-64">
+      <div class="flex w-full flex-1 items-stretch rounded-full h-10 bg-slate-800 border border-transparent focus-within:border-primary transition-all">
+        <span class="text-slate-400 flex items-center justify-center pl-4 rounded-l-full material-symbols-outlined text-xl">search</span>
+        <input
+          class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-full text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-slate-400 px-4 pl-2 text-sm font-normal"
+          type="search"
+          [placeholder]="searchPlaceholder"
+        />
+      </div>
+    </label>
+    <div class="bg-slate-700 rounded-full size-10 ring-2 ring-primary/50 cursor-pointer hover:ring-primary transition-all flex items-center justify-center overflow-hidden">
+      <span class="material-symbols-outlined text-slate-300">person</span>
+    </div>
+  </div>
+</header>

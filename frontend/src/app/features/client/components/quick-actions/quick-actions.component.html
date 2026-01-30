@@ -1,0 +1,24 @@
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-white/5">
+  <h3 class="text-slate-900 dark:text-white font-bold text-lg mb-4">Accès Rapide</h3>
+  <div class="grid grid-cols-2 gap-3">
+    @for (action of actions(); track action.id) {
+      @if (action.route) {
+        <a
+          [routerLink]="action.route"
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-primary/5 hover:text-primary transition-colors border border-transparent hover:border-primary/20 group"
+        >
+          <span class="material-symbols-outlined text-[28px] text-slate-500 group-hover:text-primary">{{ action.icon }}</span>
+          <span class="text-xs font-bold text-slate-900 dark:text-white">{{ action.label }}</span>
+        </a>
+      } @else {
+        <button
+          type="button"
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-primary/5 hover:text-primary transition-colors border border-transparent hover:border-primary/20 group"
+        >
+          <span class="material-symbols-outlined text-[28px] text-slate-500 group-hover:text-primary">{{ action.icon }}</span>
+          <span class="text-xs font-bold text-slate-900 dark:text-white">{{ action.label }}</span>
+        </button>
+      }
+    }
+  </div>
+</div>
