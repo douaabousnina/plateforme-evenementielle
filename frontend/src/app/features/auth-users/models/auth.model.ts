@@ -1,6 +1,7 @@
 export enum Role {
   CLIENT = 'CLIENT',
-  ORGANIZER = 'ORGANIZER'
+  ORGANIZER = 'ORGANIZER',
+  ADMIN = 'ADMIN'
 }
 
 export enum Preference {
@@ -38,4 +39,14 @@ export interface User {
   email: string;
   role: Role;
   preferences?: Preference[];
+  name?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  loyaltyPoints?: number;
+  createdAt?: Date;
+}
+
+export interface UserTableRow extends User {
+  isActive?: boolean;
+  isBanned?: boolean;
 }

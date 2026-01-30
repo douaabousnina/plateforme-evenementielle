@@ -99,7 +99,9 @@ export class AuthService {
     this.currentUserSubject.next(user);
     
     // Redirection selon le rôle
-    if (user?.role === 'ORGANIZER') {
+    if (user?.role === 'ADMIN') {
+      this.router.navigate(['/admin/users']);
+    } else if (user?.role === 'ORGANIZER') {
       this.router.navigate(['/dashboard']);
     } else {
       this.router.navigate(['/profile']);
