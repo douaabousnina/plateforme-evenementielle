@@ -1,0 +1,40 @@
+<div class="layout">
+  <div class="left">
+    <div class="left-content">
+      <h3 class="brand">EventLife</h3>
+      <h1>Vivez des moments inoubliables.</h1>
+      <p>
+        Rejoignez la plus grande communauté d'événementiel.
+        Découvrez, réservez et partagez vos passions en un clic.
+      </p>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="right-content">  
+       @if (isLoginRoute()) {
+        <h3>Se connecter</h3>
+        <p class="subtitle">
+          Accédez à votre compte pour continuer.
+        </p>
+        <app-auth-form [isLogin]="true" [userRole]="role()"></app-auth-form>
+        <p class="auth-link">
+          Vous n'avez pas de compte ? 
+          <a routerLink="/register">Créer un compte</a>
+        </p>
+      } @else {  
+      <h3>Créer un compte</h3>
+      <p class="subtitle">
+        Complétez vos informations pour une expérience personnalisée.
+      </p>
+      <app-roles [selectedRole]="role()"
+  (roleChange)="updateRole($event)"></app-roles>
+      <app-auth-form [isLogin]="false" [userRole]="role()"></app-auth-form>
+     <p class="auth-link">
+          Vous avez déjà un compte ? 
+          <a routerLink="/login">Se connecter</a>
+        </p>
+    }
+    </div>
+  </div>
+</div>

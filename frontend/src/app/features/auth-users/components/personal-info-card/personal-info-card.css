@@ -1,0 +1,37 @@
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  animation: slideDown 0.3s ease-out;
+}
+
+.alert-error {
+  background-color: #fee;
+  color: #c33;
+  border-top: 1px solid #fcc;
+}
+
+.alert-success {
+  background-color: #efe;
+  color: #3c3;
+  border-top: 1px solid #cfc;
+}
+
+.alert span {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

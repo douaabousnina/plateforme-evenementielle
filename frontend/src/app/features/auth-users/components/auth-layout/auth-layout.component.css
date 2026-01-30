@@ -1,0 +1,83 @@
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+.left {
+  flex: 1;
+  background: linear-gradient(
+      rgba(59, 75, 155, 0.27),
+      rgba(15, 51, 230, 0.416)
+    ),
+    url('../../../../../assets/home.png') no-repeat center center;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  padding: 4rem;
+  color: white;
+}
+
+.left-content {
+  max-width: 520px;
+}
+
+.left h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.left p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+
+
+.right {
+  flex: 1;
+  background: transparent;
+
+  display: flex;
+  align-items: center; 
+  justify-content: flex-start; 
+  padding: 4rem;
+}
+
+.right-content {
+  width: 100%;
+  max-width: 420px;
+  
+}
+
+.right h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #4b589b;
+  margin-bottom: 2rem;
+}
+.auth-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.auth-link a {
+  color:#4b589b;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 0.25rem;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}

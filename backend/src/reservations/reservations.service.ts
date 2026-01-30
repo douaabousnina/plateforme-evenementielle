@@ -8,9 +8,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Reservation } from './entities/reservation.entity';
+import { Event } from '../events/entities/event.entity';
 import { LockSeatsDto } from './dto/lock-seats.dto';
 import { ReservationStatus } from 'src/common/enums/reservation.enum';
 import { RESERVATION_EXPIRATION_MINUTES } from 'src/common/constants/reservation.constants';
+import { AccessService } from '../access/access.service';
 import { SeatsService } from '../events/services/seats.service';
 
 @Injectable()
@@ -21,6 +23,11 @@ export class ReservationsService {
         @InjectRepository(Reservation)
         private readonly reservationRepo: Repository<Reservation>,
         private readonly seatsService: SeatsService,
+
+        @InjectRepository(Event)
+        private readonly eventRepo: Repository<Event>,
+
+        private readonly accessService: AccessService,
     ) { }
 
     // LOCK SEATS & CREATE RESERVATION
@@ -89,7 +96,20 @@ export class ReservationsService {
 
         reservation.status = ReservationStatus.CONFIRMED;
         await this.seatsService.markSeatsAsSold(seatIds, reservation.eventId);
-        return this.reservationRepo.save(reservation);
+        const confirmedReservation = await this.reservationRepo.save(reservation);
+
+        // Generate tickets for the confirmed reservation
+        try {
+            const event = await this.eventRepo.findOne({ where: { id: reservation.eventId } });
+            if (event) {
+                await this.accessService.generateTicketsForReservation(reservation, event);
+            }
+        } catch (error) {
+            console.error('Failed to generate tickets:', error);
+            // Don't throw error to prevent payment confirmation failure
+        }
+
+        return confirmedReservation;
     }
 
     // CANCEL (by user)

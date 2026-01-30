@@ -27,8 +27,8 @@ export class QrScannerComponent {
   scanResult = signal<CheckInResponse | null>(null);
   scanError = signal<string | null>(null);
   
-  // Scanner settings
-  scannedBy = 'Controller-001'; // Mock controller ID
+  // Scanner settings - Using a valid UUID for the controller
+  scannedBy = '123e4567-e89b-12d3-a456-426614174000'; // Mock controller UUID
   location = 'Main Entrance';
   
   // QR Code format
@@ -67,7 +67,7 @@ export class QrScannerComponent {
     // Call backend to validate and check in
     this.accessService.checkIn(qrData, this.scannedBy, this.location, this.getDeviceInfo())
       .subscribe({
-        next: (response) => {
+        next: (response: CheckInResponse) => {
           console.log('Check-in response:', response);
           this.scanResult.set(response);
           this.isScanning.set(false);
@@ -79,7 +79,7 @@ export class QrScannerComponent {
             this.cdr.detectChanges();
           }, 6000);
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Check-in error:', error);
           this.scanError.set(error.error?.message || error.message || 'Erreur lors du scan. Vérifiez que le backend est accessible.');
           this.isScanning.set(false);

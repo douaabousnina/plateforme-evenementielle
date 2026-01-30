@@ -1,0 +1,13 @@
+<div class="roles-selector">
+  @for (role of roles; track role.value) {
+    <button
+      type="button"
+      class="role-pill"
+      [class.active]="role.value === selectedRole()"
+      (click)="selectRole(role.value)"
+    >
+      {{ role.label }}
+    </button>
+
+  }
+</div>

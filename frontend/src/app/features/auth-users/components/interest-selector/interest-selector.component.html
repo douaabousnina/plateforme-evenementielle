@@ -1,0 +1,9 @@
+<div class="interests" [class.readonly]="readonly()">
+  @for (pref of availablePreferences; track pref.value) {
+    <div 
+      (click)="togglePreference(pref.value)" 
+      [class.selected]="isSelected(pref.value)">
+      {{ pref.label }}
+    </div>
+  }
+</div>

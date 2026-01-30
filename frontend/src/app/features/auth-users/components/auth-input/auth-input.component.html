@@ -1,0 +1,10 @@
+<div class="input-wrapper">
+  <label>{{ label }}</label>
+  <input
+    [type]="type"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [ngModel]="value"
+    (ngModelChange)="valueChange.emit($event)"
+  />
+</div>

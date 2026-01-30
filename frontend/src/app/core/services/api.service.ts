@@ -4,9 +4,12 @@ import { catchError, Observable, finalize, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  // TODO: how to get env 
   private apiUrl = 'http://localhost:3000';
   private http = inject(HttpClient);
+  
+  get httpClient(): HttpClient {
+    return this.http;
+  }
 
   loading = signal<boolean>(false);
   error = signal<string | null>(null);

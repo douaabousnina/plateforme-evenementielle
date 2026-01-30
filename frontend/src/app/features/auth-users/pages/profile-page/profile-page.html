@@ -1,0 +1,30 @@
+<div class="min-h-screen bg-[#f6f6f8] dark:bg-[#141121] flex flex-col">
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Main Content -->
+    <div class="flex-1 max-w-[1440px] mx-auto w-full flex flex-col md:flex-row gap-6 p-4 md:p-6 lg:p-8">
+        <!-- Sidebar -->
+        <app-profile-sidebar></app-profile-sidebar>
+
+        <!-- Main Section -->
+        <main class="flex-1 min-w-0 flex flex-col gap-6">
+            <!-- Page Header -->
+            <div class="flex flex-col gap-2">
+                <h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase">Mon Profil</h1>
+                <p class="text-slate-500 dark:text-slate-400 text-lg">Gérez vos informations personnelles et vos paramètres de compte.</p>
+            </div>
+
+            <!-- Personal Info Card -->
+            <app-personal-info-card></app-personal-info-card>
+
+            <!-- Preferences and Password Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                @if (isClient()) {
+                    <app-preferences-card></app-preferences-card>
+                }
+                <app-password-change-card [class.lg:col-span-2]="!isClient()"></app-password-change-card>
+            </div>
+        </main>
+    </div>
+</div>
