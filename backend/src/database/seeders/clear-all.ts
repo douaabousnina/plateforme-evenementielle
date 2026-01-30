@@ -9,17 +9,23 @@ import { Location } from '../../events/entities/location.entity';
 
 /** Clear all seed-relevant tables in FK-safe order. */
 export async function clearAll(dataSource: DataSource): Promise<void> {
+  // Delete in correct order: children before parents
   const order = [
-    Payment,
-    Reservation,
-    Seat,
-    ScanLog,
-    Ticket,
-    Event,
+    ScanLog,    // References Ticket
+    Ticket,     // References Event, Reservation
+    Payment,    // References Reservation
+    Seat,       // References Event, Reservation
+    Reservation, // References Event
+    Event,      // References Location
     Location,
   ];
+  
   for (const Entity of order) {
     const repo = dataSource.getRepository(Entity);
-    await repo.delete({});
+    // Use createQueryBuilder to delete without FK constraints issues
+    await repo.createQueryBuilder()
+      .delete()
+      .from(Entity)
+      .execute();
   }
 }
