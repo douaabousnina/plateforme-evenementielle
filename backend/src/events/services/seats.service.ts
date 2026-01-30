@@ -100,7 +100,7 @@ export class SeatsService {
 
         if (takenSeats.length > 0) {
             throw new ConflictException(
-                `Seats already taken: ${takenSeats.map(s => s.id).join(', ')}`
+                `Seats already taken: ${takenSeats.map(s => s.category + " : " + s.number).join(', ')}`
             );
         }
 

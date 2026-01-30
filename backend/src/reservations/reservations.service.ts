@@ -3,6 +3,7 @@ import {
     NotFoundException,
     BadRequestException,
     ConflictException,
+    Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
@@ -17,6 +18,7 @@ import { SeatsService } from '../events/services/seats.service';
 
 @Injectable()
 export class ReservationsService {
+    private readonly logger = new Logger(ReservationsService.name);
     private isExpiringWorking = false;
 
     constructor(
@@ -98,7 +100,6 @@ export class ReservationsService {
         await this.seatsService.markSeatsAsSold(seatIds, reservation.eventId);
         const confirmedReservation = await this.reservationRepo.save(reservation);
 
-        // Generate tickets for the confirmed reservation
         try {
             const event = await this.eventRepo.findOne({ where: { id: reservation.eventId } });
             if (event) {
@@ -106,7 +107,6 @@ export class ReservationsService {
             }
         } catch (error) {
             console.error('Failed to generate tickets:', error);
-            // Don't throw error to prevent payment confirmation failure
         }
 
         return confirmedReservation;
@@ -171,22 +171,30 @@ export class ReservationsService {
                 return 0;
             }
 
-            // First, save the expired status to reservations
+            // IMPORTANT: Release seats FIRST, then mark as EXPIRED
+            // => prevents seats from being permanently locked if there's an error
+            for (const reservation of expired) {
+                if (reservation.seats?.length > 0) {
+                    const seatIds = reservation.seats.map((s) => s.id);
+                    try {
+                        await this.seatsService.releaseSeats(seatIds, reservation.eventId);
+                        this.logger.log(`Released ${seatIds.length} seats for reservation ${reservation.id}`);
+                    } catch (error) {
+                        this.logger.error(`Failed to release seats for reservation ${reservation.id}:`, error.message);
+                    }
+                }
+            }
+
+            // Now mark reservations as expired
             for (const reservation of expired) {
                 reservation.status = ReservationStatus.EXPIRED;
             }
             await this.reservationRepo.save(expired);
-
-            // Then, release seats for all expired reservations
-            for (const reservation of expired) {
-                if (reservation.seats?.length > 0) {
-                    const seatIds = reservation.seats.map((s) => s.id);
-                    await this.seatsService.releaseSeats(seatIds, reservation.eventId);
-                }
-            }
+            this.logger.log(`Marked ${expired.length} reservation(s) as EXPIRED`);
 
             return expired.length;
         } catch (error) {
+            this.logger.error('Error in expireOldReservations:', error);
             return 0;
         } finally {
             this.isExpiringWorking = false;

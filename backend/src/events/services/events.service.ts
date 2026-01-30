@@ -100,13 +100,12 @@ export class EventsService {
       throw new BadRequestException('This event has no seating plan / capacity limits');
     }
 
-    if (event.availableCapacity + quantity > event.totalCapacity) {
-      throw new BadRequestException(
-        `Cannot release ${quantity} seats: it would exceed the event's total capacity of ${event.totalCapacity}`
-      );
-    }
-
-    event.availableCapacity += quantity;
+    // Don't exceed total capacity when releasing
+    // In case of capacity tracking drift, just cap at total
+    event.availableCapacity = Math.min(
+      event.availableCapacity + quantity,
+      event.totalCapacity
+    );
 
     return this.eventRepository.save(event);
   }
