@@ -1,0 +1,25 @@
+<div class="bg-slate-50 dark:bg-slate-900 font-display text-slate-900 dark:text-white antialiased min-h-screen flex flex-col">
+  <app-client-header />
+
+  <main class="flex-grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    @if (loading()) {
+      <div class="flex items-center justify-center py-20">
+        <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+      </div>
+    } @else if (error()) {
+      <p class="text-red-500 text-center py-8">{{ error() }}</p>
+    } @else {
+      <app-welcome-section [data]="welcomeData()" />
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <div class="lg:col-span-8 flex flex-col gap-10 min-w-0">
+          <app-upcoming-events-carousel />
+          <app-recommendations-section />
+        </div>
+        <aside class="lg:col-span-4 flex flex-col gap-6 lg:pl-2 lg:border-l lg:border-slate-200 dark:lg:border-slate-700">
+          <app-client-sidebar />
+        </aside>
+      </div>
+    }
+  </main>
+</div>

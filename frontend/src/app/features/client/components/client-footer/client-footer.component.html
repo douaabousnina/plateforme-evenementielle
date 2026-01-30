@@ -1,0 +1,43 @@
+@let cfg = config();
+<footer class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      @for (group of cfg.groups; track group.title) {
+        <div>
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">{{ group.title }}</h3>
+          <ul class="space-y-3">
+            @for (link of group.links; track link.route) {
+              <li>
+                <a [routerLink]="link.route" class="text-sm text-slate-500 dark:text-gray-400 hover:text-primary transition-colors">{{ link.label }}</a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+      @if (cfg.socialLinks && cfg.socialLinks.length) {
+        <div>
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Suivez-nous</h3>
+          <div class="flex gap-4">
+            @for (social of cfg.socialLinks; track social.label) {
+              <a
+                [href]="social.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="size-10 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center text-slate-500 hover:bg-primary hover:text-white transition-colors text-xs font-bold">
+                {{ social.label }}
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+    <div class="mt-12 pt-8 border-t border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-slate-500 dark:text-gray-500">{{ cfg.copyright }}</p>
+      <div class="flex gap-6">
+        @for (legal of cfg.legalLinks; track legal.route) {
+          <a [routerLink]="legal.route" class="text-sm text-slate-500 dark:text-gray-500 hover:text-primary">{{ legal.label }}</a>
+        }
+      </div>
+    </div>
+  </div>
+</footer>
