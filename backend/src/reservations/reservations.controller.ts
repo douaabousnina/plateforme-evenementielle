@@ -1,54 +1,90 @@
 import {
     Controller,
-    Post,
-    Patch,
     Get,
-    Param,
+    Post,
     Body,
-} from '@nestjs/common';
-import { ReservationsService } from './reservations.service';
-import { LockSeatsDto } from './dto/lock-seats.dto';
-
-@Controller('reservations')
-export class ReservationsController {
-    constructor(private readonly reservationsService: ReservationsService) { }
-
-    // LOCK SEATS & CREATE RESERVATION
+    Patch,
+    Param,
+    Delete,
+    UseGuards,
+    Req,
+  } from '@nestjs/common';
+  import { ReservationsService } from './reservations.service';
+  import { LockSeatsDto } from './dto/lock-seats.dto';
+  
+  // TODO: Uncomment when auth module is ready
+  // import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+  
+  @Controller('reservations')
+  export class ReservationsController {
+    constructor(private readonly reservationsService: ReservationsService) {}
+  
+    // LOCK SEATS => Create a pending reservation
     @Post('lock')
+    // TODO: Uncomment when auth is ready
+    // @UseGuards(JwtAuthGuard)
     async lockSeats(
-        @Body() lockSeatsDto: LockSeatsDto,
+      @Body() lockSeatsDto: LockSeatsDto,
+      @Req() req: any
     ) {
-        const userId = 'sample-user-id'; // TODO: get this from auth context later
-        return this.reservationsService.lockSeats(userId, lockSeatsDto);
+      // TODO: Get userId from JWT token
+      // const userId = req.user.id;
+      const userId = 'temp-user-id'; // Temporary for testing
+  
+      return await this.reservationsService.lockSeats(userId, lockSeatsDto);
     }
-
-    // CONFIRM RESERVATION
+  
+    // CONFIRM RESERVATION => After successful payment
     @Patch(':id/confirm')
-    async confirm(@Param('id') reservationId: string) {
-        return this.reservationsService.confirm(reservationId);
+    // TODO: Uncomment when auth is ready
+    // @UseGuards(JwtAuthGuard)
+    async confirm(
+      @Param('id') id: string,
+      @Req() req: any
+    ) {
+      // TODO: Verify user owns this reservation
+      // const userId = req.user.id;
+      
+      return await this.reservationsService.confirm(id);
     }
-
-    // CANCEL RESERVATION
+  
+    // CANCEL RESERVATION => User cancels before payment/expiration
     @Patch(':id/cancel')
-    async cancel(@Param('id') reservationId: string) {
-        return this.reservationsService.cancel(reservationId);
+    // TODO: Uncomment when auth is ready
+    // @UseGuards(JwtAuthGuard)
+    async cancel(
+      @Param('id') id: string,
+      @Req() req: any
+    ) {
+      // TODO: Verify user owns this reservation
+      // const userId = req.user.id;
+      
+      return await this.reservationsService.cancel(id);
     }
-
-    // GET SINGLE RESERVATION
+  
+    // GET USER'S RESERVATIONS => Booking history
+    @Get('my-reservations')
+    // TODO: Uncomment when auth is ready
+    // @UseGuards(JwtAuthGuard)
+    async findMyReservations(@Req() req: any) {
+      // TODO: Get userId from JWT token
+      // const userId = req.user.id;
+      const userId = 'temp-user-id'; // Temporary
+  
+      return await this.reservationsService.findByUser(userId);
+    }
+  
+    // GET SINGLE RESERVATION => View details
     @Get(':id')
-    async findOne(@Param('id') reservationId: string) {
-        return this.reservationsService.findById(reservationId);
+    // TODO: Uncomment when auth is ready
+    // @UseGuards(JwtAuthGuard)
+    async findOne(
+      @Param('id') id: string,
+      @Req() req: any
+    ) {
+      // TODO: Verify user owns this reservation
+      // const userId = req.user.id;
+      
+      return await this.reservationsService.findById(id);
     }
-
-    // GET RESERVATIONS BY USER
-    @Get('user/:userId')
-    async findByUser(@Param('userId') userId: string) {
-        return this.reservationsService.findByUser(userId);
-    }
-
-    // GET SEATS BY EVENT
-    @Get('seats/event/:eventId')
-    async findSeatsByEventId(@Param('eventId') eventId: string) {
-        return this.reservationsService.findSeatsByEventId(eventId);
-    }
-}
+  }

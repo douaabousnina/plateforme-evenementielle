@@ -5,17 +5,18 @@ import {
     JoinColumn,
     OneToOne
 } from 'typeorm';
-import { Reservation } from './reservation.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { SeatStatus } from 'src/common/enums/reservation.enum';
+import { Reservation } from 'src/reservations/entities/reservation.entity';
+import { Event } from './event.entity';
 
-@Entity('reserved_seats')
-export class ReservedSeat extends BaseEntity {
-    // @OneToOne(() => Event, event => event.id, {
-    //     onDelete: 'CASCADE',
-    // })
-    // @JoinColumn({ name: 'eventId' })
-    // event: Event;
+@Entity('seats')
+export class Seat extends BaseEntity {
+    @ManyToOne(() => Event, event => event.id, {
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn({ name: 'eventId' })
+    event: Event;
 
     @Column()
     eventId: string;
@@ -43,7 +44,7 @@ export class ReservedSeat extends BaseEntity {
     reservation: Reservation;
 
     @Column({ nullable: true })
-    reservationId: string;
+    reservationId: string | null;
 
     @Column({ type: 'enum', enum: SeatStatus, default: SeatStatus.AVAILABLE })
     status: SeatStatus;
