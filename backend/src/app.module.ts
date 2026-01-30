@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ScanlogModule } from './scanlog/scanlog.module';
 
 
 @Module({
@@ -36,7 +37,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     EventsModule,
     AccessModule,  
     AuthModule,
-    UsersModule,
+    UsersModule,,
+    ScanlogModule,
   ],
 })
 export class AppModule { }

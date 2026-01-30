@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Ticket, TicketStatus } from './entities/ticket.entity';
-import { ScanLog, ScanStatus } from './entities/scan-log.entity';
+import { Ticket } from './entities/ticket.entity';
+import { TicketStatus } from './enums/ticket-status.enum';
+import { CheckInDto } from './dto/check-in.dto';
+import { CheckInResponseDto } from './dto/check-in-response.dto';
+import { ScanStatus } from '../scanlog/enums/scan-status.enum';
+import { ScanLog } from '../scanlog/entities/scan-log.entity';
 import * as QRCode from 'qrcode';
 import * as crypto from 'crypto';
 
@@ -18,13 +22,19 @@ export class AccessService {
   /**
    * Generate a secure QR code for a ticket
    */
-  async generateQRCode(ticketId: string, eventId: string, userId: string): Promise<{ qrCode: string; qrToken: string }> {
+  async generateQrCode(ticketId: string): Promise<{ qrCode: string; qrToken: string }> {
+    const ticket = await this.ticketRepository.findOne({ where: { id: ticketId } });
+    
+    if (!ticket) {
+      throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
+    }
+
     const qrToken = this.generateSecureToken(ticketId);
     
     const qrData = JSON.stringify({
       ticketId,
-      eventId,
-      userId,
+      eventId: ticket.eventId,
+      userId: ticket.userId,
       token: qrToken,
       timestamp: Date.now(),
     });
@@ -38,58 +48,129 @@ export class AccessService {
       },
     });
 
+    // Update ticket with new token
+    ticket.qrToken = qrToken;
+    await this.ticketRepository.save(ticket);
+
     return { qrCode, qrToken };
   }
-
-  
 
   /**
    * Validate QR code and perform check-in
    */
-  async validateAndCheckIn(
-    qrData: string,
-    scannedBy: string,
-    location?: string,
-    deviceInfo?: string,
-  ): Promise<{ status: ScanStatus; message: string; ticket?: Ticket }> {
+  async checkIn(dto: CheckInDto): Promise<CheckInResponseDto> {
     try {
-      const data = JSON.parse(qrData);
+      const data = JSON.parse(dto.qrCode);
       const { ticketId, eventId, userId, token, timestamp } = data;
 
       // Check if ticket exists
       const ticket = await this.ticketRepository.findOne({ where: { id: ticketId } });
       if (!ticket) {
-        await this.logScan(ticketId, eventId, scannedBy, ScanStatus.FAKE, location, deviceInfo);
-        return { status: ScanStatus.FAKE, message: 'Ticket invalide' };
+        // Log invalid scan attempt
+        await this.scanLogRepository.save({
+          ticketId,
+          eventId: eventId || 'unknown',
+          scannedBy: dto.scannedBy,
+          status: ScanStatus.FAKE,
+          location: dto.location,
+          deviceInfo: dto.deviceInfo,
+        });
+        
+        return {
+          success: false,
+          message: 'Ticket invalide',
+          status: ScanStatus.FAKE,
+        };
       }
 
       // Check if ticket is expired
       if (new Date() > ticket.expiresAt) {
-        await this.logScan(ticketId, eventId, scannedBy, ScanStatus.EXPIRED, location, deviceInfo);
-        return { status: ScanStatus.EXPIRED, message: 'Billet expiré' };
+        // Log expired scan attempt
+        await this.scanLogRepository.save({
+          ticketId,
+          eventId: ticket.eventId,
+          eventName: ticket.eventName,
+          scannedBy: dto.scannedBy,
+          status: ScanStatus.EXPIRED,
+          location: dto.location,
+          deviceInfo: dto.deviceInfo,
+        });
+        
+        return {
+          success: false,
+          message: 'Billet expiré',
+          status: ScanStatus.EXPIRED,
+          ticketId,
+          eventName: ticket.eventName,
+          ticket,
+        };
       }
 
       // Check if already scanned
       if (ticket.status === TicketStatus.SCANNED) {
-        await this.logScan(ticketId, eventId, scannedBy, ScanStatus.ALREADY_SCANNED, location, deviceInfo);
-        return { 
-          status: ScanStatus.ALREADY_SCANNED, 
+        // Log duplicate scan attempt
+        await this.scanLogRepository.save({
+          ticketId,
+          eventId: ticket.eventId,
+          eventName: ticket.eventName,
+          scannedBy: dto.scannedBy,
+          status: ScanStatus.ALREADY_SCANNED,
+          location: dto.location,
+          deviceInfo: dto.deviceInfo,
+        });
+        
+        return {
+          success: false,
           message: `Déjà scanné le ${ticket.scannedAt?.toLocaleString('fr-FR')}`,
-          ticket 
+          status: ScanStatus.ALREADY_SCANNED,
+          ticketId,
+          eventName: ticket.eventName,
+          scannedAt: ticket.scannedAt,
+          ticket,
         };
       }
 
       // Validate token
       if (token !== ticket.qrToken) {
-        await this.logScan(ticketId, eventId, scannedBy, ScanStatus.INVALID, location, deviceInfo);
-        return { status: ScanStatus.INVALID, message: 'Token invalide' };
+        // Log invalid token scan attempt
+        await this.scanLogRepository.save({
+          ticketId,
+          eventId: ticket.eventId,
+          eventName: ticket.eventName,
+          scannedBy: dto.scannedBy,
+          status: ScanStatus.INVALID,
+          location: dto.location,
+          deviceInfo: dto.deviceInfo,
+        });
+        
+        return {
+          success: false,
+          message: 'Token invalide',
+          status: ScanStatus.INVALID,
+          ticket,
+        };
       }
 
       // Check timestamp (QR valid for 5 minutes)
       const now = Date.now();
       if (now - timestamp > 5 * 60 * 1000) {
-        await this.logScan(ticketId, eventId, scannedBy, ScanStatus.EXPIRED, location, deviceInfo);
-        return { status: ScanStatus.EXPIRED, message: 'QR code expiré, veuillez rafraîchir' };
+        // Log expired QR scan attempt
+        await this.scanLogRepository.save({
+          ticketId,
+          eventId: ticket.eventId,
+          eventName: ticket.eventName,
+          scannedBy: dto.scannedBy,
+          status: ScanStatus.EXPIRED,
+          location: dto.location,
+          deviceInfo: dto.deviceInfo,
+        });
+        
+        return {
+          success: false,
+          message: 'QR code expiré, veuillez rafraîchir',
+          status: ScanStatus.EXPIRED,
+          ticket,
+        };
       }
 
       // Valid check-in
@@ -97,164 +178,152 @@ export class AccessService {
       ticket.scannedAt = new Date();
       await this.ticketRepository.save(ticket);
 
-      await this.logScan(ticketId, eventId, scannedBy, ScanStatus.VALID, location, deviceInfo);
+      // Log successful scan
+      await this.scanLogRepository.save({
+        ticketId,
+        eventId: ticket.eventId,
+        eventName: ticket.eventName,
+        scannedBy: dto.scannedBy,
+        status: ScanStatus.VALID,
+        location: dto.location,
+        deviceInfo: dto.deviceInfo,
+      });
 
-      return { 
-        status: ScanStatus.VALID, 
-        message: 'Accès autorisé', 
-        ticket 
+      return {
+        success: true,
+        message: 'Accès autorisé',
+        status: ScanStatus.VALID,
+        ticketId,
+        eventName: ticket.eventName,
+        scannedAt: ticket.scannedAt,
+        ticket,
       };
     } catch (error) {
-      return { status: ScanStatus.INVALID, message: 'QR code invalide' };
-    }
-  }
-
-  /**
-   * Log scan attempt
-   */
-  private async logScan(
-    ticketId: string,
-    eventId: string,
-    scannedBy: string,
-    status: ScanStatus,
-    location?: string,
-    deviceInfo?: string,
-  ): Promise<void> {
-    const scanLog = this.scanLogRepository.create({
-      ticketId,
-      eventId,
-      scannedBy,
-      status,
-      location,
-      deviceInfo,
-    });
-
-    await this.scanLogRepository.save(scanLog);
-  }
-
-  /**
-   * Get scan history for an event
-   */
-  async getScanHistory(eventId: string): Promise<ScanLog[]> {
-    return this.scanLogRepository.find({ where: { eventId }, order: { scannedAt: 'DESC' } });
-  }
-
-  /**
-   * Get scan history for a controller
-   */
-  async getScanHistoryByController(scannedBy: string): Promise<ScanLog[]> {
-    return this.scanLogRepository.find({ where: { scannedBy }, order: { scannedAt: 'DESC' } });
-  }
-
-  /**
-   * Get all scan logs
-   */
-  async getAllScanLogs(): Promise<ScanLog[]> {
-    return this.scanLogRepository.find({ order: { scannedAt: 'DESC' } });
-  }
-
-
-
-  /**
-   * Get scan statistics for all events
-   */
-  async getAllEventStats(): Promise<Array<{
-    eventId: string;
-    eventName: string;
-    total: number;
-    valid: number;
-    alreadyScanned: number;
-    invalid: number;
-    fake: number;
-    expired: number;
-    uniqueTickets: number;
-    lastScan: Date | null;
-  }>> {
-    const allLogs = await this.getAllScanLogs();
-    const eventMap = new Map<string, ScanLog[]>();
-    
-    // Group logs by eventId
-    allLogs.forEach(log => {
-      const eventId = log.eventId || 'unknown';
-      if (!eventMap.has(eventId)) {
-        eventMap.set(eventId, []);
+      // Log invalid QR format scan attempt
+      try {
+        await this.scanLogRepository.save({
+          ticketId: 'unknown',
+          eventId: 'unknown',
+          scannedBy: dto.scannedBy,
+          status: ScanStatus.INVALID,
+          location: dto.location,
+          deviceInfo: dto.deviceInfo,
+        });
+      } catch (logError) {
+        console.error('Failed to log invalid scan:', logError);
       }
-      eventMap.get(eventId)!.push(log);
-    });
-
-    // Calculate stats for each event
-    return Array.from(eventMap.entries()).map(([eventId, logs]) => {
-      const sortedLogs = logs.sort((a, b) => b.scannedAt.getTime() - a.scannedAt.getTime());
-      const uniqueTickets = new Set(logs.map(l => l.ticketId));
       
       return {
-        eventId,
-        eventName: logs[0].eventName || `Event ${eventId}`,
-        total: logs.length,
-        valid: logs.filter(l => l.status === ScanStatus.VALID).length,
-        alreadyScanned: logs.filter(l => l.status === ScanStatus.ALREADY_SCANNED).length,
-        invalid: logs.filter(l => l.status === ScanStatus.INVALID).length,
-        fake: logs.filter(l => l.status === ScanStatus.FAKE).length,
-        expired: logs.filter(l => l.status === ScanStatus.EXPIRED).length,
-        uniqueTickets: uniqueTickets.size,
-        lastScan: sortedLogs[0]?.scannedAt || null,
+        success: false,
+        message: 'QR code invalide',
+        status: ScanStatus.INVALID,
       };
-    }).sort((a, b) => {
-      if (!a.lastScan) return 1;
-      if (!b.lastScan) return -1;
-      return b.lastScan.getTime() - a.lastScan.getTime();
-    });
+    }
   }
 
   /**
-   * Create a ticket (mock - normally handled by Person 3)
+   * Refresh QR code (generate new token) - Used when QR expires after 5 minutes
    */
-  async createTicket(ticketData: Partial<Ticket>): Promise<Ticket> {
-    const ticketId = crypto.randomUUID();
-    const { qrCode, qrToken } = await this.generateQRCode(ticketId, ticketData.eventId!, ticketData.userId!);
-
-    const ticket = this.ticketRepository.create({
-      id: ticketId,
-      ...ticketData,
-      qrCode,
-      qrToken,
-      status: TicketStatus.CONFIRMED,
-      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
-    });
-
-    return this.ticketRepository.save(ticket);
-  }
-
-  /**
-   * Get ticket by ID
-   */
-  async getTicket(ticketId: string): Promise<Ticket | null> {
-    return this.ticketRepository.findOne({ where: { id: ticketId } });
-  }
-
-  /**
-   * Get tickets by user
-   */
-  async getTicketsByUser(userId: string): Promise<Ticket[]> {
-    return this.ticketRepository.find({ where: { userId } });
-  }
-
-  /**
-   * Refresh QR code (generate new token)
-   */
-  async refreshQRCode(ticketId: string): Promise<{ qrCode: string; qrToken: string }> {
+  async refreshQrCode(ticketId: string): Promise<{ qrCode: string; qrToken: string }> {
     const ticket = await this.ticketRepository.findOne({ where: { id: ticketId } });
+    
     if (!ticket) {
-      throw new Error('Ticket not found');
+      throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
     }
 
-    const { qrCode, qrToken } = await this.generateQRCode(ticketId, ticket.eventId, ticket.userId);
+    const qrToken = this.generateSecureToken(ticketId);
     
-    // Update the ticket with the new token
+    const qrData = JSON.stringify({
+      ticketId,
+      eventId: ticket.eventId,
+      userId: ticket.userId,
+      token: qrToken,
+      timestamp: Date.now(),
+    });
+
+    const qrCode = await QRCode.toDataURL(qrData, {
+      width: 400,
+      margin: 2,
+      color: {
+        dark: '#5B47FB',
+        light: '#FFFFFF',
+      },
+    });
+
+    // Update ticket with new token
     ticket.qrToken = qrToken;
     await this.ticketRepository.save(ticket);
 
     return { qrCode, qrToken };
+  }
+
+  /**
+   * Get all tickets for a specific user
+   */
+  async getUserTickets(userId: string) {
+    const tickets = await this.ticketRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+    return tickets;
+  }
+
+  /**
+   * Generate tickets for a confirmed reservation
+   */
+  async generateTicketsForReservation(reservation: any, event: any): Promise<Ticket[]> {
+    const tickets: Ticket[] = [];
+
+    // Create a ticket for each reserved seat
+    for (const seat of reservation.seats) {
+      // Generate UUID upfront to avoid double-save
+      const ticketId = crypto.randomUUID();
+      const qrToken = this.generateSecureToken(`${reservation.id}-${seat.id}`);
+      
+      const qrData = JSON.stringify({
+        ticketId,
+        eventId: event.id,
+        userId: reservation.userId,
+        token: qrToken,
+        timestamp: Date.now(),
+      });
+
+      const qrCode = await QRCode.toDataURL(qrData, {
+        width: 400,
+        margin: 2,
+        color: {
+          dark: '#5B47FB',
+          light: '#FFFFFF',
+        },
+      });
+
+      const ticket = this.ticketRepository.create({
+        id: ticketId,
+        eventId: event.id,
+        eventName: event.title,
+        eventDate: event.date,
+        eventLocation: `${event.venueName || ''}, ${event.city}`,
+        eventImage: event.image,
+        userId: reservation.userId,
+        orderId: reservation.id,
+        qrCode,
+        qrToken,
+        gate: seat.section,
+        row: seat.row,
+        seat: seat.number?.toString(),
+        zone: seat.section,
+        access: 'Standard',
+        category: seat.category || 'General',
+        price: seat.price,
+        status: TicketStatus.CONFIRMED,
+        expiresAt: new Date(event.date.getTime() + 24 * 60 * 60 * 1000), // Event date + 1 day
+      });
+
+      const savedTicket = await this.ticketRepository.save(ticket);
+      tickets.push(savedTicket);
+    }
+
+    return tickets;
   }
 
   /**
