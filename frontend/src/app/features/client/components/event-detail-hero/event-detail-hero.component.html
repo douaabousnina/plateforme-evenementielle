@@ -1,0 +1,91 @@
+@let e = event();
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+  <div class="lg:col-span-8 grid grid-cols-4 grid-rows-2 gap-4 h-[400px] lg:h-[450px]">
+    <div class="col-span-4 row-span-2 md:col-span-3 md:row-span-2 relative group rounded-2xl overflow-hidden cursor-pointer">
+      <img
+        [src]="e.bannerImage || e.images?.[0]"
+        [alt]="e.title"
+        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+      <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-white border border-white/10">Scène Principale</div>
+    </div>
+    @if (e.images && e.images.length > 1) {
+      <div class="hidden md:block col-span-1 row-span-1 relative group rounded-2xl overflow-hidden cursor-pointer">
+        <img [src]="e.images[1]" alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      </div>
+      <div class="hidden md:block col-span-1 row-span-1 relative group rounded-2xl overflow-hidden cursor-pointer">
+        <img [src]="e.images[2] ?? e.images[1]" alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-colors">
+          <span class="text-white font-semibold text-sm">+{{ (e.images?.length ?? 0) - 2 }} Photos</span>
+        </div>
+      </div>
+    }
+  </div>
+  <div class="lg:col-span-4 flex flex-col justify-between bg-slate-800 rounded-2xl p-6 border border-slate-700">
+    <div class="flex flex-col gap-4">
+      <div class="flex gap-2">
+        @for (tag of e.tags.slice(0, 2); track tag) {
+          <span
+            class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+            [class.bg-primary/20]="tag === e.categoryLabel"
+            [class.text-primary]="tag === e.categoryLabel"
+            [class.bg-white/10]="tag !== e.categoryLabel"
+            [class.text-white]="tag !== e.categoryLabel">
+            {{ tag }}
+          </span>
+        }
+      </div>
+      <h1 class="text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">{{ e.title }}</h1>
+      <div class="space-y-3 pt-2">
+        <div class="flex items-start gap-3">
+          <div class="p-2 rounded-lg bg-slate-700 text-primary shrink-0">
+            <span class="material-symbols-outlined text-xl">calendar_month</span>
+          </div>
+          <div>
+            <p class="text-white font-semibold">{{ e.dateLabel }}</p>
+            <p class="text-slate-400 text-sm">{{ e.timeRange }}</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="p-2 rounded-lg bg-slate-700 text-primary shrink-0">
+            <span class="material-symbols-outlined text-xl">location_on</span>
+          </div>
+          <div>
+            <p class="text-white font-semibold">{{ e.venueName }}</p>
+            <p class="text-slate-400 text-sm">{{ e.address }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 mt-2">
+          @if (e.organizerLogoUrl) {
+            <img [src]="e.organizerLogoUrl" [alt]="e.organizerName" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/30" />
+          } @else {
+            <div class="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-primary/30 flex items-center justify-center">
+              <span class="material-symbols-outlined text-slate-400 text-sm">business</span>
+            </div>
+          }
+          <p class="text-slate-400 text-sm">Organisé par <span class="text-white font-medium hover:underline cursor-pointer">{{ e.organizerName }}</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-8 pt-6 border-t border-slate-700">
+      <button type="button" class="flex-1 flex flex-col items-center gap-1 group">
+        <div class="p-2.5 rounded-full bg-slate-700 group-hover:bg-primary/20 group-hover:text-primary transition-colors text-white">
+          <span class="material-symbols-outlined text-[20px]">share</span>
+        </div>
+        <span class="text-xs text-slate-400 group-hover:text-white transition-colors">Partager</span>
+      </button>
+      <button type="button" class="flex-1 flex flex-col items-center gap-1 group">
+        <div class="p-2.5 rounded-full bg-slate-700 group-hover:bg-primary/20 group-hover:text-primary transition-colors text-white">
+          <span class="material-symbols-outlined text-[20px]">favorite</span>
+        </div>
+        <span class="text-xs text-slate-400 group-hover:text-white transition-colors">Sauver</span>
+      </button>
+      <button type="button" class="flex-1 flex flex-col items-center gap-1 group">
+        <div class="p-2.5 rounded-full bg-slate-700 group-hover:bg-primary/20 group-hover:text-primary transition-colors text-white">
+          <span class="material-symbols-outlined text-[20px]">calendar_add_on</span>
+        </div>
+        <span class="text-xs text-slate-400 group-hover:text-white transition-colors">Calendrier</span>
+      </button>
+    </div>
+  </div>
+</section>
