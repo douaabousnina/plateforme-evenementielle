@@ -1,0 +1,28 @@
+@let e = event();
+<div class="min-w-[320px] max-w-[320px] snap-center bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden group hover:shadow-md transition-shadow">
+  <div class="h-40 bg-slate-200 relative overflow-hidden">
+    <img
+      [alt]="e.title"
+      [src]="e.imageUrl"
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+    />
+    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur text-slate-900 text-xs font-bold px-2 py-1 rounded">
+      {{ e.dateLabel }}
+    </div>
+  </div>
+  <div class="p-5 flex flex-col gap-3">
+    <div>
+      <h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight line-clamp-1">{{ e.title }}</h3>
+      <p class="text-slate-500 text-sm mt-1 flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">location_on</span>
+        {{ e.venueName }}
+      </p>
+    </div>
+    <div class="flex items-center justify-between mt-auto pt-2 border-t border-slate-100 dark:border-white/10">
+      <span class="text-sm font-medium text-slate-900 dark:text-gray-300">{{ e.ticketLabel }}</span>
+      <a [routerLink]="['/access/my-tickets']" class="text-primary text-sm font-bold px-3 py-1.5 bg-primary/10 rounded-lg hover:bg-primary hover:text-white transition-colors">
+        Voir billets
+      </a>
+    </div>
+  </div>
+</div>

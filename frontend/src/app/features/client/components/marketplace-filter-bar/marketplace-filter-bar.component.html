@@ -1,0 +1,62 @@
+<div class="sticky top-[73px] z-40 -mx-4 px-4 py-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-transparent">
+  <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-2 md:p-3 flex flex-col lg:flex-row gap-4 lg:items-center">
+    <div class="flex flex-1 flex-col sm:flex-row gap-3">
+      <div class="relative flex-1 group/search">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/search:text-primary transition-colors">search</span>
+        <input
+          class="w-full h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border-0 focus:ring-2 focus:ring-primary pl-12 pr-4 text-base placeholder:text-slate-400 text-slate-900 dark:text-white transition-all"
+          type="text"
+          [value]="search()"
+          (input)="onSearchChange($any($event.target).value)"
+          placeholder="Rechercher un événement, artiste, lieu..."
+        />
+      </div>
+      <div class="relative min-w-[180px]">
+        <select
+          class="w-full h-12 appearance-none rounded-xl bg-slate-50 dark:bg-slate-900 border-0 focus:ring-2 focus:ring-primary pl-11 pr-10 text-base text-slate-900 dark:text-white cursor-pointer transition-all"
+          [value]="datePreset()"
+          (change)="onDateChange($any($event.target).value)"
+        >
+          @for (opt of dateOptions(); track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">calendar_today</span>
+        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xl">expand_more</span>
+      </div>
+    </div>
+    <div class="hidden lg:block w-px h-8 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between lg:justify-end">
+      <div class="w-full sm:w-auto overflow-x-auto scrollbar-hide">
+        <div class="flex gap-2">
+          @for (opt of categoryOptions(); track opt.value) {
+            <button
+              type="button"
+              class="whitespace-nowrap px-4 h-10 rounded-full text-sm font-medium transition-colors"
+              [class.bg-primary]="category() === opt.value"
+              [class.text-white]="category() === opt.value"
+              [class.shadow-md]="category() === opt.value"
+              [class.bg-slate-100]="category() !== opt.value"
+              [class.dark:bg-slate-800]="category() !== opt.value"
+              [class.text-slate-600]="category() !== opt.value"
+              [class.dark:text-gray-300]="category() !== opt.value"
+              [class.hover:bg-gray-200]="category() !== opt.value"
+              [class.dark:hover:bg-gray-700]="category() !== opt.value"
+              (click)="selectCategory(opt.value)"
+            >
+              {{ opt.label }}
+            </button>
+          }
+        </div>
+      </div>
+      <div class="flex items-center gap-3 min-w-[200px] px-2 w-full sm:w-auto">
+        <span class="text-xs font-semibold text-slate-500 uppercase">Prix</span>
+        <div class="relative flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full">
+          <div class="absolute left-0 top-0 h-full w-1/2 bg-primary rounded-full"></div>
+          <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-4 bg-white dark:bg-slate-700 border-2 border-primary rounded-full shadow cursor-pointer hover:scale-110 transition-transform"></div>
+        </div>
+        <span class="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">Max {{ priceMax() ?? 150 }}€</span>
+      </div>
+    </div>
+  </div>
+</div>

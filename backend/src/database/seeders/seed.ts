@@ -7,6 +7,7 @@ import { seedSeats } from './seed-seats';
 import { seedReservations } from './seed-reservations';
 import { seedPayments } from './seed-payments';
 import { seedTickets, seedScanLogs } from './seed-access';
+import { Role } from '../../common/enums/role.enum';
 
 export async function seed(dataSource: DataSource): Promise<void> {
   console.log('🌱 Starting database seeding...');
@@ -53,6 +54,7 @@ export async function seed(dataSource: DataSource): Promise<void> {
   console.log('\n📊 Seeding summary:');
   console.log(`   Users: ${users.length}`);
   console.log(`   Locations: ${locations.length}`);
+  console.log(`   Users: ${users.length}`);
   console.log(`   Events: ${events.length}`);
   console.log(`   Seats: ${seats.length}`);
   console.log(`   Reservations: ${reservations.length}`);

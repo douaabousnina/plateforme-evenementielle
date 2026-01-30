@@ -18,6 +18,7 @@ export async function seedEvents(
   const organizerId = organizer?.id?.toString() || '1';
 
   const baseDate = new Date('2026-06-01T19:00:00');
+  const effectiveOrganizerId = organizerId || 'seed-organizer-id';
   const events = repo.create([
     {
       title: 'Summer Music Festival 2026',

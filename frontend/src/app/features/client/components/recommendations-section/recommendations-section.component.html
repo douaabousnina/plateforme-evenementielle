@@ -1,0 +1,18 @@
+<section>
+  <div class="flex items-center justify-between mb-4 px-1">
+    <h2 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Recommandé pour vous</h2>
+    <div class="flex gap-2">
+      <button type="button" class="h-8 w-8 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+      </button>
+      <button type="button" class="h-8 w-8 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+      </button>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    @for (rec of recommendations(); track rec.id) {
+      <app-recommendation-card [recommendation]="rec" />
+    }
+  </div>
+</section>
