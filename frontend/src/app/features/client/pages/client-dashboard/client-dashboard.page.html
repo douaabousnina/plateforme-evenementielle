@@ -11,12 +11,14 @@
     } @else {
       <app-welcome-section [data]="welcomeData()" />
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <div class="lg:col-span-8 flex flex-col gap-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <div class="lg:col-span-8 flex flex-col gap-10 min-w-0">
           <app-upcoming-events-carousel />
           <app-recommendations-section />
         </div>
-        <app-client-sidebar />
+        <aside class="lg:col-span-4 flex flex-col gap-6 lg:pl-2 lg:border-l lg:border-slate-200 dark:lg:border-slate-700">
+          <app-client-sidebar />
+        </aside>
       </div>
     }
   </main>

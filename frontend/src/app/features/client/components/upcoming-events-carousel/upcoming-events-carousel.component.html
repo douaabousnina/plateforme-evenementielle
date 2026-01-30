@@ -1,13 +1,16 @@
-<section>
-  <div class="flex items-center justify-between mb-4 px-1">
-    <h2 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Mes événements à venir</h2>
-    <a routerLink="/access/my-tickets" class="text-primary text-sm font-semibold hover:underline flex items-center gap-1">
+<section class="min-w-0">
+  <div class="flex items-center justify-between mb-4 px-0">
+    <h2 class="text-slate-900 dark:text-white text-xl sm:text-2xl font-bold tracking-tight">Mes événements à venir</h2>
+    <a routerLink="/access/my-tickets" class="text-primary text-sm font-semibold hover:underline flex items-center gap-1 shrink-0">
       Voir tout <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
     </a>
   </div>
-  <div class="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide snap-x">
-    @for (event of upcomingEvents(); track event.id) {
-      <app-event-card [event]="event" />
-    }
+  <div class="relative -mx-4 sm:-mx-6 lg:-mx-0 lg:mr-0">
+    <div class="flex gap-4 overflow-x-auto pb-4 pt-1 px-4 sm:px-6 lg:px-0 scrollbar-hide snap-x snap-mandatory [scrollbar-width:thin]">
+      @for (event of upcomingEvents(); track event.id) {
+        <app-event-card [event]="event" />
+      }
+    </div>
+    <div class="pointer-events-none absolute top-0 right-0 bottom-4 w-8 sm:w-12 lg:w-0 bg-gradient-to-l from-slate-50 to-transparent dark:from-slate-900 hidden sm:block lg:hidden" aria-hidden="true"></div>
   </div>
 </section>
