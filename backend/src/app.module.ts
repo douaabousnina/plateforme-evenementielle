@@ -6,6 +6,7 @@ import { ReservationsModule } from './reservations/reservations.module'
 import { PaymentsModule } from './payments/payments.module';
 import { EventsModule } from './events/events.module';
 import { AccessModule } from './access/access.module';
+import { ScanlogModule } from './scanlog/scanlog.module';
 
 
 @Module({
@@ -30,7 +31,8 @@ import { AccessModule } from './access/access.module';
     ReservationsModule,
     PaymentsModule,
     EventsModule,
-    AccessModule
+    AccessModule,
+    ScanlogModule,
   ],
 })
 export class AppModule { }

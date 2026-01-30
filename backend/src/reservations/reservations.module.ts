@@ -4,9 +4,14 @@ import { ReservationsService } from './reservations.service';
 import { ReservationsController } from './reservations.controller';
 import { Reservation } from './entities/reservation.entity';
 import { ReservedSeat } from './entities/reserved-seat.entity';
+import { Event } from '../events/entities/event.entity';
+import { AccessModule } from '../access/access.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reservation, ReservedSeat])],
+  imports: [
+    TypeOrmModule.forFeature([Reservation, ReservedSeat, Event]),
+    AccessModule,
+  ],
   controllers: [ReservationsController],
   providers: [ReservationsService],
   exports: [ReservationsService],

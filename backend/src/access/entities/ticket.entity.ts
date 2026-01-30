@@ -1,11 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-
-export enum TicketStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  SCANNED = 'scanned',
-  CANCELLED = 'cancelled',
-}
+import { TicketStatus } from '../enums/ticket-status.enum';
+// import { ManyToOne, OneToMany } from 'typeorm';
+// import { Reservation } from '../../reservations/entities/reservation.entity';
+// import { ScanLog } from '../../scanlog/entities/scan-log.entity';
 
 @Entity('tickets')
 export class Ticket {
@@ -32,6 +29,9 @@ export class Ticket {
 
   @Column()
   orderId: string;
+
+  // @ManyToOne(() => Reservation, (reservation) => reservation.tickets)
+  // reservation: Reservation;
 
   @Column('text')
   qrCode: string; // Base64 encoded QR code image
@@ -75,4 +75,7 @@ export class Ticket {
 
   @Column()
   expiresAt: Date;
+
+  // @OneToMany(() => ScanLog, (scanLog) => scanLog.ticket)
+  // scanLogs: ScanLog[];
 }
