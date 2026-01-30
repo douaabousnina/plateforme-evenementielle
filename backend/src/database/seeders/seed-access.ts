@@ -1,13 +1,13 @@
 import { DataSource } from 'typeorm';
 import { Ticket } from '../../access/entities/ticket.entity';
 import { TicketStatus } from '../../access/enums/ticket-status.enum';
-import { ScanLog, ScanStatus } from '../../access/entities/scan-log.entity';
+import { ScanLog } from '../../scanlog/entities/scan-log.entity';
 import { Reservation } from '../../reservations/entities/reservation.entity';
 import { Event } from '../../events/entities/event.entity';
 import { ReservationStatus } from '../../common/enums/reservation.enum';
 import * as QRCode from 'qrcode';
 import * as crypto from 'crypto';
-
+import { ScanStatus } from 'src/access/entities/scan-log.entity';
 export async function seedTickets(
   dataSource: DataSource,
   reservations: Reservation[],
