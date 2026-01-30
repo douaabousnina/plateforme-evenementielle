@@ -1,7 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { ReservationStatus } from 'src/common/enums/reservation.enum';
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
-import { ReservedSeat } from './reserved-seat.entity';
+import { Seat } from 'src/events/entities/seat.entity';
 // import { User } from '../../users/entities/user.entity';
 // import { Event } from '../../events/entities/event.entity';
 
@@ -24,10 +24,10 @@ export class Reservation extends BaseEntity {
     eventId: string;
 
 
-    @OneToMany(() => ReservedSeat, seat => seat.reservation, {
+    @OneToMany(() => Seat, seat => seat.reservation, {
         cascade: true,
     })
-    seats: ReservedSeat[];
+    seats: Seat[];
 
     @Column('decimal')
     totalPrice: number;

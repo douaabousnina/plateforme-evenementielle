@@ -1,6 +1,8 @@
-import { Controller, Post, Get, Body, Param, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { AccessService } from './access.service';
-import { ScanStatus } from './entities/scan-log.entity';
+import { GenerateQrDto } from './dto/generate-qr.dto';
+import { CheckInDto } from './dto/check-in.dto';
+import { CreateTicketDto } from './dto/create-ticket.dto';
 
 @Controller('access')
 export class AccessController {
@@ -10,13 +12,11 @@ export class AccessController {
    * Generate QR code for a ticket
    */
   @Post('generate-qr')
-  async generateQR(
-    @Body() body: { ticketId: string; eventId: string; userId: string },
-  ) {
+  async generateQR(@Body() dto: GenerateQrDto) {
     return this.accessService.generateQRCode(
-      body.ticketId,
-      body.eventId,
-      body.userId,
+      dto.ticketId,
+      dto.eventId,
+      dto.userId,
     );
   }
 
@@ -24,20 +24,12 @@ export class AccessController {
    * Validate and check-in a ticket
    */
   @Post('check-in')
-  async checkIn(
-    @Body()
-    body: {
-      qrData: string;
-      scannedBy: string;
-      location?: string;
-      deviceInfo?: string;
-    },
-  ) {
+  async checkIn(@Body() dto: CheckInDto) {
     return this.accessService.validateAndCheckIn(
-      body.qrData,
-      body.scannedBy,
-      body.location,
-      body.deviceInfo,
+      dto.qrData,
+      dto.scannedBy,
+      dto.location,
+      dto.deviceInfo,
     );
   }
 
@@ -103,17 +95,7 @@ export class AccessController {
    * Create ticket (mock endpoint for testing)
    */
   @Post('ticket')
-  async createTicket(
-    @Body()
-    body: {
-      eventId: string;
-      userId: string;
-      orderId: string;
-      seat?: string;
-      category: string;
-      price: number;
-    },
-  ) {
-    return this.accessService.createTicket(body);
+  async createTicket(@Body() dto: CreateTicketDto) {
+    return this.accessService.createTicket(dto);
   }
 }

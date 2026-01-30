@@ -1,107 +1,88 @@
 import {
   IsString,
-  IsNotEmpty,
   IsEnum,
   IsDate,
-  IsNumber,
+  IsBoolean,
   IsOptional,
-  IsArray,
-  Min,
-  Max,
-  ValidateNested,
+  IsUUID,
+  MaxLength,
   IsUrl,
+  IsArray,
+  ValidateNested,
+  IsObject,
+  IsNumber,
+  Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
-import { EventCategory } from '../enums/event-category.enum';
-import { SeatingPlanDto } from './seating-plan.dto';
+import { EventCategory, EventStatus, EventType } from 'src/common/enums/event.enum';
+import { CreateLocationDto } from './create-location.dto';
 
 export class CreateEventDto {
-  @ApiProperty({ example: 'Summer Music Festival 2025' })
+  // Basic Details
   @IsString()
-  @IsNotEmpty()
+  @MaxLength(255)
   title: string;
 
-  @ApiProperty({
-    example: 'The biggest summer music festival featuring top artists',
-  })
-  @IsString()
-  @IsNotEmpty()
-  description: string;
+  @IsEnum(EventType)
+  type: EventType;
 
-  @ApiProperty({ enum: EventCategory, example: EventCategory.CONCERT })
   @IsEnum(EventCategory)
   category: EventCategory;
 
-  @ApiProperty({ example: '2025-07-15T18:00:00Z' })
-  @Type(() => Date)
+  // Date & Time
   @IsDate()
-  date: Date;
+  @Type(() => Date)
+  startDate: Date;
 
-  @ApiProperty({ example: 'Central Park, New York' })
-  @IsString()
-  @IsNotEmpty()
-  location: string;
+  @IsDate()
+  @Type(() => Date)
+  startTime: Date;
 
-  @ApiProperty({ example: 'Madison Square Garden' })
-  @IsString()
+  @IsDate()
+  @Type(() => Date)
+  endDate: Date;
+
+  @IsDate()
+  @Type(() => Date)
+  endTime: Date;
+
+  // Location
   @IsOptional()
-  venueName?: string;
+  @ValidateNested()
+  @Type(() => CreateLocationDto)
+  location?: CreateLocationDto;
 
-  @ApiProperty({ example: 'New York' })
+  // Description
   @IsString()
-  @IsNotEmpty()
-  city: string;
+  description: string;
 
-  @ApiProperty({ example: 'USA' })
-  @IsString()
-  @IsNotEmpty()
-  country: string;
+  // Seats
+  @IsBoolean()
+  hasSeatingPlan: boolean;
 
-  @ApiProperty({ example: 1000 })
   @IsNumber()
   @Min(1)
   totalCapacity: number;
 
-  @ApiProperty({ example: 50.0 })
   @IsNumber()
   @Min(0)
-  basePrice: number;
+  availableCapacity: number;
 
-  @ApiProperty({ type: [String], required: false })
+  // Media
+  @IsOptional()
+  @IsUrl()
+  coverImage?: string;
+
   @IsOptional()
   @IsArray()
-  // @IsUrl({}, { each: true })
-  @IsString({ each: true })
-  images?: string[];
+  @IsUrl({}, { each: true })
+  gallery?: string[];
 
-  @ApiProperty({ required: false })
+  // Status
   @IsOptional()
-  // @IsUrl()
+  @IsEnum(EventStatus)
+  status?: EventStatus;
+
   @IsString()
-  bannerImage?: string;
-
-  @ApiProperty({ type: SeatingPlanDto })
-  @ValidateNested()
-  @Type(() => SeatingPlanDto)
-  seatingPlan: SeatingPlanDto;
-
-  @ApiProperty({ example: 5, required: false })
-  @IsOptional()
-  @IsNumber()
-  @Min(1)
-  @Max(20)
-  maxTicketsPerUser?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  salesStartDate?: Date;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  salesEndDate?: Date;
+  organizerId: string;
 }

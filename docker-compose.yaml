@@ -27,7 +27,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./backend:/app:cached
-    command: npm run start:dev
+    command: >
+      npm install lodash@4.17.21 --prefix /app &&
+      npm run start:dev
 
   frontend:
     build: ./frontend

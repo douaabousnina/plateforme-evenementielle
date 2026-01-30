@@ -1,0 +1,78 @@
+### Variables (replace with real IDs after seeding)
+@baseUrl = http://localhost:3000
+@eventId = {{eventId}}
+
+### ========== EVENTS ==========
+
+### Create event
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+  "title": "New Concert 2026",
+  "description": "An amazing night of music.",
+  "type": "concert",
+  "category": "concert",
+  "startDate": "2026-08-15T19:00:00.000Z",
+  "startTime": "2026-08-15T19:00:00.000Z",
+  "endDate": "2026-08-15T22:00:00.000Z",
+  "endTime": "2026-08-15T22:00:00.000Z",
+  "hasSeatingPlan": true,
+  "totalCapacity": 100,
+  "availableCapacity": 100,
+  "organizerId": "temp-organizer-id",
+  "location": {
+    "type": "physical",
+    "venueName": "Main Arena",
+    "address": "1 Street",
+    "city": "Paris",
+    "country": "France"
+  }
+}
+
+### Get all events (public, with filters)
+GET {{baseUrl}}/events?page=1&limit=10
+
+### Get all events – filter by category
+GET {{baseUrl}}/events?category=concert
+
+### Get all events – filter by city
+GET {{baseUrl}}/events?city=Paris
+
+### Get my events (organizer dashboard)
+GET {{baseUrl}}/events/my-events?page=1&limit=10
+
+### Get featured events
+GET {{baseUrl}}/events/featured?limit=6
+
+### Get single event by ID
+GET {{baseUrl}}/events/{{eventId}}
+
+### Get event seats (seat map for booking)
+GET {{baseUrl}}/events/{{eventId}}/seats
+
+### Get event seat statistics (organizer)
+GET {{baseUrl}}/events/{{eventId}}/seats/stats
+
+### Get event stats (organizer)
+GET {{baseUrl}}/events/{{eventId}}/stats
+
+### Update event
+PATCH {{baseUrl}}/events/{{eventId}}
+Content-Type: application/json
+
+{
+  "title": "Updated Concert Title",
+  "description": "Updated description."
+}
+
+### Update event status (draft | published | sold_out | cancelled | completed)
+PATCH {{baseUrl}}/events/{{eventId}}/status
+Content-Type: application/json
+
+{
+  "status": "published"
+}
+
+### Delete event (only if no reservations)
+DELETE {{baseUrl}}/events/{{eventId}}

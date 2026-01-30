@@ -5,13 +5,13 @@ import {
     ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, LessThan } from 'typeorm';
+import { Repository, LessThan } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Reservation } from './entities/reservation.entity';
-import { ReservedSeat } from './entities/reserved-seat.entity';
 import { LockSeatsDto } from './dto/lock-seats.dto';
-import { ReservationStatus, SeatStatus } from 'src/common/enums/reservation.enum';
-import { DEFAULT_SEAT_PRICE, RESERVATION_EXPIRATION_MINUTES } from 'src/common/constants/reservation.constants';
+import { ReservationStatus } from 'src/common/enums/reservation.enum';
+import { RESERVATION_EXPIRATION_MINUTES } from 'src/common/constants/reservation.constants';
+import { SeatsService } from '../events/services/seats.service';
 
 @Injectable()
 export class ReservationsService {
@@ -20,51 +20,50 @@ export class ReservationsService {
     constructor(
         @InjectRepository(Reservation)
         private readonly reservationRepo: Repository<Reservation>,
-
-        @InjectRepository(ReservedSeat)
-        private readonly seatRepo: Repository<ReservedSeat>,
+        private readonly seatsService: SeatsService,
     ) { }
 
     // LOCK SEATS & CREATE RESERVATION
     async lockSeats(userId: string, dto: LockSeatsDto) {
-        // check seat availability
-        const takenSeats = await this.seatRepo.find({
-            where: {
-                id: In(dto.seatIds),
-                status: In([SeatStatus.LOCKED, SeatStatus.SOLD]),
-            },
-        });
-
-        if (takenSeats.length > 0) {
+        // Check seat availability - this validates:
+        // 1. Event exists
+        // 2. Seats exist
+        // 3. Seats belong to the specified event
+        // 4. Seats are available (not locked/sold)
+        const availabilityCheck = await this.seatsService.checkSeatsAvailability(
+            dto.seatIds,
+            dto.eventId
+        );
+        
+        if (!availabilityCheck.allAvailable) {
             throw new ConflictException(
-                `Seats already taken: ${takenSeats.map(s => s.id).join(', ')}`
+                `Seats already taken: ${availabilityCheck.takenSeatIds.join(', ')}`
             );
         }
 
-        // create reservation
+        // Lock seats - this also:
+        // 1. Validates seats belong to the event
+        // 2. Updates event capacity
+        const seats = await this.seatsService.lockSeats(dto.seatIds, dto.eventId);
+        const totalPrice = seats.reduce((sum, s) => sum + Number(s.price), 0);
         const expiresAt = new Date(Date.now() + RESERVATION_EXPIRATION_MINUTES * 60 * 1000);
-        const totalPrice = dto.seatIds.length * DEFAULT_SEAT_PRICE;
-
-        const seats = await this.seatRepo.find({
-            where: {
-                id: In(dto.seatIds),
-            },
-        });
-
-        seats.forEach(seat => {
-            seat.status = SeatStatus.LOCKED;
-        });
 
         const reservation = this.reservationRepo.create({
             userId,
             eventId: dto.eventId,
-            seats,
             totalPrice,
             status: ReservationStatus.PENDING,
             expiresAt,
         });
+        const savedReservation = await this.reservationRepo.save(reservation);
 
-        return this.reservationRepo.save(reservation);
+        await this.seatsService.setReservationForSeats(
+            dto.seatIds,
+            dto.eventId,
+            savedReservation.id,
+        );
+
+        return this.findById(savedReservation.id);
     }
 
     // CONFIRM (after payment)
@@ -79,17 +78,17 @@ export class ReservationsService {
             throw new NotFoundException('Reserved seats not found');
         }
 
+        const seatIds = reservation.seats.map((s) => s.id);
+
         if (reservation.expiresAt < new Date()) {
             reservation.status = ReservationStatus.EXPIRED;
-            reservation.seats.forEach(s => (s.status = SeatStatus.AVAILABLE));
-            await this.seatRepo.save(reservation.seats);
+            await this.seatsService.releaseSeats(seatIds, reservation.eventId);
             await this.reservationRepo.save(reservation);
             throw new BadRequestException('Reservation expired');
         }
 
         reservation.status = ReservationStatus.CONFIRMED;
-        reservation.seats.forEach(s => (s.status = SeatStatus.SOLD));
-        await this.seatRepo.save(reservation.seats);
+        await this.seatsService.markSeatsAsSold(seatIds, reservation.eventId);
         return this.reservationRepo.save(reservation);
     }
 
@@ -106,8 +105,10 @@ export class ReservationsService {
         }
 
         reservation.status = ReservationStatus.CANCELLED;
-        reservation.seats.forEach(s => (s.status = SeatStatus.AVAILABLE));
-        await this.seatRepo.save(reservation.seats);
+        await this.seatsService.releaseSeats(
+            reservation.seats.map((s) => s.id),
+            reservation.eventId
+        );
         return this.reservationRepo.save(reservation);
     }
 
@@ -138,17 +139,20 @@ export class ReservationsService {
         this.isExpiringWorking = true;
 
         const expired = await this.reservationRepo.find({
-            where: { status: ReservationStatus.PENDING, expiresAt: LessThan(new Date()) },
+            where: { 
+                status: ReservationStatus.PENDING, 
+                expiresAt: LessThan(new Date()) 
+            },
             relations: ['seats'],
         });
 
         for (const reservation of expired) {
             reservation.status = ReservationStatus.EXPIRED;
-            reservation.seats.forEach(s => (s.status = SeatStatus.AVAILABLE));
+            const seatIds = reservation.seats.map((s) => s.id);
+            await this.seatsService.releaseSeats(seatIds, reservation.eventId);
         }
 
         if (expired.length > 0) {
-            await this.seatRepo.save(expired.flatMap(r => r.seats));
             await this.reservationRepo.save(expired);
         }
 
@@ -156,10 +160,8 @@ export class ReservationsService {
         return expired.length;
     }
 
+    // Get seats for an event
     async findSeatsByEventId(eventId: string) {
-        return this.seatRepo.find({
-            where: { eventId },
-            order: { section: 'ASC', row: 'ASC', number: 'ASC' },
-        });
+        return this.seatsService.findByEventId(eventId);
     }
 }
