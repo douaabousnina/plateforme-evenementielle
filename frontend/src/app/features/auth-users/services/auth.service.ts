@@ -104,7 +104,7 @@ export class AuthService {
     } else if (user?.role === 'ORGANIZER') {
       this.router.navigate(['/dashboard']);
     } else {
-      this.router.navigate(['/profile']);
+      this.router.navigate(['/client/home']);
     }
   }
 

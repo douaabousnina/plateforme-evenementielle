@@ -4,6 +4,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { ProfilePage } from './pages/profile-page/profile-page';
 
 export const authRoutes: Routes = [
+    {path: '' ,redirectTo: 'login', pathMatch: 'full'},
     {path: 'register' ,component: RegisterComponent},
     {path: 'login' ,component: LoginComponent},
     {path: 'profile' ,component: ProfilePage}

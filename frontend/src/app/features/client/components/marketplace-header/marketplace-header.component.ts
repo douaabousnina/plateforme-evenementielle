@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MarketplaceService } from '../../services/marketplace.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../auth-users/services/auth.service';
 
 export interface MarketplaceNavItem {
   label: string;
@@ -35,7 +35,7 @@ export class MarketplaceHeaderComponent {
   get navItems(): MarketplaceNavItem[] {
     return [
       { label: 'Découvrir', route: '/client/marketplace', active: true },
-      { label: 'Mes Billets', route: '/access/my-tickets' },
+      { label: 'Mes Billets', route: '/client/my-tickets' },
       { label: 'Favoris', route: '/client/favorites' },
     ];
   }

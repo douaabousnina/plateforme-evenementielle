@@ -9,9 +9,8 @@ import {
   QuickAction,
   NotificationItem,
 } from '../models/client-dashboard.model';
-import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
-
+import { AuthService } from '../../auth-users/services/auth.service';
 /** App display name for client area (configurable, not hardcoded in templates). */
 export const CLIENT_APP_NAME = 'EventMaster';
 
@@ -95,9 +94,9 @@ export class ClientDashboardService {
 
   private setStaticQuickActions(): void {
     this.quickActions.set([
-      { id: 'scan', icon: 'qr_code_scanner', label: 'Scanner QR', route: '/access/scanner' },
-      { id: 'tickets', icon: 'confirmation_number', label: 'Mes Billets', route: '/access/my-tickets' },
-      { id: 'explore', icon: 'explore', label: 'Explorer', route: '/' },
+      { id: 'scan', icon: 'qr_code_scanner', label: 'Scanner QR', route: '/client/scanner' },
+      { id: 'tickets', icon: 'confirmation_number', label: 'Mes Billets', route: '/client/my-tickets' },
+      { id: 'explore', icon: 'explore', label: 'Explorer', route: '/client/marketplace' },
       { id: 'wallet', icon: 'account_balance_wallet', label: 'Portefeuille', route: '/wallet' },
     ]);
   }
@@ -112,7 +111,7 @@ export class ClientDashboardService {
   }
 
   private fetchDashboardData(): Observable<ClientDashboardData> {
-    const userName = this.getUserDisplayName() || 'Utilisateur';
+    const userName = this.getUserDisplayName() || '';
     return this.api.get<unknown>('events/featured').pipe(
       map((response) => this.mapApiResponseToDashboard(response, userName)),
       catchError(() => of(this.getMockDashboardData()))

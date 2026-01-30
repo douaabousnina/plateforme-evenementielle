@@ -5,7 +5,7 @@ import { EventDetailPage } from './pages/event-detail/event-detail.page';
 
 export const clientRoutes: Routes = [
   {
-    path: 'dashboard',
+    path: 'home',
     component: ClientDashboardPage,
   },
   {
@@ -19,6 +19,6 @@ export const clientRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'dashboard',
+    redirectTo: 'home',
   },
 ];

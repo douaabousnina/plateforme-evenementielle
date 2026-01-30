@@ -13,7 +13,9 @@ export const routes: Routes = [
     },
   ...reservationRoutes,
   ...organizerRoutes,
-  ...accessRoutes,
   ...authRoutes,
-  { path: 'client', children: clientRoutes },
+  {
+    path: 'client',
+    children: [...clientRoutes, ...accessRoutes]
+  },
 ];
