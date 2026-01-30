@@ -8,6 +8,7 @@ import { SeatCartSummaryComponent } from '../../components/seat-cart-summary/sea
 import { SeatService } from '../../services/seat.service';
 import { ReservationService } from '../../services/reservation.service';
 import { EventService } from '../../services/event.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Seat } from '../../models/reservation.model';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
 import { BreadcrumbComponent } from '../../../../shared/components/breadcrumb/breadcrumb.component';
@@ -34,6 +35,9 @@ export class SeatSelectionPage {
   private seatService = inject(SeatService);
   private reservationService = inject(ReservationService);
   private cartService = inject(CartService);
+  private authService = inject(AuthService);
+
+  isAuthenticated = () => this.authService.isAdmin() || this.authService.isOrganizer() || !!this.authService.getCurrentUser();
 
   breadcrumbSteps = signal(createBreadcrumbSteps('seatSelection'));
 

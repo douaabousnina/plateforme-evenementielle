@@ -158,26 +158,39 @@ export class ReservationsService {
         if (this.isExpiringWorking) return 0;
         this.isExpiringWorking = true;
 
-        const expired = await this.reservationRepo.find({
-            where: { 
-                status: ReservationStatus.PENDING, 
-                expiresAt: LessThan(new Date()) 
-            },
-            relations: ['seats'],
-        });
+        try {
+            const expired = await this.reservationRepo.find({
+                where: { 
+                    status: ReservationStatus.PENDING, 
+                    expiresAt: LessThan(new Date()) 
+                },
+                relations: ['seats'],
+            });
 
-        for (const reservation of expired) {
-            reservation.status = ReservationStatus.EXPIRED;
-            const seatIds = reservation.seats.map((s) => s.id);
-            await this.seatsService.releaseSeats(seatIds, reservation.eventId);
-        }
+            if (expired.length === 0) {
+                return 0;
+            }
 
-        if (expired.length > 0) {
+            // First, save the expired status to reservations
+            for (const reservation of expired) {
+                reservation.status = ReservationStatus.EXPIRED;
+            }
             await this.reservationRepo.save(expired);
-        }
 
-        this.isExpiringWorking = false;
-        return expired.length;
+            // Then, release seats for all expired reservations
+            for (const reservation of expired) {
+                if (reservation.seats?.length > 0) {
+                    const seatIds = reservation.seats.map((s) => s.id);
+                    await this.seatsService.releaseSeats(seatIds, reservation.eventId);
+                }
+            }
+
+            return expired.length;
+        } catch (error) {
+            return 0;
+        } finally {
+            this.isExpiringWorking = false;
+        }
     }
 
     // Get seats for an event

@@ -24,12 +24,14 @@
     <h3 class="event-name">{{ ticket().eventName }}</h3>
     
     <!-- Date & Time -->
+    @if (ticket().eventDate) {
     <div class="event-info">
       <span class="material-symbols-outlined info-icon">schedule</span>
       <span class="info-text-bold">{{ formatDate(ticket().eventDate) }}</span>
       <span class="info-separator">•</span>
       <span>{{ formatTime(ticket().eventDate) }}</span>
     </div>
+    }
 
     <!-- Location -->
     <div class="event-info location">

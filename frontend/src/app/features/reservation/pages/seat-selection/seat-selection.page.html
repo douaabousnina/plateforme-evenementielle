@@ -25,15 +25,15 @@
                 <div class="lg:col-span-2 flex flex-col gap-2">
                     <h1
                         class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
-                        {{ currentEvent()!.name }}
+                        {{ currentEvent()!.title }}
                     </h1>
                     <div
                         class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-base md:text-lg font-normal">
                         <span class="material-symbols-outlined text-xl">location_on</span>
-                        <span>{{ currentEvent()!.location }}</span>
+                        <span>{{ currentEvent()!.location?.venueName }}{{ currentEvent()!.location?.city ? ', ' + currentEvent()!.location?.city : '' }}</span>
                         <span class="w-1 h-1 rounded-full bg-slate-400"></span>
                         <span class="material-symbols-outlined text-xl">calendar_month</span>
-                        <span>{{ currentEvent()!.date | date: 'EEE d MMM' }}</span>
+                        <span>{{ currentEvent()!.startDate | date: 'EEE d MMM' }}</span>
                     </div>
                 </div>
                 }

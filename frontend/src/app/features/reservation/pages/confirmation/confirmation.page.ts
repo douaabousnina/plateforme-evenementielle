@@ -9,6 +9,8 @@ import { OrderDetailsComponent } from '../../components/order-details/order-deta
 import { BreadcrumbComponent } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { createBreadcrumbSteps } from '../../../../core/config/breadcrumb.config';
 import { EventService } from '../../services/event.service';
+import { AccessService } from '../../../access/services/access.service';
+import { Ticket } from '../../../access/models/access.model';
 
 @Component({
   selector: 'app-confirmation-page',
@@ -27,12 +29,14 @@ export class ConfirmationPage {
   private reservationService = inject(ReservationService);
   private paymentService = inject(PaymentService);
   private eventService = inject(EventService);
+  private accessService = inject(AccessService);
 
   breadcrumbSteps = signal(createBreadcrumbSteps('confirmation'));
 
   reservation = signal<any>(null);
   payment = signal<any>(null);
   event = signal<any>(null);
+  tickets = signal<Ticket[]>([]);
 
   confirmationCode = signal<string>('');
   qrCode = signal<string>('');
@@ -40,13 +44,15 @@ export class ConfirmationPage {
   loading = computed(() =>
     this.reservationService.loading() ||
     this.paymentService.loading() ||
-    this.eventService.loading()
+    this.eventService.loading() ||
+    this.accessService.loading()
   );
 
   errorMessage = computed(() =>
     this.reservationService.error() ||
     this.paymentService.error() ||
-    this.eventService.error()
+    this.eventService.error() ||
+    this.accessService.error()
   );
 
   order = computed(() => {
@@ -71,7 +77,12 @@ export class ConfirmationPage {
     const serviceFee = subtotal * 0.1;
     const total = subtotal + serviceFee;
 
-    return {
+      // Get location display string
+      const locationDisplay = evt.location 
+        ? `${evt.location.venueName || ''}${evt.location.city ? ', ' + evt.location.city : ''}`
+        : '';
+
+      return {
       id: res.id,
       items: items,
       subtotal: subtotal,
@@ -85,12 +96,12 @@ export class ConfirmationPage {
       confirmationCode: '',
       qrCode: '',
       event: {
-        imageUrl: evt.imageUrl || evt.image || '/assets/default-event.jpg',
-        title: evt.name || evt.title,
-        type: evt.type || evt.category,
-        date: evt.date,
-        time: evt.time || evt.startTime,
-        venue: evt.location || evt.venue
+        imageUrl: evt.coverImage || '/assets/default-event.jpg',
+        title: evt.title,
+        type: evt.type,
+        date: evt.startDate,
+        time: evt.startTime,
+        venue: locationDisplay
       }
     };
   });
@@ -121,7 +132,6 @@ export class ConfirmationPage {
           error: (error) => console.error('Error loading payment:', error)
         });
 
-
         // 3. Fetch event using eventId from reservation
         if (reservation.eventId) {
           this.eventService.loadEventById(reservation.eventId).subscribe({
@@ -129,6 +139,18 @@ export class ConfirmationPage {
             error: (error) => console.error('Error loading event:', error)
           });
         }
+
+        // 4. Fetch tickets for this reservation
+        this.accessService.getTicketsByReservation(reservationId).subscribe({
+          next: (tickets) => {
+            this.tickets.set(tickets);
+            // Set the first ticket's QR code as the main QR code for display
+            if (tickets.length > 0 && tickets[0].qrCode) {
+              this.qrCode.set(tickets[0].qrCode);
+            }
+          },
+          error: (error) => console.error('Error loading tickets:', error)
+        });
       },
       error: (error) => {
         console.error('Error loading reservation:', error);

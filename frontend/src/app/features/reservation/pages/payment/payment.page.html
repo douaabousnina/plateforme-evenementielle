@@ -5,7 +5,16 @@
     <main class="flex-grow w-full max-w-[1200px] mx-auto px-4 md:px-6 py-8">
         <app-breadcrumb [steps]="breadcrumbSteps()" />
 
-        <h1 class="text-[#0d101c] dark:text-white text-3xl font-bold leading-tight mb-8">
+            <!-- Error Alert -->
+            @if (errorMessage()) {
+            <div
+                class="flex items-center gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 mb-6">
+                <span class="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
+                <span class="text-red-700 dark:text-red-300 text-sm">{{ errorMessage() }}</span>
+            </div>
+            }
+
+            <h1 class="text-[#0d101c] dark:text-white text-3xl font-bold leading-tight mb-8">
             Finaliser votre commande
         </h1>
 

@@ -35,11 +35,11 @@ export class MyTicketsComponent {
     switch (tab) {
       case 'upcoming':
         return allTickets.filter(
-          ticket => ticket.eventDate >= now && ticket.status !== TicketStatus.CANCELLED
+          ticket => ticket.eventDate && ticket.eventDate >= now && ticket.status !== TicketStatus.CANCELLED
         );
       case 'past':
         return allTickets.filter(
-          ticket => ticket.eventDate < now && ticket.status !== TicketStatus.CANCELLED
+          ticket => ticket.eventDate && ticket.eventDate < now && ticket.status !== TicketStatus.CANCELLED
         );
       case 'cancelled':
         return allTickets.filter(
@@ -56,10 +56,10 @@ export class MyTicketsComponent {
 
     return {
       upcoming: allTickets.filter(
-        ticket => ticket.eventDate >= now && ticket.status !== TicketStatus.CANCELLED
+        ticket => ticket.eventDate && ticket.eventDate >= now && ticket.status !== TicketStatus.CANCELLED
       ).length,
       past: allTickets.filter(
-        ticket => ticket.eventDate < now && ticket.status !== TicketStatus.CANCELLED
+        ticket => ticket.eventDate && ticket.eventDate < now && ticket.status !== TicketStatus.CANCELLED
       ).length,
       cancelled: allTickets.filter(
         ticket => ticket.status === TicketStatus.CANCELLED
@@ -79,7 +79,7 @@ export class MyTicketsComponent {
       next: (tickets) => {
         const mappedTickets = tickets.map(ticket => ({
           ...ticket,
-          eventDate: new Date(ticket.eventDate),
+          eventDate: ticket.eventDate ? new Date(ticket.eventDate) : undefined,
           createdAt: new Date(ticket.createdAt),
           expiresAt: new Date(ticket.expiresAt),
           scannedAt: ticket.scannedAt ? new Date(ticket.scannedAt) : undefined

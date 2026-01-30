@@ -21,7 +21,8 @@ export class ApiService {
     return observable.pipe(
       finalize(() => this.loading.set(false)),
       catchError(err => {
-        this.error.set('API request failed');
+        const errorMessage = err.error?.message || err.message || 'API request failed';
+        this.error.set(errorMessage);
         return throwError(() => err);
       })
     );

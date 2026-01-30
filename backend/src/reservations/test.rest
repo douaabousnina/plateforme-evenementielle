@@ -3,27 +3,33 @@
 @eventId = {{eventId}}
 @seatIds = {{seatIds}}
 @reservationId = {{reservationId}}
+@token = {{token}}
 
 ### ========== RESERVATIONS ==========
 
-### Lock seats (creates pending reservation – use eventId and available seat IDs from GET events/:id/seats)
+### Lock seats (creates pending reservation – requires CLIENT role)
+# Use eventId and available seat IDs from GET events/:id/seats
 POST {{baseUrl}}/reservations/lock
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "eventId": "{{eventId}}",
   "seatIds": ["{{seatIds}}"]
 }
 
-### Get my reservations
+### Get my reservations (requires CLIENT role)
 GET {{baseUrl}}/reservations/my-reservations
+Authorization: Bearer {{token}}
 
-### Get reservation by ID
+### Get reservation by ID (requires CLIENT or ORGANIZER role)
 GET {{baseUrl}}/reservations/{{reservationId}}
+Authorization: Bearer {{token}}
 
-### Confirm reservation (after payment – use reservation ID from lock response)
+### Confirm reservation (after payment – requires CLIENT role)
 PATCH {{baseUrl}}/reservations/{{reservationId}}/confirm
+Authorization: Bearer {{token}}
 
-### Cancel reservation (only PENDING)
+### Cancel reservation (only PENDING – requires CLIENT role)
 PATCH {{baseUrl}}/reservations/{{reservationId}}/cancel
-
+Authorization: Bearer {{token}}

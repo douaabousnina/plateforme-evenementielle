@@ -2,12 +2,14 @@
 @baseUrl = http://localhost:3000
 @reservationId = {{reservationId}}
 @paymentId = {{paymentId}}
+@token = {{token}}
 
 ### ========== PAYMENTS ==========
 
-### Create payment (use a PENDING reservation ID from reservations)
+### Create payment (requires CLIENT role - use a PENDING reservation ID)
 POST {{baseUrl}}/payments
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "reservationId": "{{reservationId}}",
@@ -17,9 +19,10 @@ Content-Type: application/json
   "cvc": "123"
 }
 
-### Refund a payment
+### Refund a payment (requires ORGANIZER role)
 POST {{baseUrl}}/payments/refund
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "paymentId": "{{paymentId}}",
@@ -27,11 +30,14 @@ Content-Type: application/json
   "reason": "Cancelled event"
 }
 
-### Get my payments
+### Get my payments (requires CLIENT role)
 GET {{baseUrl}}/payments
+Authorization: Bearer {{token}}
 
-### Get payment by ID
+### Get payment by ID (requires CLIENT, ORGANIZER, or ADMIN role)
 GET {{baseUrl}}/payments/{{paymentId}}
+Authorization: Bearer {{token}}
 
-### Get successful payment by reservation ID
+### Get successful payment by reservation ID (requires CLIENT, ORGANIZER, or ADMIN role)
 GET {{baseUrl}}/payments/reservation/{{reservationId}}/successful
+Authorization: Bearer {{token}}

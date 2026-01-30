@@ -17,7 +17,8 @@ export class TicketCardComponent {
     this.qrClick.emit(this.ticket());
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | undefined): string {
+    if (!date) return 'Date non disponible';
     return new Date(date).toLocaleDateString('fr-FR', {
       weekday: 'short',
       day: 'numeric',
@@ -26,7 +27,8 @@ export class TicketCardComponent {
     });
   }
 
-  formatTime(date: Date): string {
+  formatTime(date: Date | undefined): string {
+    if (!date) return '';
     return new Date(date).toLocaleTimeString('fr-FR', {
       hour: '2-digit',
       minute: '2-digit'

@@ -22,8 +22,9 @@ export interface Payment {
     reservationId: string;
     amount: number;
     method: PaymentMethod;
-    cardLast4: string;
+    cardLast4?: string;
     status: string;
+    refundReason?: string;
 
     createdAt?: Date;
     updatedAt?: Date;

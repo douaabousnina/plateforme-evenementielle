@@ -1,12 +1,15 @@
 ### Variables (replace with real IDs after seeding)
 @baseUrl = http://localhost:3000
 @eventId = {{eventId}}
+@token = {{token}}
 
 ### ========== EVENTS ==========
 
-### Create event
+### Create event (requires ORGANIZER role - token from login)
+# Note: organizerId is taken from JWT token, not from body
 POST {{baseUrl}}/events
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "title": "New Concert 2026",
@@ -20,7 +23,6 @@ Content-Type: application/json
   "hasSeatingPlan": true,
   "totalCapacity": 100,
   "availableCapacity": 100,
-  "organizerId": "temp-organizer-id",
   "location": {
     "type": "physical",
     "venueName": "Main Arena",
@@ -39,8 +41,9 @@ GET {{baseUrl}}/events?category=concert
 ### Get all events – filter by city
 GET {{baseUrl}}/events?city=Paris
 
-### Get my events (organizer dashboard)
+### Get my events (organizer dashboard - requires ORGANIZER role)
 GET {{baseUrl}}/events/my-events?page=1&limit=10
+Authorization: Bearer {{token}}
 
 ### Get featured events
 GET {{baseUrl}}/events/featured?limit=6
@@ -51,15 +54,18 @@ GET {{baseUrl}}/events/{{eventId}}
 ### Get event seats (seat map for booking)
 GET {{baseUrl}}/events/{{eventId}}/seats
 
-### Get event seat statistics (organizer)
+### Get event seat statistics (organizer - requires ORGANIZER role)
 GET {{baseUrl}}/events/{{eventId}}/seats/stats
+Authorization: Bearer {{token}}
 
-### Get event stats (organizer)
+### Get event stats (organizer - requires ORGANIZER role)
 GET {{baseUrl}}/events/{{eventId}}/stats
+Authorization: Bearer {{token}}
 
-### Update event
+### Update event (requires ORGANIZER role)
 PATCH {{baseUrl}}/events/{{eventId}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "title": "Updated Concert Title",
@@ -69,10 +75,12 @@ Content-Type: application/json
 ### Update event status (draft | published | sold_out | cancelled | completed)
 PATCH {{baseUrl}}/events/{{eventId}}/status
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "status": "published"
 }
 
-### Delete event (only if no reservations)
+### Delete event (only if no reservations - requires ORGANIZER role)
 DELETE {{baseUrl}}/events/{{eventId}}
+Authorization: Bearer {{token}}

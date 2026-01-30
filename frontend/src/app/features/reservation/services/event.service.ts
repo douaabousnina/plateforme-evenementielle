@@ -1,78 +1,132 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Event } from '../models/event.model';
 
+export interface EventFilters {
+  type?: string;
+  category?: string;
+  city?: string;
+  status?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}
 
-//! temporaire 
+export interface EventStats {
+  totalSeats: number;
+  availableSeats: number;
+  soldSeats: number;
+  reservedSeats: number;
+  revenue: number;
+  occupancyRate: number;
+}
+
+export interface SeatStats {
+  totalSeats: number;
+  available: number;
+  locked: number;
+  sold: number;
+  byCategory: Record<string, { total: number; available: number; sold: number }>;
+  bySection: Record<string, { total: number; available: number; sold: number }>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EventService {
-    currentEvent = signal<Event | null>(null);
-    loading = signal<boolean>(false);
-    error = signal<string | null>(null);
+    private apiService = inject(ApiService);
+    private authService = inject(AuthService);
 
-    private readonly mockEvents: Event[] = [
-        {
-            id: '550e8400-e29b-41d4-a716-446655440001',
-            name: 'Summer Music Festival 2026',
-            location: 'Central Park Arena',
-            date: new Date('2026-06-15'),
-            totalSeats: 100,
-            imageUrl: 'https://images.unsplash.com/photo-1459749411177-042180ce6a9c?q=80&w=2070&auto=format&fit=crop'
-        },
-        {
-            id: '550e8400-e29b-41d4-a716-446655440002',
-            name: 'Tech Conference 2026',
-            location: 'Convention Center',
-            date: new Date('2026-03-20'),
-            totalSeats: 200,
-            imageUrl: 'https://images.unsplash.com/photo-1540575861501-7ad060e39fe1?q=80&w=2070&auto=format&fit=crop'
-        },
-        {
-            id: '550e8400-e29b-41d4-a716-446655440003',
-            name: 'Jazz Night',
-            location: 'Blue Note Club',
-            date: new Date('2026-04-10'),
-            totalSeats: 50,
-            imageUrl: 'https://images.unsplash.com/photo-1511192303578-4a7b974a429b?q=80&w=2070&auto=format&fit=crop'
-        },
-        {
-            id: '550e8400-e29b-41d4-a716-446655440004',
-            name: 'Comedy Show Spectacular',
-            location: 'Laugh Factory',
-            date: new Date('2026-05-05'),
-            totalSeats: 75,
-            imageUrl: 'https://images.unsplash.com/photo-1527224857830-43a7acc85260?q=80&w=2070&auto=format&fit=crop'
-        },
-        {
-            id: '550e8400-e29b-41d4-a716-446655440005',
-            name: 'Classical Orchestra Performance',
-            location: 'Symphony Hall',
-            date: new Date('2026-07-22'),
-            totalSeats: 150,
-            imageUrl: 'https://images.unsplash.com/photo-1465847899034-d174fc546f00?q=80&w=2070&auto=format&fit=crop'
-        }
-    ];
+    currentEvent = signal<Event | null>(null);
+    events = signal<Event[]>([]);
+    loading = this.apiService.loading;
+    error = this.apiService.error;
+
+    isOrganizer = () => this.authService.isOrganizer();
+    isAdmin = () => this.authService.isAdmin();
+
+    // Public endpoints
+    loadEvents(filters?: EventFilters): Observable<Event[]> {
+        const params = new URLSearchParams();
+        if (filters?.type) params.append('type', filters.type);
+        if (filters?.category) params.append('category', filters.category);
+        if (filters?.city) params.append('city', filters.city);
+        if (filters?.status) params.append('status', filters.status);
+        if (filters?.search) params.append('search', filters.search);
+        if (filters?.limit) params.append('limit', filters.limit.toString());
+        if (filters?.offset) params.append('offset', filters.offset.toString());
+
+        const queryString = params.toString();
+        const url = `events${queryString ? '?' + queryString : ''}`;
+
+        return this.apiService.get<Event[]>(url).pipe(
+            tap(events => this.events.set(events))
+        );
+    }
+
+    loadFeaturedEvents(limit: number = 6): Observable<Event[]> {
+        return this.apiService.get<Event[]>(`events/featured?limit=${limit}`).pipe(
+            tap(events => this.events.set(events))
+        );
+    }
 
     loadEventById(id: string): Observable<Event> {
-        this.loading.set(true);
-        this.error.set(null);
+        return this.apiService.get<Event>(`events/${id}`).pipe(
+            tap(event => this.currentEvent.set(event))
+        );
+    }
 
-        const event = this.mockEvents.find(e => e.id === id);
+    // Organizer endpoints
+    loadMyEvents(filters?: EventFilters): Observable<Event[]> {
+        const params = new URLSearchParams();
+        if (filters?.status) params.append('status', filters.status);
+        if (filters?.limit) params.append('limit', filters.limit.toString());
+        if (filters?.offset) params.append('offset', filters.offset.toString());
 
-        return new Observable<Event>(subscriber => {
-            setTimeout(() => {
-                if (event) {
+        const queryString = params.toString();
+        const url = `events/my-events${queryString ? '?' + queryString : ''}`;
+
+        return this.apiService.get<Event[]>(url).pipe(
+            tap(events => this.events.set(events))
+        );
+    }
+
+    createEvent(eventData: Partial<Event>): Observable<Event> {
+        return this.apiService.post<Event>('events', eventData);
+    }
+
+    updateEvent(id: string, eventData: Partial<Event>): Observable<Event> {
+        return this.apiService.patch<Event>(`events/${id}`, eventData).pipe(
+            tap(event => {
+                if (this.currentEvent()?.id === id) {
                     this.currentEvent.set(event);
-                    subscriber.next(event);
-                } else {
-                    this.error.set('Event not found');
-                    subscriber.error('Event not found');
                 }
-                this.loading.set(false);
-                subscriber.complete();
-            }, 100);
-        });
+            })
+        );
+    }
+
+    updateEventStatus(id: string, status: string): Observable<Event> {
+        return this.apiService.patch<Event>(`events/${id}/status`, { status }).pipe(
+            tap(event => {
+                if (this.currentEvent()?.id === id) {
+                    this.currentEvent.set(event);
+                }
+            })
+        );
+    }
+
+    deleteEvent(id: string): Observable<void> {
+        return this.apiService.delete<void>(`events/${id}`);
+    }
+
+    // Statistics endpoints
+    getEventStats(id: string): Observable<EventStats> {
+        return this.apiService.get<EventStats>(`events/${id}/stats`);
+    }
+
+    getSeatStats(id: string): Observable<SeatStats> {
+        return this.apiService.get<SeatStats>(`events/${id}/seats/stats`);
     }
 
     setCurrentEvent(event: Event): void {
@@ -85,5 +139,9 @@ export class EventService {
 
     clearCurrentEvent(): void {
         this.currentEvent.set(null);
+    }
+
+    clearEvents(): void {
+        this.events.set([]);
     }
 }

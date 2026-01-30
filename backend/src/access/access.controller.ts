@@ -39,5 +39,12 @@ export class AccessController {
   async getUserTickets(@Param('userId') userId: string) {
     return this.accessService.getUserTickets(userId);
   }
+
+  @Get('tickets/reservation/:reservationId')
+  @ApiOperation({ summary: 'Get all tickets for a reservation' })
+  @ApiResponse({ status: 200, description: 'Reservation tickets retrieved successfully' })
+  async getTicketsByReservation(@Param('reservationId') reservationId: string) {
+    return this.accessService.getTicketsByReservation(reservationId);
+  }
 }
 

@@ -3,59 +3,56 @@
 @ticketId = {{ticketId}}
 @eventId = {{eventId}}
 @userId = {{userId}}
+@reservationId = {{reservationId}}
+@scanLogId = {{scanLogId}}
+@token = {{token}}
 
 ### ========== ACCESS – TICKETS & CHECK-IN ==========
-
-### Create ticket (mock endpoint for testing)
-POST {{baseUrl}}/access/ticket
-Content-Type: application/json
-
-{
-  "eventId": "{{eventId}}",
-  "userId": "650e8400-e29b-41d4-a716-446655440001",
-  "orderId": "00000000-0000-0000-0000-000000000001",
-  "category": "Standard",
-  "price": 95
-}
 
 ### Generate QR code for a ticket
 POST {{baseUrl}}/access/generate-qr
 Content-Type: application/json
 
 {
-  "ticketId": "{{ticketId}}",
-  "eventId": "{{eventId}}",
-  "userId": "{{userId}}"
+  "ticketId": "{{ticketId}}"
 }
 
 ### Refresh QR code (new token)
 POST {{baseUrl}}/access/refresh-qr/{{ticketId}}
 
-### Get ticket by ID
-GET {{baseUrl}}/access/ticket/{{ticketId}}
-
 ### Get tickets by user
-GET {{baseUrl}}/access/tickets/user/650e8400-e29b-41d4-a716-446655440001
+GET {{baseUrl}}/access/tickets/user/{{userId}}
 
-### Check-in (validate and scan ticket) – body is QR payload as string
+### Get tickets by reservation (new endpoint)
+GET {{baseUrl}}/access/tickets/reservation/{{reservationId}}
+
+### Check-in (validate and scan ticket) – qrCode is the QR payload string
 POST {{baseUrl}}/access/check-in
 Content-Type: application/json
 
 {
-  "qrData": "{\"ticketId\":\"{{ticketId}}\",\"eventId\":\"{{eventId}}\",\"userId\":\"{{userId}}\",\"token\":\"...\",\"timestamp\":1234567890}",
+  "qrCode": "{\"ticketId\":\"{{ticketId}}\",\"eventId\":\"{{eventId}}\",\"userId\":\"{{userId}}\",\"token\":\"...\",\"timestamp\":1234567890}",
   "scannedBy": "controller-user-id",
   "location": "Main entrance",
   "deviceInfo": "Scanner 1"
 }
 
-### Get scan history for an event
-GET {{baseUrl}}/access/scan-history/event/{{eventId}}
-
-### Get scan history for a controller
-GET {{baseUrl}}/access/scan-history/controller/seed-controller-id
-
-### Get all scan history
-GET {{baseUrl}}/access/scan-history
+### ========== SCANLOG – SCAN HISTORY & STATS ==========
 
 ### Get scan statistics for all events
-GET {{baseUrl}}/access/stats
+GET {{baseUrl}}/scanlog/stats
+
+### Get scan logs for a specific ticket
+GET {{baseUrl}}/scanlog/ticket/{{ticketId}}
+
+### Get scan logs for a specific event
+GET {{baseUrl}}/scanlog/event/{{eventId}}
+
+### Get scan logs for a specific scanner/controller
+GET {{baseUrl}}/scanlog/scanner/controller-user-id
+
+### Get a specific scan log by ID
+GET {{baseUrl}}/scanlog/{{scanLogId}}
+
+### Get all scan logs with optional filters
+GET {{baseUrl}}/scanlog

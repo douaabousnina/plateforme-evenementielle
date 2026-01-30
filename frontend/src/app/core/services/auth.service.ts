@@ -1,27 +1,60 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { ApiService } from './api.service';
+import { tap } from 'rxjs/operators';
 
 export enum UserRole {
-  CLIENT = 'client',
-  ORGANIZER = 'organizer',
-  CONTROLLER = 'controller'
+  CLIENT = 'CLIENT',
+  ORGANIZER = 'ORGANIZER',
+  ADMIN = 'ADMIN'
 }
 
 export interface User {
   id: string;
-  name: string;
-  role: UserRole;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email: string;
+  role: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // Mock current user - in production, this would come from backend/token
-  private currentUser = signal<User | null>({
-    id: 'user-123',
-    name: 'John Doe',
-    role: UserRole.CLIENT // Change to ORGANIZER to test organizer features
-  });
+  private apiService = inject(ApiService);
+
+  private currentUser = signal<User | null>(null);
+
+  constructor() {
+    this.loadCurrentUser();
+  }
+
+  private loadCurrentUser(): void {
+    this.apiService.get<User>('users/me').pipe(
+      tap(user => {
+        if (user) {
+          this.currentUser.set({
+            id: user.id?.toString() || '',
+            firstName: user.name || user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            role: this.mapRole(user.role)
+          });
+        }
+      })
+    ).subscribe({
+      error: () => {
+        // User not authenticated, keep currentUser as null
+        console.log('User not authenticated');
+      }
+    });
+  }
+
+  private mapRole(role: string | UserRole): UserRole {
+    if (role === 'ORGANIZER') return UserRole.ORGANIZER;
+    if (role === 'ADMIN') return UserRole.ADMIN;
+    return UserRole.CLIENT;
+  }
 
   getCurrentUser() {
     return this.currentUser();
@@ -31,19 +64,17 @@ export class AuthService {
     return this.currentUser()?.role === UserRole.ORGANIZER;
   }
 
-  isController(): boolean {
-    return this.currentUser()?.role === UserRole.CONTROLLER;
+
+  isAdmin(): boolean {
+    return this.currentUser()?.role === UserRole.ADMIN;
   }
 
   hasRole(role: UserRole): boolean {
     return this.currentUser()?.role === role;
   }
 
-  // Mock login - in production, this would authenticate with backend
-  setUserRole(role: UserRole) {
-    const user = this.currentUser();
-    if (user) {
-      this.currentUser.set({ ...user, role });
-    }
+  // For testing purposes - set mock user
+  setMockUser(user: User) {
+    this.currentUser.set(user);
   }
 }

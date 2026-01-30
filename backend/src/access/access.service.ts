@@ -5,13 +5,18 @@ import { Ticket } from './entities/ticket.entity';
 import { TicketStatus } from './enums/ticket-status.enum';
 import { CheckInDto } from './dto/check-in.dto';
 import { CheckInResponseDto } from './dto/check-in-response.dto';
-import { ScanStatus } from '../scanlog/enums/scan-status.enum';
-import { ScanLog } from '../scanlog/entities/scan-log.entity';
+import { ScanStatus } from './entities/scan-log.entity';
+import { ScanLog } from './entities/scan-log.entity';
 import * as QRCode from 'qrcode';
 import * as crypto from 'crypto';
+import { Reservation } from '../reservations/entities/reservation.entity';
+import { Event } from '../events/entities/event.entity';
 
 @Injectable()
 export class AccessService {
+  // QR code valid for 24 hours (increased from 5 minutes for practical use)
+  private readonly QR_CODE_VALIDITY_MS = 24 * 60 * 60 * 1000;
+
   constructor(
     @InjectRepository(Ticket)
     private ticketRepository: Repository<Ticket>,
@@ -151,9 +156,9 @@ export class AccessService {
         };
       }
 
-      // Check timestamp (QR valid for 5 minutes)
+      // Check timestamp (QR valid for 24 hours)
       const now = Date.now();
-      if (now - timestamp > 5 * 60 * 1000) {
+      if (now - timestamp > this.QR_CODE_VALIDITY_MS) {
         // Log expired QR scan attempt
         await this.scanLogRepository.save({
           ticketId,
@@ -269,9 +274,20 @@ export class AccessService {
   }
 
   /**
+   * Get all tickets for a specific reservation
+   */
+  async getTicketsByReservation(reservationId: string) {
+    const tickets = await this.ticketRepository.find({
+      where: { reservationId },
+      order: { createdAt: 'ASC' },
+    });
+    return tickets;
+  }
+
+  /**
    * Generate tickets for a confirmed reservation
    */
-  async generateTicketsForReservation(reservation: any, event: any): Promise<Ticket[]> {
+  async generateTicketsForReservation(reservation: Reservation, event: Event): Promise<Ticket[]> {
     const tickets: Ticket[] = [];
 
     // Create a ticket for each reserved seat
@@ -301,9 +317,9 @@ export class AccessService {
         id: ticketId,
         eventId: event.id,
         eventName: event.title,
-        eventDate: event.date,
-        eventLocation: `${event.venueName || ''}, ${event.city}`,
-        eventImage: event.image,
+        eventDate: event.startDate,
+        eventLocation: event.location ? `${event.location.venueName || ''}, ${event.location.city || ''}` : '',
+        eventImage: event.coverImage,
         userId: reservation.userId,
         orderId: reservation.id,
         qrCode,
@@ -316,7 +332,7 @@ export class AccessService {
         category: seat.category || 'General',
         price: seat.price,
         status: TicketStatus.CONFIRMED,
-        expiresAt: new Date(event.date.getTime() + 24 * 60 * 60 * 1000), // Event date + 1 day
+        expiresAt: new Date(event.startDate.getTime() + 24 * 60 * 60 * 1000), // Event date + 1 day
       });
 
       const savedTicket = await this.ticketRepository.save(ticket);

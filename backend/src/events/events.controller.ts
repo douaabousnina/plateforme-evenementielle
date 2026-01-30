@@ -40,7 +40,7 @@ export class EventsController {
     @Body() createEventDto: CreateEventDto,
     @Req() req: any
   ) {
-    const organizerId = req.user.id;
+    const organizerId = req.user.sub;
     return await this.eventsService.create(createEventDto, organizerId);
   }
 
@@ -64,7 +64,7 @@ export class EventsController {
     @Query() filterDto: FilterEventDto,
     @Req() req: any
   ) {
-    const organizerId = req.user.id;
+    const organizerId = req.user.sub;
     return await this.eventsService.findAll(filterDto, organizerId);
   }
 
@@ -111,7 +111,7 @@ export class EventsController {
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const organizerId = req.user.id;
+    const organizerId = req.user.sub;
     
     // Verify ownership
     const event = await this.eventsService.findOne(id);
@@ -133,7 +133,7 @@ export class EventsController {
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const organizerId = req.user.id;
+    const organizerId = req.user.sub;
 
     // Verify ownership
     const event = await this.eventsService.findOne(id);
@@ -156,7 +156,7 @@ export class EventsController {
     @Body() updateEventDto: UpdateEventDto,
     @Req() req: any
   ) {
-    const organizerId = req.user.id;
+    const organizerId = req.user.sub;
     return await this.eventsService.update(id, updateEventDto, organizerId);
   }
 
@@ -172,7 +172,7 @@ export class EventsController {
     @Body() dto: UpdateEventStatusDto,
     @Req() req: any
   ) {
-    const organizerId = req.user.id;
+    const organizerId = req.user.sub;
     
     if (dto.status == null) {
       throw new BadRequestException('status is required');
@@ -192,7 +192,7 @@ export class EventsController {
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const organizerId = req.user.id;
+    const organizerId = req.user.sub;
     return await this.eventsService.remove(id, organizerId);
   }
 }

@@ -16,7 +16,10 @@ export const roleGuard: CanActivateFn = (route, state) => {
   }
 
   if (requiredRoles && requiredRoles.length > 0) {
-    const hasRole = requiredRoles.includes(currentUser.role);
+    const hasRole = requiredRoles.some(role => 
+      role === currentUser.role || 
+      role.toString().toLowerCase() === currentUser.role?.toString().toLowerCase()
+    );
     
     if (!hasRole) {
       // User doesn't have required role

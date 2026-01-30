@@ -29,7 +29,7 @@ export class PaymentsController {
         @Body() dto: CreatePaymentDto,
         @Req() req: any
     ) {
-        const userId = req.user.id;
+        const userId = req.user.sub;
         return this.paymentsService.create(userId, dto);
     }
 
@@ -50,7 +50,7 @@ export class PaymentsController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.CLIENT)
     findMine(@Req() req: any) {
-        const userId = req.user.id;
+        const userId = req.user.sub;
         return this.paymentsService.findByUser(userId);
     }
 

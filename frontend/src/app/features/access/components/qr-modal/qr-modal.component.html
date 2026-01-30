@@ -15,7 +15,9 @@
       </button>
       
       <h2 class="modal-title">{{ ticket().eventName }}</h2>
+      @if (ticket().eventDate) {
       <p class="modal-subtitle">{{ formatDate(ticket().eventDate) }} • {{ formatTime(ticket().eventDate) }}</p>
+      }
     </div>
 
     <!-- QR Code -->

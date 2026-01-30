@@ -31,7 +31,7 @@ export class ReservationsController {
     @Body() lockSeatsDto: LockSeatsDto,
     @Req() req: any
   ) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     return await this.reservationsService.lockSeats(userId, lockSeatsDto);
   }
 
@@ -46,7 +46,7 @@ export class ReservationsController {
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
 
     // Verify user owns this reservation
     const reservation = await this.reservationsService.findById(id);
@@ -68,7 +68,7 @@ export class ReservationsController {
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
 
     // Verify user owns this reservation
     const reservation = await this.reservationsService.findById(id);
@@ -87,7 +87,7 @@ export class ReservationsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.CLIENT)
   async findMyReservations(@Req() req: any) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     return await this.reservationsService.findByUser(userId);
   }
 
@@ -103,7 +103,7 @@ export class ReservationsController {
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const userRole = req.user.role;
 
     const reservation = await this.reservationsService.findById(id);

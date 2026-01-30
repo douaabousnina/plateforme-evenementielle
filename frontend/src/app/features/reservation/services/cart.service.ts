@@ -3,13 +3,22 @@ import { Seat } from '../models/reservation.model';
 import { SeatStatus } from '../enums/reservation.enum';
 import { SERVICE_FEE_RATE, MAX_SEATS_PER_ORDER } from '../constants/reservations.constants';
 import { SeatService } from './seat.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
     private seatService = inject(SeatService);
+    private authService = inject(AuthService);
 
     reservedSeats = signal<Seat[]>([]);
     errorMessage = signal<string | null>(null);
+
+    isAuthenticated = () => !!this.authService.getCurrentUser();
+
+    getUserName = () => {
+      const user = this.authService.getCurrentUser();
+      return user ? `${user.firstName} ${user.lastName}` : 'Guest';
+    };
 
     subtotal = computed(() => {
         return this.reservedSeats().reduce((sum, seat) => sum + Number(seat.price), 0);

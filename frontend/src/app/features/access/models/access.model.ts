@@ -38,12 +38,13 @@ export interface ScanLog {
 export interface Ticket {
   id: string;
   eventId: string;
-  eventName: string;
-  eventDate: Date;
-  eventLocation: string;
+  eventName?: string;
+  eventDate?: Date;
+  eventLocation?: string;
   eventImage?: string;
   userId: string;
   orderId: string;
+  reservationId: string;
   qrCode: string;
   qrToken: string;
   

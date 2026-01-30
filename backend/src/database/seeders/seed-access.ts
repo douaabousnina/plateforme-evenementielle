@@ -44,6 +44,7 @@ export async function seedTickets(
       eventLocation: 'Venue',
       userId: reservation.userId,
       orderId: reservation.id,
+      reservationId: reservation.id,
       qrCode,
       qrToken,
       category: 'Standard',

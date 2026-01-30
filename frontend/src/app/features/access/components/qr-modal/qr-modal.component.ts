@@ -44,7 +44,8 @@ export class QrModalComponent {
     });
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | undefined): string {
+    if (!date) return 'Date non disponible';
     return new Date(date).toLocaleDateString('fr-FR', {
       weekday: 'long',
       day: 'numeric',
@@ -53,7 +54,8 @@ export class QrModalComponent {
     });
   }
 
-  formatTime(date: Date): string {
+  formatTime(date: Date | undefined): string {
+    if (!date) return '';
     return new Date(date).toLocaleTimeString('fr-FR', {
       hour: '2-digit',
       minute: '2-digit'

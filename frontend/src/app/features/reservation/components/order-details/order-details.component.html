@@ -41,7 +41,40 @@
         </div>
     </div>
 
-    <!-- Ticket Details -->
+    <!-- Tickets with QR Codes -->
+    @if (tickets().length > 0) {
+    <div class="p-6 border-b border-[#f0f2f5] dark:border-gray-700">
+        <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined text-primary">confirmation_number</span>
+            <h3 class="text-lg font-bold text-[#0d101c] dark:text-white">
+                Vos billets avec QR codes
+            </h3>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            @for (ticket of tickets(); track ticket.id) {
+            <div class="flex gap-4 p-4 bg-[#f8f9fc] dark:bg-[#131625] rounded-lg">
+                <div class="w-20 h-20 shrink-0">
+                    <img [src]="ticket.qrCode" alt="QR Code" class="w-full h-full object-contain" />
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-[#0d101c] dark:text-white">
+                        {{ ticket.category || 'Standard' }}
+                    </p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        @if (ticket.zone) { Zone {{ ticket.zone }} - }@if (ticket.gate) { {{ ticket.gate }}
+                        - }@if (ticket.row) { Rangée {{ ticket.row }} }@if (ticket.seat) { - Place {{ ticket.seat }} }
+                    </p>
+                    <p class="text-sm font-mono font-bold text-primary mt-1">
+                        {{ ticket.price | number:'1.2-2' }} €
+                    </p>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    } @else {
+    <!-- Fallback: Show items without QR codes if tickets not yet loaded -->
     <div class="p-6 border-b border-[#f0f2f5] dark:border-gray-700">
         <div class="flex items-center gap-2 mb-4">
             <span class="material-symbols-outlined text-primary">confirmation_number</span>
@@ -68,6 +101,7 @@
             }
         </div>
     </div>
+    }
 
     <!-- Payment Summary -->
     <div class="p-6">
