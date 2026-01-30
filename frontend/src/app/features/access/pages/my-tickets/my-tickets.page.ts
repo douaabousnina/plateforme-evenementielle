@@ -6,6 +6,7 @@ import { TicketCardComponent } from '../../components/ticket-card/ticket-card.co
 import { TicketFiltersComponent, FilterTab } from '../../components/ticket-filters/ticket-filters.component';
 import { QrModalComponent } from '../../components/qr-modal/qr-modal.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
+import { AuthService } from '../../../auth-users/services/auth.service';
 
 @Component({
   selector: 'app-my-tickets',
@@ -16,6 +17,7 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
 })
 export class MyTicketsComponent {
   private readonly accessService = inject(AccessService);
+  private readonly authService = inject(AuthService);
 
   tickets = signal<Ticket[]>([]);
   activeTab = signal<FilterTab>('upcoming');
@@ -23,8 +25,11 @@ export class MyTicketsComponent {
   selectedTicket = signal<Ticket | null>(null);
   showQRModal = signal(false);
 
-  // Mock user ID - in real app, get from auth service
-  readonly userId = 'user-123';
+  // Get user ID from JWT token
+  get userId(): string {
+    const user = this.authService.getCurrentUser();
+    return user?.id?.toString() || '';
+  }
 
   // Computed values based on current state
   filteredTickets = computed(() => {

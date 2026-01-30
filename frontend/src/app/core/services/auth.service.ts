@@ -60,6 +60,10 @@ export class AuthService {
     return this.currentUser();
   }
 
+  setCurrentUser(user: User | null) {
+    this.currentUser.set(user);
+  }
+
   isOrganizer(): boolean {
     return this.currentUser()?.role === UserRole.ORGANIZER;
   }
@@ -73,8 +77,7 @@ export class AuthService {
     return this.currentUser()?.role === role;
   }
 
-  // For testing purposes - set mock user
-  setMockUser(user: User) {
-    this.currentUser.set(user);
+  logout() {
+    this.currentUser.set(null);
   }
 }

@@ -12,7 +12,7 @@ export const accessRoutes: Routes = [
   { 
     path: 'scan-history', 
     component: ScanHistoryComponent,
-    // canActivate: [roleGuard],
-    // data: { roles: [UserRole.ORGANIZER] }
+     //canActivate: [roleGuard],
+     //data: { roles: [UserRole.ORGANIZER] }
   },
 ];
