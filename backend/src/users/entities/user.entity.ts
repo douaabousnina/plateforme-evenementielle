@@ -1,7 +1,8 @@
 import { Role } from "../../common/enums/role.enum";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Preference } from "../../common/enums/preference.enum";
-//import { Reservation } from "../../reservations/entities/reservation.entity";
+import { Reservation } from "../../reservations/entities/reservation.entity";
+import { Event } from "src/events/entities/event.entity";
 
 @Entity()
 export class User {
@@ -33,10 +34,13 @@ export class User {
 
   @Column({ nullable: true })
   phoneNumber: string;
-  /*@OneToMany(() => Reservation, (r) => r.user)
-  reservations: Reservation[];*/
-  /*  @OneToMany(() => Event, (event) => event.organizer)
-  events: Event[];*/
+
+  @OneToMany(() => Reservation, (r) => r.user)
+  reservations: Reservation[];
+
+  @OneToMany(() => Event, (event) => event.organizer)
+  events: Event[];
+
   @CreateDateColumn({ update: false })
   createdAt: Date;
 }

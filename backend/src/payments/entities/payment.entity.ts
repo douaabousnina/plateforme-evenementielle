@@ -7,15 +7,15 @@ import {
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Reservation } from 'src/reservations/entities/reservation.entity';
 import { PaymentMethod, PaymentStatus } from 'src/common/enums/payment.enum';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity('payments')
 export class Payment extends BaseEntity {
-    // @ManyToOne(() => User, { onDelete: 'CASCADE' })
-    // @JoinColumn({name: "userId"})
-    // user: User;
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
+    @JoinColumn({name: "userId"})
+    user: User;
 
-    // @Column({ type: 'uuid' })
-    @Column()
+    @Column({ type: 'uuid' })
     userId: string;
     
     // many => in case of retry (because we allow failed payments)

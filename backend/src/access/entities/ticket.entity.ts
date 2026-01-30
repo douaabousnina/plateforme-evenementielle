@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { TicketStatus } from '../enums/ticket-status.enum';
+import { Reservation } from 'src/reservations/entities/reservation.entity';
 // import { ManyToOne, OneToMany } from 'typeorm';
 // import { Reservation } from '../../reservations/entities/reservation.entity';
 // import { ScanLog } from '../../scanlog/entities/scan-log.entity';
@@ -30,8 +31,12 @@ export class Ticket {
   @Column()
   orderId: string;
 
-  // @ManyToOne(() => Reservation, (reservation) => reservation.tickets)
-  // reservation: Reservation;
+  @ManyToOne(() => Reservation, (reservation) => reservation.tickets)
+  @JoinColumn({ name: "reservationId" })
+  reservation: Reservation;
+
+  @Column({ type: "uuid" })
+  reservationId: string;
 
   @Column('text')
   qrCode: string; // Base64 encoded QR code image

@@ -13,6 +13,8 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import { Location } from './location.entity';
 import { EventCategory, EventStatus, EventType } from 'src/common/enums/event.enum';
 import { Seat } from './seat.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Reservation } from 'src/reservations/entities/reservation.entity';
 
 @Entity('events')
 export class Event extends BaseEntity {
@@ -84,11 +86,13 @@ export class Event extends BaseEntity {
   status: EventStatus;
 
   // Organizer
-  @Column()
+  @Column({ type: 'uuid' })
   organizerId: string;
 
-  // Uncomment when User entity is available
-  // @ManyToOne(() => User, (user) => user.events)
-  // @JoinColumn({ name: 'organizerId' })
-  // organizer: User;
+  @ManyToOne(() => User, (user) => user.events)
+  @JoinColumn({ name: 'organizerId' })
+  organizer: User;
+
+  @OneToMany(() => Reservation, reservation => reservation.event)
+  reservations: Reservation[];
 }
