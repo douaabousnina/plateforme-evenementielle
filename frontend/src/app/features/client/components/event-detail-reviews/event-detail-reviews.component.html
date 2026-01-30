@@ -1,0 +1,45 @@
+@let reviews = reviews();
+@let rating = rating();
+@let reviewCount = reviewCount();
+@let title = sectionTitle();
+@let viewAllLabel = viewAllLabel();
+<section>
+  <div class="flex items-center gap-4 mb-6">
+    <h3 class="text-2xl text-white font-bold">{{ title }}</h3>
+    @if (rating != null && reviewCount != null) {
+      <div class="flex items-center gap-1 bg-slate-800 px-3 py-1 rounded-full">
+        <span class="material-symbols-outlined text-yellow-400 text-sm">star</span>
+        <span class="text-white font-bold text-sm">{{ rating }}</span>
+        <span class="text-slate-400 text-xs">({{ reviewCount }} avis)</span>
+      </div>
+    }
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    @for (r of reviews; track r.id) {
+      <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+        <div class="flex items-center gap-3 mb-3">
+          @if (r.authorAvatarUrl) {
+            <img [src]="r.authorAvatarUrl" [alt]="r.authorName" class="w-10 h-10 rounded-full object-cover" />
+          } @else {
+            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
+              <span class="material-symbols-outlined text-slate-400">person</span>
+            </div>
+          }
+          <div>
+            <p class="text-white text-sm font-bold">{{ r.authorName }}</p>
+            <p class="text-slate-400 text-xs">{{ r.timeAgo }}</p>
+          </div>
+          <div class="ml-auto flex text-yellow-400">
+            @for (star of [1,2,3,4,5]; track star) {
+              <span class="material-symbols-outlined text-[16px]">{{ star <= r.rating ? 'star' : (star - 0.5 <= r.rating ? 'star_half' : 'star') }}</span>
+            }
+          </div>
+        </div>
+        <p class="text-slate-300 text-sm">{{ r.content }}</p>
+      </div>
+    }
+  </div>
+  <button type="button" class="mt-4 text-primary text-sm font-medium hover:underline" (click)="viewAllClick.emit()">
+    {{ viewAllLabel() }}
+  </button>
+</section>

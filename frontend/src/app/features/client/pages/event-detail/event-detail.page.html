@@ -1,0 +1,44 @@
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-white">
+  <app-event-detail-header />
+
+  <main class="flex-1 flex justify-center py-8 px-4 sm:px-8 lg:px-12 xl:px-40">
+    <div class="layout-content-container flex flex-col max-w-[1200px] flex-1 gap-8">
+      @if (loading()) {
+        <div class="flex justify-center py-20">
+          <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+        </div>
+      } @else if (error() || !event()) {
+        <p class="text-red-500 text-center py-8">{{ error() || 'Événement introuvable' }}</p>
+      } @else {
+        <app-breadcrumb [steps]="breadcrumbSteps()" />
+
+        <app-event-detail-hero [event]="event()!" />
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
+          <div class="lg:col-span-8 flex flex-col gap-10">
+            <app-event-detail-description [event]="event()!" [highlights]="descriptionHighlights()" />
+            <app-event-detail-lineup [artists]="artists()" />
+            <app-event-detail-seat-map
+              [sections]="seatMapSections()"
+              (expandClick)="onExpandSeatMap()"
+              (chooseOnMapClick)="onChooseOnMap()"
+            />
+            <app-event-detail-reviews
+              [reviews]="reviews()"
+              [rating]="event()!.rating"
+              [reviewCount]="event()!.reviewCount"
+              (viewAllClick)="onViewAllReviews()"
+            />
+          </div>
+          <div class="lg:col-span-4 relative">
+            <app-event-detail-ticket-card
+              [event]="event()!"
+              [ticketOptions]="ticketOptions()"
+              (reserveClick)="onReserve($event)"
+            />
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>
