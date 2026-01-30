@@ -49,7 +49,7 @@ export class Event {
     enum: EventStatus,
     default: EventStatus.DRAFT,
   })
-  @Index()
+  @Index()git branch
   status: EventStatus;
 
   @Column({ type: 'int' })
