@@ -4,12 +4,13 @@ import { EventsTable } from '../../components/events-table/events-table';
 import { KpiCard } from '../../components/kpi-card/kpi-card';
 import { SalesChart } from '../../components/sales-chart/sales-chart';
 import { SideBar } from '../../components/side-bar/side-bar';
+import { ScanHistoryButton } from '../../components/scan-history-button/scan-history-button';
 import { KpiService } from '../../services/kpi.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [SideBar, KpiCard, SalesChart, EventsTable, Alerts],
+  imports: [SideBar, KpiCard, SalesChart, EventsTable, Alerts, ScanHistoryButton],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
 })
