@@ -1,0 +1,86 @@
+<div class="bg-white dark:bg-[#1a1d2d] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+    <!-- Messages -->
+    @if (error()) {
+        <div class="alert alert-error p-4">
+            <span class="material-symbols-outlined">error</span>
+            {{ error() }}
+        </div>
+    }
+
+    <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary">interests</span>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Préférences</h3>
+        </div>
+        @if (!isEditing()) {
+            <button (click)="onEdit()" [disabled]="isLoading()" class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-primary border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-[18px]">edit</span>
+                Modifier
+            </button>
+        }
+    </div>
+
+    @if (!isEditing()) {
+        <!-- View Mode -->
+        <div class="p-6">
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Tous les intérêts</p>
+            <app-interest-selector [selectedPreferences]="selectedPreferences()" [readonly]="true"></app-interest-selector>
+            @if (selectedPreferences().length === 0) {
+                <p class="text-slate-500 dark:text-slate-400 text-sm italic mt-3">Aucune préférence sélectionnée</p>
+            }
+        </div>
+    } @else {
+        <!-- Edit Mode -->
+        <div class="p-6 border-b border-slate-100 dark:border-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Sélectionnez vos intérêts</p>
+            <app-interest-selector [selectedPreferences]="selectedPreferences()" (preferencesChange)="onPreferencesChange($event)"></app-interest-selector>
+        </div>
+        <div class="p-6 flex gap-3 justify-end">
+            <button 
+                (click)="cancelEdit()" 
+                [disabled]="isLoading()"
+                class="px-6 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                Annuler
+            </button>
+            <button 
+                (click)="savePreferences()" 
+                [disabled]="isLoading()"
+                class="px-6 py-2 text-sm font-bold text-white bg-primary rounded-lg hover:opacity-90 transition-colors disabled:opacity-50">
+                {{ isLoading() ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
+        </div>
+    }
+
+    <!-- Notifications Section (always visible) -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Notifications</h4>
+        <label class="flex items-center justify-between cursor-pointer group">
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Alertes nouveaux événements</span>
+                <span class="text-xs text-slate-500">Par email et push notification</span>
+            </div>
+            <div (click)="toggleNewEventAlerts()" 
+                 [class]="newEventAlerts() ? 
+                    'relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors cursor-pointer' : 
+                    'relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 dark:bg-slate-700 transition-colors cursor-pointer'">
+                <span [class]="newEventAlerts() ? 
+                    'translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition-transform' : 
+                    'translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform'"></span>
+            </div>
+        </label>
+        <label class="flex items-center justify-between cursor-pointer group">
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Activités de vente</span>
+                <span class="text-xs text-slate-500">Rapport journalier des ventes</span>
+            </div>
+            <div (click)="toggleSalesActivity()" 
+                 [class]="salesActivity() ? 
+                    'relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors cursor-pointer' : 
+                    'relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 dark:bg-slate-700 transition-colors cursor-pointer'">
+                <span [class]="salesActivity() ? 
+                    'translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition-transform' : 
+                    'translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform'"></span>
+            </div>
+        </label>
+    </div>
+</div>
