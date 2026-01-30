@@ -10,5 +10,5 @@ export const routes: Routes = [
   ...organizerRoutes,
   ...accessRoutes,
   ...authRoutes,
-  { path: 'client', children: clientRoutes },
+  ...clientRoutes
 ];

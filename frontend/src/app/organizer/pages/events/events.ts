@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SideBar } from '../../components/side-bar/side-bar';
 import { EventsTable } from '../../components/events-table/events-table';
-import { EventService } from '../../services/event.service';
 import { Event } from '../../models/event.models';
+import { EventService } from '../../../features/reservation/services/event.service';
 
 @Component({
   selector: 'app-events',
@@ -17,7 +17,7 @@ export class Events implements OnInit {
   eventService = inject(EventService);
 
   ngOnInit() {
-    this.eventService.getEvents().subscribe();
+    this.eventService.loadMyEvents().subscribe();
   }
 
   getTotalTicketsSold(events: Event[]): number {
