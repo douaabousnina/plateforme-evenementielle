@@ -1,16 +1,22 @@
 import { DataSource } from 'typeorm';
 import { Event } from '../../events/entities/event.entity';
 import { Location } from '../../events/entities/location.entity';
+import { User } from '../../users/entities/user.entity';
 import { EventCategory, EventStatus, EventType } from '../../common/enums/event.enum';
-
-const ORGANIZER_ID = 'seed-organizer-id';
+import { Role } from 'src/common/enums/role.enum';
 
 export async function seedEvents(
   dataSource: DataSource,
   locations: Location[],
+  users: User[],
 ): Promise<Event[]> {
   const repo = dataSource.getRepository(Event);
   const [loc0, loc1, loc2, loc3, loc4] = locations;
+
+  // Find an organizer user (role: ORGANIZER)
+  const organizer = users.find((u) => u.role === Role.ORGANIZER) || users[0];
+  const organizerId = organizer?.id?.toString() || '1';
+
   const baseDate = new Date('2026-06-01T19:00:00');
   const events = repo.create([
     {
@@ -29,7 +35,7 @@ export async function seedEvents(
       availableCapacity: 135,
       hasSeatingPlan: true,
       status: EventStatus.PUBLISHED,
-      organizerId: ORGANIZER_ID,
+      organizerId,
     },
     {
       title: 'Tech Conference 2026',
@@ -45,7 +51,7 @@ export async function seedEvents(
       availableCapacity: 200,
       hasSeatingPlan: true,
       status: EventStatus.PUBLISHED,
-      organizerId: ORGANIZER_ID,
+      organizerId,
     },
     {
       title: 'Jazz Night',
@@ -61,7 +67,7 @@ export async function seedEvents(
       availableCapacity: 135,
       hasSeatingPlan: true,
       status: EventStatus.PUBLISHED,
-      organizerId: ORGANIZER_ID,
+      organizerId,
     },
     {
       title: 'Comedy Show Spectacular',
@@ -77,7 +83,7 @@ export async function seedEvents(
       availableCapacity: 135,
       hasSeatingPlan: true,
       status: EventStatus.PUBLISHED,
-      organizerId: ORGANIZER_ID,
+      organizerId,
     },
     {
       title: 'Classical Orchestra Performance',
@@ -93,7 +99,7 @@ export async function seedEvents(
       availableCapacity: 150,
       hasSeatingPlan: true,
       status: EventStatus.PUBLISHED,
-      organizerId: ORGANIZER_ID,
+      organizerId,
     },
   ]);
   return repo.save(events);

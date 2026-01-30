@@ -21,7 +21,6 @@ export class PaymentsController {
 
     /**
      * CREATE PAYMENT - Client only
-     * Clients make payments for their reservations
      */
     @Post()
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -36,7 +35,6 @@ export class PaymentsController {
 
     /**
      * REFUND PAYMENT - Organizer only
-     * Only organizers can issue refunds
      */
     @Post('refund')
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -47,7 +45,6 @@ export class PaymentsController {
 
     /**
      * GET MY PAYMENTS - Client only
-     * View payment history
      */
     @Get()
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -59,22 +56,20 @@ export class PaymentsController {
 
     /**
      * GET SINGLE PAYMENT - Client and Organizer
-     * View payment details
      */
     @Get(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.CLIENT, Role.ORGANIZER)
+    @Roles(Role.CLIENT, Role.ORGANIZER, Role.ADMIN)
     findOne(@Param('id') id: string) {
         return this.paymentsService.findOne(id);
     }
 
     /**
      * GET SUCCESSFUL PAYMENT BY RESERVATION - Client and Organizer
-     * Check if a reservation has a successful payment
      */
     @Get('reservation/:reservationId/successful')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.CLIENT, Role.ORGANIZER)
+    @Roles(Role.CLIENT, Role.ORGANIZER, Role.ADMIN)
     findSuccessfulByReservationId(
         @Param('reservationId') reservationId: string,
     ) {
