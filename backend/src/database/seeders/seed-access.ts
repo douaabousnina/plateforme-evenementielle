@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
-import { Ticket, TicketStatus } from '../../access/entities/ticket.entity';
+import { Ticket } from '../../access/entities/ticket.entity';
+import { TicketStatus } from '../../access/enums/ticket-status.enum';
 import { ScanLog, ScanStatus } from '../../access/entities/scan-log.entity';
 import { Reservation } from '../../reservations/entities/reservation.entity';
 import { Event } from '../../events/entities/event.entity';

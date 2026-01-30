@@ -9,8 +9,8 @@ import { AccessModule } from '../access/access.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Reservation, ReservedSeat, Event]),
-    AccessModule,
+    TypeOrmModule.forFeature([Reservation, Event]),
+    AccessModule, EventsModule
   ],
   controllers: [ReservationsController],
   providers: [ReservationsService],

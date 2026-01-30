@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { ReservationsModule } from './reservations/reservations.module'
+import { ReservationsModule } from './reservations/reservations.module';
 import { PaymentsModule } from './payments/payments.module';
 import { EventsModule } from './events/events.module';
 import { AccessModule } from './access/access.module';
@@ -35,9 +35,9 @@ import { ScanlogModule } from './scanlog/scanlog.module';
     ReservationsModule,
     PaymentsModule,
     EventsModule,
-    AccessModule,  
+    AccessModule,
     AuthModule,
-    UsersModule,,
+    UsersModule,
     ScanlogModule,
   ],
 })
