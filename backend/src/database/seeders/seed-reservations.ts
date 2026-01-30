@@ -5,17 +5,12 @@ import { Event } from '../../events/entities/event.entity';
 import { ReservationStatus } from '../../common/enums/reservation.enum';
 import { SeatStatus } from '../../common/enums/reservation.enum';
 
-const MOCK_USER_IDS = [
-  '650e8400-e29b-41d4-a716-446655440001',
-  '650e8400-e29b-41d4-a716-446655440002',
-  '650e8400-e29b-41d4-a716-446655440003',
-];
-
 const RESERVATION_EXPIRATION_MINUTES = 30;
 
 export async function seedReservations(
   dataSource: DataSource,
   events: Event[],
+  userIds: string[],
 ): Promise<{ reservations: Reservation[] }> {
   const reservationRepo = dataSource.getRepository(Reservation);
   const seatRepo = dataSource.getRepository(Seat);
@@ -39,7 +34,8 @@ export async function seedReservations(
       const selectedSeats = seats.slice(seatIndex, seatIndex + numSeats);
       seatIndex += numSeats;
 
-      const userId = MOCK_USER_IDS[i % MOCK_USER_IDS.length];
+      const fallbackUserId = `seed-user-${i + 1}`;
+      const userId = userIds.length > 0 ? userIds[i % userIds.length] : fallbackUserId;
       const totalPrice = selectedSeats.reduce((sum, s) => sum + Number(s.price), 0);
       const isConfirmed = i % 2 === 0;
       const status = isConfirmed ? ReservationStatus.CONFIRMED : ReservationStatus.PENDING;

@@ -6,6 +6,7 @@ import { ScanLog } from '../../scanlog/entities/scan-log.entity';
 import { Ticket } from '../../access/entities/ticket.entity';
 import { Event } from '../../events/entities/event.entity';
 import { Location } from '../../events/entities/location.entity';
+import { User } from '../../users/entities/user.entity';
 
 /** Clear all seed-relevant tables in FK-safe order. */
 export async function clearAll(dataSource: DataSource): Promise<void> {
@@ -18,6 +19,7 @@ export async function clearAll(dataSource: DataSource): Promise<void> {
     Reservation, // References Event
     Event,      // References Location
     Location,
+    User,
   ];
   
   for (const Entity of order) {

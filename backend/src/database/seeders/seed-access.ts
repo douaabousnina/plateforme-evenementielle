@@ -7,7 +7,7 @@ import { Event } from '../../events/entities/event.entity';
 import { ReservationStatus } from '../../common/enums/reservation.enum';
 import * as QRCode from 'qrcode';
 import * as crypto from 'crypto';
-import { ScanStatus } from 'src/access/entities/scan-log.entity';
+import { ScanStatus } from '../../scanlog/enums/scan-status.enum';
 export async function seedTickets(
   dataSource: DataSource,
   reservations: Reservation[],
