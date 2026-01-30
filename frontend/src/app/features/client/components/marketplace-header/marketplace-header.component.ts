@@ -37,7 +37,6 @@ export class MarketplaceHeaderComponent {
       { label: 'Découvrir', route: '/client/marketplace', active: true },
       { label: 'Mes Billets', route: '/access/my-tickets' },
       { label: 'Favoris', route: '/client/favorites' },
-      { label: 'Organiser', route: '/organizer/events' },
     ];
   }
 }
