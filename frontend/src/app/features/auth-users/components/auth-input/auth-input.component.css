@@ -1,8 +1,19 @@
+:host {
+  display: block;
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
 .input-wrapper {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
 }
 
 label {

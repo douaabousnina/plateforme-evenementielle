@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service'; 
 import { JwtService } from '@nestjs/jwt';
@@ -18,7 +18,7 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.usersService.findByEmail(email);
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
 
     return this.generateTokens(user.id, user.email, user.role);
@@ -39,24 +39,19 @@ export class AuthService {
     email,
     password,
     preferences,
-    role: role ? Role.CLIENT:Role.ORGANIZER,
+    role: role || Role.CLIENT,
   };
    const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
-      throw new UnauthorizedException('Email already in use');
+      throw new ConflictException('Cette adresse email est déjà utilisée');
 
     }
    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%+*?&]{8,}$/;
   if (!passwordRegex.test(password)) {
-    throw new UnauthorizedException('Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character');
+    throw new BadRequestException('Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial');
   }
 
-    try{
-   
     const user = await this.usersService.create(dto);
     return this.generateTokens(user.id, user.email, user.role);
-  } catch (error) {
-    throw new UnauthorizedException('Registration failed');
-  }
   }
     }

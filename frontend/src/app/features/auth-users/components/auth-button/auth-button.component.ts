@@ -9,5 +9,5 @@ import { Component, Input } from '@angular/core';
 export class AuthButtonComponent {
   @Input() text!: string;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
-
+  @Input() disabled = false;
 }

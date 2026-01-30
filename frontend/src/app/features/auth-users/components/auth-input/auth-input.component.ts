@@ -12,5 +12,6 @@ export class AuthInputComponent {
  @Input() type: string = 'text';
   @Input() placeholder!: string;
   @Input () value!: string;
+  @Input() disabled = false;
   @Output() valueChange = new EventEmitter<string>();
 }

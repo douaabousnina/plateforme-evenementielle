@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { ScheduleModule } from '@nestjs/schedule';
+
 import { ReservationsModule } from './reservations/reservations.module'
 import { PaymentsModule } from './payments/payments.module';
 import { EventsModule } from './events/events.module';
@@ -36,7 +34,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     ReservationsModule,
     PaymentsModule,
     EventsModule,
-    AccessModule
+    AccessModule,  
+    AuthModule,
+    UsersModule,
   ],
 })
 export class AppModule { }

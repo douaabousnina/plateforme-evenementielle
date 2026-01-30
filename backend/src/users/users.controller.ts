@@ -40,6 +40,16 @@ export class UsersController {
     await this.usersService.remove(currentUserId);
     return { message: 'You deleted your account successfully!' };
   }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(Role.CLIENT,Role.ORGANIZER)
+  async changePassword(@Req() req, @Body() body: { currentPassword: string; newPassword: string }) {
+    const userId = req.user.sub;
+    await this.usersService.changePassword(userId, body.currentPassword, body.newPassword);
+    return { message: 'Password changed successfully!' };
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.ADMIN)

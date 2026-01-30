@@ -1,19 +1,25 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthService } from '../../features/auth-users/services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // Get the auth token from the service.
-  // For now, we'll just pass the request through.
-  // In a real app, you would inject an AuthService and get the token.
-  // const authToken = inject(AuthService).getToken();
+  const authService = inject(AuthService);
+  const token = authService.getAccessToken();
 
-  // Clone the request and replace the original headers with
-  // cloned headers, updated with the authorization.
-  // const authReq = req.clone({
-  //   setHeaders: {
-  //     Authorization: `Bearer ${authToken}`
-  //   }
-  // });
+  // Ne pas ajouter le token pour les requêtes de login/register
+  if (req.url.includes('/login') || req.url.includes('/register')) {
+    return next(req);
+  }
 
-  // return next(authReq);
+  // Ajouter le token si disponible
+  if (token) {
+    const authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return next(authReq);
+  }
+
   return next(req);
 };

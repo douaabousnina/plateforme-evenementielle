@@ -39,7 +39,7 @@
 
 .right {
   flex: 1;
-  background: #f6f6f8;
+  background: transparent;
 
   display: flex;
   align-items: center; 
@@ -62,4 +62,22 @@
 .subtitle {
   color: #4b589b;
   margin-bottom: 2rem;
+}
+.auth-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.auth-link a {
+  color:#4b589b;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 0.25rem;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
 }

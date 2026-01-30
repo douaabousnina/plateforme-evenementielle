@@ -1,6 +1,6 @@
 import { Component,EventEmitter, input, Input, output, Output } from '@angular/core';
+import { Role } from '../../models/auth.model';
 
-export type UserRole = 'CLIENT' | 'ORGANIZER' ;
 
 @Component({
   selector: 'app-roles',
@@ -9,15 +9,15 @@ export type UserRole = 'CLIENT' | 'ORGANIZER' ;
   styleUrl: './roles.css',
 })
 export class Roles {
-  selectedRole=input<UserRole>('CLIENT');
-  roleChange = output<UserRole>();
+  selectedRole=input<Role>(Role.CLIENT);
+  roleChange = output<Role>();
 
   roles = [
-    { label: 'Client', value: 'CLIENT' as UserRole },
-    { label: 'Organisateur', value: 'ORGANIZER' as UserRole },
+    { label: 'Client', value: Role.CLIENT },
+    { label: 'Organisateur', value: Role.ORGANIZER },
   ];
 
-  selectRole(role: UserRole) {
+  selectRole(role: Role) {
     this.roleChange.emit(role);
   }
 

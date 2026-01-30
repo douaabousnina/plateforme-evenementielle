@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, forwardRef, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, UnauthorizedException, forwardRef, Inject } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Preference } from '../common/enums/preference.enum';
@@ -59,5 +59,22 @@ export class UsersService {
 
     if (result.affected === 0) {
       throw new NotFoundException('User not found');
-    }}
+    }
+  }
+
+  async changePassword(id: number, currentPassword: string, newPassword: string): Promise<void> {
+    const user = await this.findById(id);
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await this.userRepository.update(id, { password: hashedPassword });
+  }
   } 

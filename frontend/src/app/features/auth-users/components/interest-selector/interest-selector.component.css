@@ -10,10 +10,19 @@
   border: 1px solid #cfd3e8;
   border-radius: 15px;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.interests.readonly div {
+  cursor: default;
+}
+
+.interests.readonly {
+  pointer-events: none;
 }
 
 .interests div.selected {
-color:#1d3fff;
+  color: #1d3fff;
   background-color: #e4e7ff;
   border-color: #1d3fff;
 }

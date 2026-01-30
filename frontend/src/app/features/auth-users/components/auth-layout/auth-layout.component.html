@@ -11,14 +11,30 @@
   </div>
 
   <div class="right">
-    <div class="right-content">
+    <div class="right-content">  
+       @if (isLoginRoute()) {
+        <h3>Se connecter</h3>
+        <p class="subtitle">
+          Accédez à votre compte pour continuer.
+        </p>
+        <app-auth-form [isLogin]="true" [userRole]="role()"></app-auth-form>
+        <p class="auth-link">
+          Vous n'avez pas de compte ? 
+          <a routerLink="/register">Créer un compte</a>
+        </p>
+      } @else {  
       <h3>Créer un compte</h3>
       <p class="subtitle">
         Complétez vos informations pour une expérience personnalisée.
       </p>
-      <app-roles [selectedRole]="role"
-  (roleChange)="role = $event"></app-roles>
-      <app-auth-form></app-auth-form>
+      <app-roles [selectedRole]="role()"
+  (roleChange)="updateRole($event)"></app-roles>
+      <app-auth-form [isLogin]="false" [userRole]="role()"></app-auth-form>
+     <p class="auth-link">
+          Vous avez déjà un compte ? 
+          <a routerLink="/login">Se connecter</a>
+        </p>
+    }
     </div>
   </div>
 </div>
