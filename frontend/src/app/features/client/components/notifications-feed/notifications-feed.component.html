@@ -1,0 +1,23 @@
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-white/5 flex-grow">
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="text-slate-900 dark:text-white font-bold text-lg">Activité Récente</h3>
+    <button type="button" class="text-primary text-xs font-bold uppercase hover:underline" (click)="markAllRead()">
+      Tout marquer lu
+    </button>
+  </div>
+  <div class="flex flex-col gap-4">
+    @for (item of notifications(); track item.id) {
+      <div class="flex gap-3 items-start p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+        <div
+          class="h-2 w-2 mt-2 rounded-full flex-shrink-0"
+          [class.bg-primary]="item.unread"
+          [class.bg-transparent]="!item.unread"
+        ></div>
+        <div>
+          <p class="text-sm text-slate-900 dark:text-white font-medium leading-snug">{{ item.title }}</p>
+          <p class="text-xs text-slate-500 mt-1">{{ item.timeAgo }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>
