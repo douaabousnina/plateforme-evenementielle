@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MarketplaceService } from '../../services/marketplace.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -12,7 +12,7 @@ export interface MarketplaceNavItem {
 @Component({
   selector: 'app-marketplace-header',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './marketplace-header.component.html',
   styleUrls: ['./marketplace-header.component.css'],
 })

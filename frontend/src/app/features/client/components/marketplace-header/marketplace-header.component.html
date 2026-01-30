@@ -11,7 +11,7 @@
         <a
           [routerLink]="item.route"
           routerLinkActive="text-primary font-semibold"
-          [routerLinkActiveOptions]="{ exact: item.active }"
+          [routerLinkActiveOptions]="{ exact: item.route === '/client/marketplace' }"
           class="text-slate-500 hover:text-primary dark:text-gray-400 dark:hover:text-white text-sm font-medium transition-colors">
           {{ item.label }}
         </a>

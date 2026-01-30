@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MarketplaceService } from '../../services/marketplace.service';
 import { EventDetailHeaderComponent } from '../../components/event-detail-header/event-detail-header.component';
 import { EventDetailHeroComponent } from '../../components/event-detail-hero/event-detail-hero.component';
@@ -15,7 +15,6 @@ import { BreadcrumbStep } from '../../../../core/models/breadcrumb.model';
   selector: 'app-event-detail-page',
   standalone: true,
   imports: [
-    RouterLink,
     EventDetailHeaderComponent,
     BreadcrumbComponent,
     EventDetailHeroComponent,

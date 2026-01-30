@@ -212,7 +212,7 @@ export class MarketplaceService {
 
   private mapApiToListResponse(res: { data: unknown[]; meta?: unknown }): MarketplaceListResponse {
     const data = Array.isArray(res.data) ? res.data : [];
-    const events = data.map((e: Record<string, unknown>) => this.mapRawToCard(e));
+    const events = data.map((e: unknown) => this.mapRawToCard(e as Record<string, unknown>));
     const meta = (res.meta as MarketplaceListResponse['meta']) ?? {
       total: events.length,
       page: 1,

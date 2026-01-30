@@ -9,8 +9,8 @@ import { EventDetailReview } from '../../models/event-detail.model';
 })
 export class EventDetailReviewsComponent {
   reviews = input.required<EventDetailReview[]>();
-  rating = input<number | null>(null);
-  reviewCount = input<number | null>(null);
+  rating = input<number | null | undefined>(null);
+  reviewCount = input<number | null | undefined>(null);
   sectionTitle = input('Avis & Notes');
   viewAllLabel = input('Voir tous les avis');
 

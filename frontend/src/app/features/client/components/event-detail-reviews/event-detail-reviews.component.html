@@ -1,21 +1,16 @@
-@let reviews = reviews();
-@let rating = rating();
-@let reviewCount = reviewCount();
-@let title = sectionTitle();
-@let viewAllLabel = viewAllLabel();
 <section>
   <div class="flex items-center gap-4 mb-6">
-    <h3 class="text-2xl text-white font-bold">{{ title }}</h3>
-    @if (rating != null && reviewCount != null) {
+    <h3 class="text-2xl text-white font-bold">{{ sectionTitle() }}</h3>
+    @if (rating() != null && reviewCount() != null) {
       <div class="flex items-center gap-1 bg-slate-800 px-3 py-1 rounded-full">
         <span class="material-symbols-outlined text-yellow-400 text-sm">star</span>
-        <span class="text-white font-bold text-sm">{{ rating }}</span>
-        <span class="text-slate-400 text-xs">({{ reviewCount }} avis)</span>
+        <span class="text-white font-bold text-sm">{{ rating() }}</span>
+        <span class="text-slate-400 text-xs">({{ reviewCount() }} avis)</span>
       </div>
     }
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    @for (r of reviews; track r.id) {
+    @for (r of reviews(); track r.id) {
       <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
         <div class="flex items-center gap-3 mb-3">
           @if (r.authorAvatarUrl) {

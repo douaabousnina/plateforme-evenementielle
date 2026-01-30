@@ -1,13 +1,6 @@
-@let sections = sections();
-@let title = sectionTitle();
-@let expandLabel = expandLabel();
-@let chooseOnMapLabel = chooseOnMapLabel();
-@let availableLabel = availableLabel();
-@let selectedLabel = selectedLabel();
-@let occupiedLabel = occupiedLabel();
 <section>
   <div class="flex justify-between items-end mb-4">
-    <h3 class="text-2xl text-white font-bold">{{ title }}</h3>
+    <h3 class="text-2xl text-white font-bold">{{ sectionTitle() }}</h3>
     <button type="button" class="text-primary text-sm font-medium hover:text-white transition-colors flex items-center gap-1" (click)="expandClick.emit()">
       <span class="material-symbols-outlined text-sm">open_in_full</span> {{ expandLabel() }}
     </button>
@@ -17,7 +10,7 @@
       <span class="text-white/70 text-sm font-bold tracking-widest uppercase">Scène Principale</span>
     </div>
     <div class="flex flex-col gap-3 items-center">
-      @for (section of sections; track section.id) {
+      @for (section of sections(); track section.id) {
         <div
           class="w-1/2 h-20 border-2 border-dashed border-white/20 rounded-xl flex items-center justify-center mb-6 hover:bg-white/5 cursor-pointer transition-colors">
           <span class="text-slate-400 text-xs font-bold uppercase">

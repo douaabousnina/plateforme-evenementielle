@@ -1,12 +1,11 @@
 @let e = event();
-@let highlights = highlights();
 <section>
   <h3 class="text-2xl text-white font-bold mb-4">À propos de l'événement</h3>
   <div class="text-slate-300 leading-relaxed space-y-4 prose prose-invert max-w-none">
     <p class="whitespace-pre-line">{{ e.description }}</p>
-    @if (highlights.length) {
+    @if (highlights().length) {
       <ul class="list-disc pl-5 space-y-1 text-white">
-        @for (item of highlights; track item) {
+        @for (item of highlights(); track item) {
           <li>{{ item }}</li>
         }
       </ul>
