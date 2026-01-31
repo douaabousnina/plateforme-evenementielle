@@ -1,75 +1,69 @@
-<app-header/>
-<div class="scanner-page">
-  <div class="scanner-container">
-    <!-- Header -->
-    <div class="scanner-header">
-      <h1 class="scanner-title">Scanner QR Code</h1>
-      <p class="scanner-subtitle">Scannez les billets pour valider l'entrée</p>
-    </div>
+<div class="flex h-screen w-screen overflow-hidden">
 
-    <!-- Scanner Settings -->
-    @if (hasDevices() && availableDevices().length > 1) {
+  <app-side-bar></app-side-bar>
+
+  <div class="scanner-page overflow-y-auto">
+    <div class="scanner-container">
+      <!-- Header -->
+      <div class="scanner-header">
+        <h1 class="scanner-title">Scanner QR Code</h1>
+        <p class="scanner-subtitle">Scannez les billets pour valider l'entrée</p>
+      </div>
+
+      <!-- Scanner Settings -->
+      @if (hasDevices() && availableDevices().length > 1) {
       <div class="scanner-settings">
         <label for="camera-select" class="setting-label">
           <span class="material-symbols-outlined">videocam</span>
           Caméra
         </label>
-        <select 
-          id="camera-select" 
-          class="camera-select"
+        <select id="camera-select" class="camera-select"
           (change)="onCameraChange(availableDevices()[$any($event.target).selectedIndex])">
           @for (device of availableDevices(); track device.deviceId) {
-            <option 
-              [value]="device.deviceId"
-              [selected]="currentDevice()?.deviceId === device.deviceId">
-              {{ device.label || 'Caméra' }}
-            </option>
+          <option [value]="device.deviceId" [selected]="currentDevice()?.deviceId === device.deviceId">
+            {{ device.label || 'Caméra' }}
+          </option>
           }
         </select>
       </div>
-    }
+      }
 
-    <!-- Scanner View -->
-    <div class="scanner-view">
-      <div class="camera-container">
-        <zxing-scanner
-          [device]="currentDevice()"
-          (scanSuccess)="onScanSuccess($event)"
-          (scanError)="onScanError($event)"
-          (camerasFound)="onCamerasFound($event)"
-          (permissionResponse)="onHasPermission($event)"
-          [formats]="allowedFormats"
-          class="qr-scanner">
-        </zxing-scanner>
+      <!-- Scanner View -->
+      <div class="scanner-view">
+        <div class="camera-container">
+          <zxing-scanner [device]="currentDevice()" (scanSuccess)="onScanSuccess($event)"
+            (scanError)="onScanError($event)" (camerasFound)="onCamerasFound($event)"
+            (permissionResponse)="onHasPermission($event)" [formats]="allowedFormats" class="qr-scanner">
+          </zxing-scanner>
 
-        <!-- Permission Denied -->
-        @if (hasPermission() === false) {
+          <!-- Permission Denied -->
+          @if (hasPermission() === false) {
           <div class="permission-error">
             <span class="material-symbols-outlined error-icon">videocam_off</span>
             <h3>Accès caméra refusé</h3>
             <p>Veuillez autoriser l'accès à la caméra pour scanner les QR codes</p>
           </div>
-        }
+          }
 
-        <!-- No Camera -->
-        @if (hasPermission() && !hasDevices()) {
+          <!-- No Camera -->
+          @if (hasPermission() && !hasDevices()) {
           <div class="no-camera">
             <span class="material-symbols-outlined error-icon">no_photography</span>
             <h3>Aucune caméra détectée</h3>
             <p>Veuillez connecter une caméra pour continuer</p>
           </div>
-        }
+          }
 
-        <!-- Scanning Indicator -->
-        @if (isScanning()) {
+          <!-- Scanning Indicator -->
+          @if (isScanning()) {
           <div class="scanning-overlay">
             <div class="spinner"></div>
             <p>Validation en cours...</p>
           </div>
-        }
+          }
 
-        <!-- Scan Frame Overlay -->
-        @if (hasPermission() && hasDevices() && !scanResult() && !scanError()) {
+          <!-- Scan Frame Overlay -->
+          @if (hasPermission() && hasDevices() && !scanResult() && !scanError()) {
           <div class="scan-frame">
             <div class="frame-corner top-left"></div>
             <div class="frame-corner top-right"></div>
@@ -77,12 +71,13 @@
             <div class="frame-corner bottom-right"></div>
             <p class="scan-instruction">Placez le QR code dans le cadre</p>
           </div>
-        }
-      </div>
+          }
+        </div>
       </div>
 
       <!-- Scan Result -->
-      <div *ngIf="scanResult()" class="scan-result" [ngClass]="getStatusClass()">
+      <div class="scan-result" [ngClass]="getStatusClass()">
+        @if (scanResult()) {
         <div class="result-icon">
           <span class="material-symbols-outlined">{{ getStatusIcon() }}</span>
         </div>
@@ -91,16 +86,18 @@
           <p><strong>Événement:</strong> {{ scanResult()?.ticket?.eventName }}</p>
           <p><strong>Billet ID:</strong> <code>{{ scanResult()?.ticket?.id }}</code></p>
           @if (scanResult()?.ticket?.seat) {
-            <p><strong>Place:</strong> {{ scanResult()?.ticket?.seat }}</p>
+          <p><strong>Place:</strong> {{ scanResult()?.ticket?.seat }}</p>
           }
           @if (scanResult()?.message) {
-            <p class="result-message">{{ scanResult()?.message }}</p>
+          <p class="result-message">{{ scanResult()?.message }}</p>
           }
         </div>
-      
+        }
 
-      <!-- Scan Error -->
-      @if (scanError()) {
+
+
+        <!-- Scan Error -->
+        @if (scanError()) {
         <div class="scan-result error">
           <div class="result-icon">
             <span class="material-symbols-outlined">error</span>
@@ -108,18 +105,19 @@
           <h3 class="result-title">Erreur</h3>
           <p class="result-message">{{ scanError() }}</p>
         </div>
-      }
-    </div>
-
-    <!-- Controller Info -->
-    <div class="controller-info">
-      <div class="info-item">
-        <span class="material-symbols-outlined">person</span>
-        <span>Contrôleur: {{ scannedBy }}</span>
+        }
       </div>
-      <div class="info-item">
-        <span class="material-symbols-outlined">location_on</span>
-        <span>Lieu: {{ location }}</span>
+
+      <!-- Controller Info -->
+      <div class="controller-info">
+        <div class="info-item">
+          <span class="material-symbols-outlined">person</span>
+          <span>Contrôleur: {{ scannedBy }}</span>
+        </div>
+        <div class="info-item">
+          <span class="material-symbols-outlined">location_on</span>
+          <span>Lieu: {{ location }}</span>
+        </div>
       </div>
     </div>
   </div>

@@ -6,11 +6,12 @@ import { BarcodeFormat } from '@zxing/library';
 import { AccessService } from '../../services/access.service';
 import { CheckInResponse } from '../../models/access.model';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
+import { SideBar } from '../../../../organizer/components/side-bar/side-bar';
 
 @Component({
   selector: 'app-qr-scanner',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZXingScannerModule, HeaderComponent],
+  imports: [CommonModule, FormsModule, ZXingScannerModule, SideBar],
   templateUrl: './qr-scanner.page.html',
   styleUrls: ['./qr-scanner.page.css']
 })

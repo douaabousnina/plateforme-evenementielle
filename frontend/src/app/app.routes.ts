@@ -15,4 +15,7 @@ export const routes: Routes = [
       ...organizerRoutes,
     ]
   },
+  {
+    path: "", redirectTo: "login", pathMatch: "full"
+  }
 ];

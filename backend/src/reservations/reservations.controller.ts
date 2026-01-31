@@ -24,7 +24,7 @@ import {
       @Body() lockSeatsDto: LockSeatsDto,
       @Req() req: any
     ) {
-      const userId = req.user.id;
+      const userId = req.user.sub;
   
       return await this.reservationsService.lockSeats(userId, lockSeatsDto);
     }
@@ -36,7 +36,7 @@ import {
       @Param('id') id: string,
       @Req() req: any
     ) {
-      const userId = req.user.id;
+      const userId = req.user.sub;
       
       return await this.reservationsService.confirm(id);
     }
@@ -48,7 +48,7 @@ import {
       @Param('id') id: string,
       @Req() req: any
     ) {
-      const userId = req.user.id;
+      const userId = req.user.sub;
       
       return await this.reservationsService.cancel(id);
     }
@@ -57,7 +57,7 @@ import {
     @Get('my-reservations')
     @UseGuards(JwtAuthGuard)
     async findMyReservations(@Req() req: any) {
-      const userId = req.user.id;
+      const userId = req.user.sub;
   
       return await this.reservationsService.findByUser(userId);
     }
@@ -69,7 +69,7 @@ import {
       @Param('id') id: string,
       @Req() req: any
     ) {
-      const userId = req.user.id;
+      const userId = req.user.sub;
       
       return await this.reservationsService.findById(id);
     }

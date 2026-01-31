@@ -1,57 +1,60 @@
-<app-header />
+<div class="flex h-screen w-screen overflow-hidden">
 
-<div class="scan-history-page">
-  <div class="scan-history-container">
+  <app-side-bar></app-side-bar>
 
-    <!-- Header -->
-    <div class="page-header">
-      <h1 class="page-title">Historique des Scans</h1>
-      <p class="page-subtitle">
-        Consultez l'historique des validations de billets pour vos événements
-      </p>
-    </div>
+  <div class="scan-history-page overflow-y-auto">
+    <div class="scan-history-container">
 
-    <!-- Loading State -->
-    @if (loading()) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-    </div>
-    }
+      <!-- Header -->
+      <div class="page-header">
+        <h1 class="page-title">Historique des Scans</h1>
+        <p class="page-subtitle">
+          Consultez l'historique des validations de billets pour vos événements
+        </p>
+      </div>
 
-    <!-- Empty State -->
-    @if (!loading() && eventStats().length === 0) {
-    <div class="empty-state">
-      <span class="material-symbols-outlined empty-icon">
-        qr_code_scanner
-      </span>
-      <p class="empty-text">Aucun scan enregistré</p>
-    </div>
-    }
-
-    <!-- Event Statistics -->
-    @if (!loading() && eventStats().length > 0) {
-    <div class="stats-container">
-
-      <!-- Summary Stats -->
-      <app-scan-stats-summary [totalEvents]="eventStats().length" [totalScans]="getTotalScans()"
-        [uniqueTickets]="getTotalUniqueTickets()">
-      </app-scan-stats-summary>
-
-      <!-- Event Cards -->
-      @for (event of eventStats(); track event.eventId) {
-      <app-event-stats-card [event]="event" [isExpanded]="isEventExpanded(event.eventId)"
-        (toggleExpand)="toggleEvent(event.eventId)">
-
-        <!-- Scan Details (expanded) -->
-        @if (isEventExpanded(event.eventId)) {
-        <app-scan-details-table [scans]="event.scans">
-        </app-scan-details-table>
-        }
-
-      </app-event-stats-card>
+      <!-- Loading State -->
+      @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+      </div>
       }
-    </div>
-    }
 
+      <!-- Empty State -->
+      @if (!loading() && eventStats().length === 0) {
+      <div class="empty-state">
+        <span class="material-symbols-outlined empty-icon">
+          qr_code_scanner
+        </span>
+        <p class="empty-text">Aucun scan enregistré</p>
+      </div>
+      }
+
+      <!-- Event Statistics -->
+      @if (!loading() && eventStats().length > 0) {
+      <div class="stats-container">
+
+        <!-- Summary Stats -->
+        <app-scan-stats-summary [totalEvents]="eventStats().length" [totalScans]="getTotalScans()"
+          [uniqueTickets]="getTotalUniqueTickets()">
+        </app-scan-stats-summary>
+
+        <!-- Event Cards -->
+        @for (event of eventStats(); track event.eventId) {
+        <app-event-stats-card [event]="event" [isExpanded]="isEventExpanded(event.eventId)"
+          (toggleExpand)="toggleEvent(event.eventId)">
+
+          <!-- Scan Details (expanded) -->
+          @if (isEventExpanded(event.eventId)) {
+          <app-scan-details-table [scans]="event.scans">
+          </app-scan-details-table>
+          }
+
+        </app-event-stats-card>
+        }
+      </div>
+      }
+
+    </div>
   </div>
 </div>

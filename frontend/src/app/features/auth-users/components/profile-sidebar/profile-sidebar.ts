@@ -22,7 +22,7 @@ export class ProfileSidebar {
   userInfo = computed(() => {
     const user = this.userService.userProfile();
     return {
-      name: user?.name || 'Utilisateur',
+      name: user?.name || 'Thomas',
       role: user?.role as Role | null
     };
   });

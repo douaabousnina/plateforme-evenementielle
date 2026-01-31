@@ -13,7 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
 
 /** App display name for client area (configurable, not hardcoded in templates). */
-export const CLIENT_APP_NAME = 'EventMaster';
+export const CLIENT_APP_NAME = 'EventLife';
 
 /** Default date locale for formatting. */
 const DATE_LOCALE = 'fr-FR';
@@ -112,7 +112,7 @@ export class ClientDashboardService {
   }
 
   private fetchDashboardData(): Observable<ClientDashboardData> {
-    const userName = this.getUserDisplayName() || 'Utilisateur';
+    const userName = this.getUserDisplayName() || 'Thomas';
     return this.api.get<unknown>('events/featured').pipe(
       map((response) => this.mapApiResponseToDashboard(response, userName)),
       catchError(() => of(this.getMockDashboardData()))
@@ -157,7 +157,7 @@ export class ClientDashboardService {
   }
 
   private getMockDashboardData(): ClientDashboardData {
-    const userName = this.getUserDisplayName() || 'Utilisateur';
+    const userName = this.getUserDisplayName() || 'Thomas';
     const dateLabel = this.formatCurrentDate();
     return {
       welcome: {

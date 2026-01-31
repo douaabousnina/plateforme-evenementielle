@@ -8,9 +8,11 @@ import { UserRole } from '../../core/services/auth.service';
 
 export const accessRoutes: Routes = [
   { path: 'my-tickets', component: MyTicketsComponent },
-  { path: 'scanner', component: QrScannerComponent },
+
+
+  { path: 'dashboard/scanner', component: QrScannerComponent },
   { 
-    path: 'scan-history', 
+    path: 'dashboard/scan-history', 
     component: ScanHistoryComponent,
      //canActivate: [roleGuard],
      //data: { roles: [UserRole.ORGANIZER] }
