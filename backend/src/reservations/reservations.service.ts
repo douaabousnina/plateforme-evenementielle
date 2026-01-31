@@ -100,12 +100,19 @@ export class ReservationsService {
 
         // Generate tickets for the confirmed reservation
         try {
-            const event = await this.eventRepo.findOne({ where: { id: reservation.eventId } });
+            const event = await this.eventRepo.findOne({ 
+                where: { id: reservation.eventId },
+                relations: ['location'] // Load location relation
+            });
             if (event) {
-                await this.accessService.generateTicketsForReservation(reservation, event);
+                console.log('Generating tickets for reservation', reservation.id, 'with seats:', reservation.seats.map(s => s.id));
+                const tickets = await this.accessService.generateTicketsForReservation(reservation, event);
+                console.log('Successfully generated', tickets.length, 'tickets');
+            } else {
+                console.warn('Event not found for reservation', reservation.id);
             }
         } catch (error) {
-            console.error('Failed to generate tickets:', error);
+            console.error('Failed to generate tickets:', error.message, error.stack);
             // Don't throw error to prevent payment confirmation failure
         }
 

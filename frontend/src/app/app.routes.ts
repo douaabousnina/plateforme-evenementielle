@@ -6,21 +6,13 @@ import { accessRoutes } from './features/access/access.routes';
 import { clientRoutes } from './features/client/client.routes';
 
 export const routes: Routes = [
-  {
-    path: "", children: [
-      ...authRoutes,
-      ...clientRoutes,
-      ...reservationRoutes,
-      ...accessRoutes,
-    ]
-  },
+  ...authRoutes,
+  ...clientRoutes,
+  ...reservationRoutes,
+  ...accessRoutes,
   {
     path: "dashboard", children: [
       ...organizerRoutes,
     ]
-  },
-  {
-    path: '',
-    redirectTo: '',
   },
 ];

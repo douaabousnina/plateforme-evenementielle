@@ -3,8 +3,9 @@
   <div class="h-40 bg-slate-200 relative overflow-hidden">
     <img
       [alt]="e.title"
-      [src]="e.imageUrl"
+      [src]="e.imageUrl || 'assets/image.png'"
       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      onerror="this.src='assets/image.png'"
     />
     <div class="absolute top-3 left-3 bg-white/90 backdrop-blur text-slate-900 text-xs font-bold px-2 py-1 rounded">
       {{ e.dateLabel }}

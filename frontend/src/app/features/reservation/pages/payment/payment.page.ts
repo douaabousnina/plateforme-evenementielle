@@ -10,6 +10,7 @@ import { SeatCartSummaryComponent } from '../../components/seat-cart-summary/sea
 import { CartService } from '../../services/cart.service';
 import { ReservationService } from '../../services/reservation.service';
 import { PaymentService } from '../../services/payment.service';
+import { UserService } from '../../../auth-users/services/user.service';
 import { createBreadcrumbSteps } from '../../../../core/config/breadcrumb.config';
 import { ContactInfo, PaymentInfo } from '../../models/payment.model';
 import { TimerComponent } from '../../components/timer/timer.component';
@@ -35,15 +36,26 @@ export class PaymentPage {
   private reservationService = inject(ReservationService);
   private paymentService = inject(PaymentService);
   private timerService = inject(TimerService);
+  private userService = inject(UserService);
 
   breadcrumbSteps = signal(createBreadcrumbSteps('payment'));
   reservationId = signal<string | null>(this.route.snapshot.paramMap.get('reservationId'));
 
-  // TODO: mock data => auth service
-  contactInfo = signal<ContactInfo>({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com'
+  // Get contact info from user profile
+  contactInfo = computed(() => {
+    const user = this.userService.userProfile();
+    if (user) {
+      return {
+        firstName: user.name || '',
+        lastName: user.lastName || '',
+        email: user.email
+      };
+    }
+    return {
+      firstName: '',
+      lastName: '',
+      email: ''
+    };
   });
 
   paymentInfo = signal<PaymentInfo | null>(null);
@@ -54,7 +66,7 @@ export class PaymentPage {
   cartServiceFee = this.cartService.serviceFee;
   cartTotal = this.cartService.total;
   selectedSeats = this.cartService.reservedSeats;
-  loading = computed(() => this.reservationService.loading() || this.paymentService.loading());
+  loading = computed(() => this.reservationService.loading() || this.paymentService.loading() || this.userService.isLoading());
 
   constructor() {
     effect(() => {
@@ -65,6 +77,13 @@ export class PaymentPage {
         alert("no res id");
       }
       this.timerService.start();
+    });
+
+    // Load user profile for contact info
+    effect(() => {
+      if (!this.userService.userProfile()) {
+        this.userService.loadProfile();
+      }
     });
   }
 

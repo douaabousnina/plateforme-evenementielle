@@ -2,7 +2,7 @@ import { Component, signal, computed, inject, effect } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { InteractiveSeatMapComponent } from '../../components/interactive-seat-map/interactive-seat-map.component';
 import { SeatCartSummaryComponent } from '../../components/seat-cart-summary/seat-cart-summary.component';
 import { SeatService } from '../../services/seat.service';
@@ -78,8 +78,16 @@ export class SeatSelectionPage {
   }
 
   private loadData(eventId: string): void {
-    this.seatService.loadSeatsByEventId(eventId).subscribe();
-    this.eventService.loadEventById(eventId).subscribe();
+    // Load event first, then seats from the event data
+    this.eventService.loadEventById(eventId).pipe(
+      switchMap(() => this.seatService.loadSeatsByEventId(eventId))
+    ).subscribe();
+  }
+
+  getLocationString(location: any): string {
+    if (!location) return 'Lieu à déterminer';
+    if (typeof location === 'string') return location;
+    return location.city || location.venue || location.address || 'Lieu à déterminer';
   }
 
   handleSeatSelection(seat: Seat): void { this.cartService.toggleSeat(seat); }

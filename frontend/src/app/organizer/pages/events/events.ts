@@ -27,7 +27,7 @@ export class Events implements OnInit {
   }
 
   getTotalRevenue(events: Event[]): string {
-    // Exemple avec prix moyen de 30€ par billet
+    // Exemple avec prix moyen de 30TND par billet
     const ticketsSold = this.getTotalTicketsSold(events);
     const revenue = ticketsSold * 30;
     return new Intl.NumberFormat('fr-FR', { 
