@@ -1,36 +1,30 @@
 <section>
   <div class="flex items-center gap-4 mb-6">
-    <h3 class="text-2xl text-white font-bold">{{ sectionTitle() }}</h3>
+    <h3 class="text-2xl text-slate-900 font-bold">{{ sectionTitle() }}</h3>
     @if (rating() != null && reviewCount() != null) {
-      <div class="flex items-center gap-1 bg-slate-800 px-3 py-1 rounded-full">
-        <span class="material-symbols-outlined text-yellow-400 text-sm">star</span>
-        <span class="text-white font-bold text-sm">{{ rating() }}</span>
-        <span class="text-slate-400 text-xs">({{ reviewCount() }} avis)</span>
+      <div class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+        <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
+        <span class="text-slate-900 font-bold text-sm">{{ rating() }}</span>
+        <span class="text-slate-500 text-xs">({{ reviewCount() }} avis)</span>
       </div>
     }
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     @for (r of reviews(); track r.id) {
-      <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+      <div class="bg-white p-4 rounded-xl border border-gray-200">
         <div class="flex items-center gap-3 mb-3">
-          @if (r.authorAvatarUrl) {
-            <img [src]="r.authorAvatarUrl" [alt]="r.authorName" class="w-10 h-10 rounded-full object-cover" />
-          } @else {
-            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
-              <span class="material-symbols-outlined text-slate-400">person</span>
-            </div>
-          }
+            <img [src]="r.authorAvatarUrl || 'assets/image.png'" [alt]="r.authorName" class="w-10 h-10 rounded-full object-cover" onerror="this.src='assets/image.png'" />
           <div>
-            <p class="text-white text-sm font-bold">{{ r.authorName }}</p>
-            <p class="text-slate-400 text-xs">{{ r.timeAgo }}</p>
+            <p class="text-slate-900 text-sm font-bold">{{ r.authorName }}</p>
+            <p class="text-slate-500 text-xs">{{ r.timeAgo }}</p>
           </div>
-          <div class="ml-auto flex text-yellow-400">
+          <div class="ml-auto flex text-yellow-500">
             @for (star of [1,2,3,4,5]; track star) {
               <span class="material-symbols-outlined text-[16px]">{{ star <= r.rating ? 'star' : (star - 0.5 <= r.rating ? 'star_half' : 'star') }}</span>
             }
           </div>
         </div>
-        <p class="text-slate-300 text-sm">{{ r.content }}</p>
+        <p class="text-slate-600 text-sm">{{ r.content }}</p>
       </div>
     }
   </div>

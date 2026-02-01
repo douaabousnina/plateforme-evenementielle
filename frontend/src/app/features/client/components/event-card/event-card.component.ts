@@ -10,6 +10,5 @@ import { UpcomingEventCard } from '../../models/client-dashboard.model';
   styleUrls: ['./event-card.component.css'],
 })
 export class EventCardComponent {
-  /** Single upcoming event – no hardcoding. */
   event = input.required<UpcomingEventCard>();
 }

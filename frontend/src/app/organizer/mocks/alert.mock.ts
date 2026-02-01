@@ -13,7 +13,7 @@ export const MOCK_ALERTS_DATA: AlertsResponse = {
       id: '2',
       type: 'success',
       title: 'Paiement reçu',
-      message: 'Nouveau paiement de 1,250€ reçu',
+      message: 'Nouveau paiement de 1,250TND reçu',
       time: 'Il y a 1h',
       icon: 'check_circle'
     },

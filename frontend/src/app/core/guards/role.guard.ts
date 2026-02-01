@@ -1,17 +1,22 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
-import { AuthService, UserRole } from '../services/auth.service';
+import { AuthService } from '../../features/auth-users/services/auth.service';
+import { Role } from '../../features/auth-users/models/auth.model';
 
 export const roleGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   
-  const requiredRoles = route.data['roles'] as UserRole[];
+  const requiredRoles = route.data['roles'] as Role[];
+  const redirectIfNotAuth = route.data['redirectIfNotAuth'] as string || '/';
+  const redirectIfNoRole = route.data['redirectIfNoRole'] as string || '/';
+  const accessDeniedMessage = route.data['accessDeniedMessage'] as string;
+  
   const currentUser = authService.getCurrentUser();
 
   if (!currentUser) {
     // No user logged in
-    router.navigate(['/']);
+    router.navigate([redirectIfNotAuth]);
     return false;
   }
 
@@ -20,8 +25,10 @@ export const roleGuard: CanActivateFn = (route, state) => {
     
     if (!hasRole) {
       // User doesn't have required role
-      alert('Access denied. This page is only accessible to organizers.');
-      router.navigate(['/']);
+      if (accessDeniedMessage) {
+        alert(accessDeniedMessage);
+      }
+      router.navigate([redirectIfNoRole]);
       return false;
     }
   }

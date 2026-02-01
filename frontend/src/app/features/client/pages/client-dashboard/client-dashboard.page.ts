@@ -1,16 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ClientHeaderComponent } from '../../components/client-header/client-header.component';
 import { WelcomeSectionComponent } from '../../components/welcome-section/welcome-section.component';
 import { UpcomingEventsCarouselComponent } from '../../components/upcoming-events-carousel/upcoming-events-carousel.component';
 import { RecommendationsSectionComponent } from '../../components/recommendations-section/recommendations-section.component';
 import { ClientSidebarComponent } from '../../components/client-sidebar/client-sidebar.component';
 import { ClientDashboardService } from '../../services/client-dashboard.service';
+import { HeaderComponent } from '../../../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-client-dashboard',
   standalone: true,
   imports: [
-    ClientHeaderComponent,
+    HeaderComponent,
     WelcomeSectionComponent,
     UpcomingEventsCarouselComponent,
     RecommendationsSectionComponent,

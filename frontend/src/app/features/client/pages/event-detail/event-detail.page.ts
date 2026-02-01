@@ -1,43 +1,41 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MarketplaceService } from '../../services/marketplace.service';
-import { EventDetailHeaderComponent } from '../../components/event-detail-header/event-detail-header.component';
+import { EventService } from '../../../reservation/services/event.service';
+import { Event } from '../../../reservation/models/event.model';
+import { EventDetail } from '../../models/event-detail.model';
 import { EventDetailHeroComponent } from '../../components/event-detail-hero/event-detail-hero.component';
 import { EventDetailDescriptionComponent } from '../../components/event-detail-description/event-detail-description.component';
-import { EventDetailLineupComponent } from '../../components/event-detail-lineup/event-detail-lineup.component';
-import { EventDetailSeatMapComponent } from '../../components/event-detail-seat-map/event-detail-seat-map.component';
 import { EventDetailReviewsComponent } from '../../components/event-detail-reviews/event-detail-reviews.component';
 import { EventDetailTicketCardComponent } from '../../components/event-detail-ticket-card/event-detail-ticket-card.component';
 import { BreadcrumbComponent } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { BreadcrumbStep } from '../../../../core/models/breadcrumb.model';
+import { HeaderComponent } from '../../../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-event-detail-page',
   standalone: true,
   imports: [
-    EventDetailHeaderComponent,
     BreadcrumbComponent,
     EventDetailHeroComponent,
     EventDetailDescriptionComponent,
-    EventDetailLineupComponent,
-    EventDetailSeatMapComponent,
     EventDetailReviewsComponent,
     EventDetailTicketCardComponent,
+    HeaderComponent
   ],
   templateUrl: './event-detail.page.html',
   styleUrls: ['./event-detail.page.css'],
 })
 export class EventDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly marketplace = inject(MarketplaceService);
+  private readonly eventService = inject(EventService);
 
-  readonly event = signal<import('../../models/event-detail.model').EventDetail | null>(null);
-  readonly ticketOptions = signal<import('../../models/event-detail.model').EventDetailTicketOption[]>([]);
-  readonly artists = signal<import('../../models/event-detail.model').EventDetailArtist[]>([]);
-  readonly reviews = signal<import('../../models/event-detail.model').EventDetailReview[]>([]);
-  readonly seatMapSections = signal<import('../../models/event-detail.model').SeatMapSection[]>([]);
-  readonly loading = signal(true);
-  readonly error = signal<string | null>(null);
+  readonly event = signal<EventDetail | null>(null);
+  readonly loading = this.eventService.loading;
+  readonly error = this.eventService.error;
+  readonly artists = signal<any[]>([]);
+  readonly reviews = signal<any[]>([]);
+  readonly seatMapSections = signal<any[]>([]);
+  readonly ticketOptions = signal<any[]>([]);
   readonly descriptionHighlights = signal<string[]>([
     '3 Scènes thématiques',
     'Installations d\'art numérique interactives',
@@ -48,8 +46,8 @@ export class EventDetailPage implements OnInit {
     const ev = this.event();
     if (!ev) return [];
     return [
-      { label: 'Accueil', route: '/client/marketplace', completed: true, active: false, stepNumber: 1 },
-      { label: ev.categoryLabel, route: `/client/marketplace?category=${ev.category}`, completed: true, active: false, stepNumber: 2 },
+      { label: 'Accueil', route: '/client/events', completed: true, active: false, stepNumber: 1 },
+      { label: ev.category || 'Événement', route: `/client/events?category=${ev.category}`, completed: true, active: false, stepNumber: 2 },
       { label: ev.title, route: '', completed: false, active: true, stepNumber: 3 },
     ];
   });
@@ -57,22 +55,59 @@ export class EventDetailPage implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.error.set('Événement introuvable');
-      this.loading.set(false);
+      this.eventService.error.set('Événement introuvable');
       return;
     }
-    this.marketplace.getEventDetail(id).subscribe((data) => {
-      this.loading.set(false);
-      if (!data) {
-        this.error.set('Événement introuvable');
-        return;
+    this.eventService.loadEventById(id).subscribe({
+      next: (data) => {
+        this.event.set(this.mapEventToEventDetail(data));
+      },
+      error: (err) => {
+        this.eventService.error.set('Événement introuvable');
       }
-      this.event.set(data.event);
-      this.ticketOptions.set(data.ticketOptions);
-      this.artists.set(data.artists);
-      this.reviews.set(data.reviews);
-      this.seatMapSections.set(data.seatMapSections);
     });
+  }
+
+  private mapEventToEventDetail(event: Event): EventDetail {
+    const startDate = new Date(event.startDate);
+    const dateLabel = startDate.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    const startTime = new Date(event.startTime).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const endTime = new Date(event.endTime).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    return {
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      category: event.category,
+      categoryLabel: event.category.charAt(0).toUpperCase() + event.category.slice(1),
+      tags: [],
+      date: startDate,
+      dateLabel,
+      timeRange: `${startTime} - ${endTime}`,
+      venueName: event.location?.venueName || 'Lieu à déterminer',
+      address: event.location?.address || '',
+      city: event.location?.city,
+      country: event.location?.country,
+      organizerId: event.organizerId,
+      organizerName: 'Organizer Name',
+      images: event.gallery || [],
+      bannerImage: event.coverImage,
+      priceFrom: 0,
+      priceCurrency: 'TND',
+      isAvailable: (event.availableCapacity ?? 0) > 0,
+      availabilityLabel: (event.availableCapacity ?? 0) > 0 ? 'Places disponibles' : 'Événement complet'
+    };
   }
 
   onReserve(payload: { ticketId: string; quantity: number }): void {

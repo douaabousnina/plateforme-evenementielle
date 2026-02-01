@@ -3,8 +3,9 @@
   <div class="h-40 bg-slate-200 relative overflow-hidden">
     <img
       [alt]="e.title"
-      [src]="e.imageUrl"
+      [src]="e.imageUrl || 'assets/image.png'"
       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      onerror="this.src='assets/image.png'"
     />
     <div class="absolute top-3 left-3 bg-white/90 backdrop-blur text-slate-900 text-xs font-bold px-2 py-1 rounded">
       {{ e.dateLabel }}
@@ -20,7 +21,7 @@
     </div>
     <div class="flex items-center justify-between mt-auto pt-2 border-t border-slate-100 dark:border-white/10">
       <span class="text-sm font-medium text-slate-900 dark:text-gray-300">{{ e.ticketLabel }}</span>
-      <a [routerLink]="['/access/my-tickets']" class="text-primary text-sm font-bold px-3 py-1.5 bg-primary/10 rounded-lg hover:bg-primary hover:text-white transition-colors">
+      <a [routerLink]="['/client/my-tickets']" class="text-primary text-sm font-bold px-3 py-1.5 bg-primary/10 rounded-lg hover:bg-primary hover:text-white transition-colors">
         Voir billets
       </a>
     </div>

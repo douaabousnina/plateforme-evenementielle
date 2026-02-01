@@ -1,11 +1,16 @@
 ﻿/* Main Container */
 .scan-history-page {
-  min-height: 100vh;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: linear-gradient(135deg, #eef2ff 0%, #ffffff 50%, #faf5ff 100%);
+  min-height: 100vh;
+  height: 100vh;
 }
 
 .scan-history-container {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }

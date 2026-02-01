@@ -254,7 +254,7 @@ export class MarketplaceService {
       reviewCount,
       badge,
       priceFrom: basePrice,
-      priceCurrency: '€',
+      priceCurrency: 'TND',
       category: CATEGORY_LABELS[category] ?? category,
     };
   }
@@ -282,7 +282,7 @@ export class MarketplaceService {
         reviewCount: 128,
         badge: { kind: 'vip', label: 'VIP Dispo', icon: 'diamond' },
         priceFrom: 45,
-        priceCurrency: '€',
+        priceCurrency: 'TND',
       },
       {
         id: '2',
@@ -295,7 +295,7 @@ export class MarketplaceService {
         reviewCount: 84,
         badge: { kind: 'low_stock', label: 'Peu de places', icon: 'local_fire_department' },
         priceFrom: 120,
-        priceCurrency: '€',
+        priceCurrency: 'TND',
       },
       {
         id: '3',
@@ -307,7 +307,7 @@ export class MarketplaceService {
         rating: 4.7,
         reviewCount: 210,
         priceFrom: 85,
-        priceCurrency: '€',
+        priceCurrency: 'TND',
       },
       {
         id: '4',
@@ -319,7 +319,7 @@ export class MarketplaceService {
         rating: 4.2,
         reviewCount: 45,
         priceFrom: 25,
-        priceCurrency: '€',
+        priceCurrency: 'TND',
       },
       {
         id: '5',
@@ -331,7 +331,7 @@ export class MarketplaceService {
         rating: 5,
         reviewCount: 12,
         priceFrom: 15,
-        priceCurrency: '€',
+        priceCurrency: 'TND',
       },
       {
         id: '6',
@@ -344,7 +344,7 @@ export class MarketplaceService {
         reviewCount: 340,
         badge: { kind: 'vip', label: 'VIP Dispo', icon: 'diamond' },
         priceFrom: 30,
-        priceCurrency: '€',
+        priceCurrency: 'TND',
       },
     ];
     return {
@@ -381,7 +381,7 @@ export class MarketplaceService {
       images: images.length ? images : [banner].filter(Boolean),
       bannerImage: banner || undefined,
       priceFrom: Number(e['basePrice'] ?? 45),
-      priceCurrency: '€',
+      priceCurrency: 'TND',
       isAvailable: available > 0,
       availabilityLabel: available > 0 ? 'Dispo' : 'Complet',
       rating: 4.8,
