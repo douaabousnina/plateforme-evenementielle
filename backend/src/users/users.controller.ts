@@ -66,13 +66,13 @@ export class UsersController {
   }
 
 
-  @Get(':id')
+  /*@Get(':id')
     @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.ADMIN)
   findOne(@Param('id') id: string) {
     return this.usersService.findById(+id);
   }
-  
+  */
 
   @Get('by-email/:email')
   @UseGuards(JwtAuthGuard,RolesGuard)
@@ -81,12 +81,12 @@ export class UsersController {
     return this.usersService.findByEmail(email);
   }
  
-  @Patch(':id')
+  /*@Patch(':id')
    @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.ADMIN)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
-  }
+  }*/
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard,RolesGuard)

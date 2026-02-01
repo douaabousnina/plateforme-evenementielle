@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+/*import { Injectable, signal } from '@angular/core';
 
 export enum UserRole {
   CLIENT = 'client',
@@ -42,3 +42,4 @@ export class AuthService {
     this.currentUser.set(null);
   }
 }
+*/
