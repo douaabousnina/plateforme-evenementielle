@@ -17,20 +17,20 @@ export class AccessService {
     private ticketRepository: Repository<Ticket>,
     @InjectRepository(ScanLog)
     private scanLogRepository: Repository<ScanLog>,
-  ) {}
+  ) { }
 
   /**
    * Generate a secure QR code for a ticket
    */
   async generateQrCode(ticketId: string): Promise<{ qrCode: string; qrToken: string }> {
     const ticket = await this.ticketRepository.findOne({ where: { id: ticketId } });
-    
+
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
     }
 
     const qrToken = this.generateSecureToken(ticketId);
-    
+
     const qrData = JSON.stringify({
       ticketId,
       eventId: ticket.eventId,
@@ -75,7 +75,7 @@ export class AccessService {
           location: dto.location,
           deviceInfo: dto.deviceInfo,
         });
-        
+
         return {
           success: false,
           message: 'Ticket invalide',
@@ -95,7 +95,7 @@ export class AccessService {
           location: dto.location,
           deviceInfo: dto.deviceInfo,
         });
-        
+
         return {
           success: false,
           message: 'Billet expiré',
@@ -118,7 +118,7 @@ export class AccessService {
           location: dto.location,
           deviceInfo: dto.deviceInfo,
         });
-        
+
         return {
           success: false,
           message: `Déjà scanné le ${ticket.scannedAt?.toLocaleString('fr-FR')}`,
@@ -142,7 +142,7 @@ export class AccessService {
           location: dto.location,
           deviceInfo: dto.deviceInfo,
         });
-        
+
         return {
           success: false,
           message: 'Token invalide',
@@ -164,7 +164,7 @@ export class AccessService {
           location: dto.location,
           deviceInfo: dto.deviceInfo,
         });
-        
+
         return {
           success: false,
           message: 'QR code expiré, veuillez rafraîchir',
@@ -212,7 +212,7 @@ export class AccessService {
       } catch (logError) {
         console.error('Failed to log invalid scan:', logError);
       }
-      
+
       return {
         success: false,
         message: 'QR code invalide',
@@ -226,13 +226,13 @@ export class AccessService {
    */
   async refreshQrCode(ticketId: string): Promise<{ qrCode: string; qrToken: string }> {
     const ticket = await this.ticketRepository.findOne({ where: { id: ticketId } });
-    
+
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
     }
 
     const qrToken = this.generateSecureToken(ticketId);
-    
+
     const qrData = JSON.stringify({
       ticketId,
       eventId: ticket.eventId,
@@ -274,53 +274,64 @@ export class AccessService {
   async generateTicketsForReservation(reservation: any, event: any): Promise<Ticket[]> {
     const tickets: Ticket[] = [];
 
+    // Validate input
+    if (!reservation.seats || reservation.seats.length === 0) {
+      console.warn('No seats found for reservation', reservation.id);
+      return tickets;
+    }
+
     // Create a ticket for each reserved seat
     for (const seat of reservation.seats) {
-      // Generate UUID upfront to avoid double-save
-      const ticketId = crypto.randomUUID();
-      const qrToken = this.generateSecureToken(`${reservation.id}-${seat.id}`);
-      
-      const qrData = JSON.stringify({
-        ticketId,
-        eventId: event.id,
-        userId: reservation.userId,
-        token: qrToken,
-        timestamp: Date.now(),
-      });
+      try {
+        // Generate UUID upfront to avoid double-save
+        const ticketId = crypto.randomUUID();
+        const qrToken = this.generateSecureToken(`${reservation.id}-${seat.id}`);
 
-      const qrCode = await QRCode.toDataURL(qrData, {
-        width: 400,
-        margin: 2,
-        color: {
-          dark: '#5B47FB',
-          light: '#FFFFFF',
-        },
-      });
+        const qrData = JSON.stringify({
+          ticketId,
+          eventId: event.id,
+          userId: reservation.userId,
+          token: qrToken,
+          timestamp: Date.now(),
+        });
 
-      const ticket = this.ticketRepository.create({
-        id: ticketId,
-        eventId: event.id,
-        eventName: event.title,
-        eventDate: event.date,
-        eventLocation: `${event.venueName || ''}, ${event.city}`,
-        eventImage: event.image,
-        userId: reservation.userId,
-        orderId: reservation.id,
-        qrCode,
-        qrToken,
-        gate: seat.section,
-        row: seat.row,
-        seat: seat.number?.toString(),
-        zone: seat.section,
-        access: 'Standard',
-        category: seat.category || 'General',
-        price: seat.price,
-        status: TicketStatus.CONFIRMED,
-        expiresAt: new Date(event.date.getTime() + 24 * 60 * 60 * 1000), // Event date + 1 day
-      });
+        const qrCode = await QRCode.toDataURL(qrData, {
+          width: 400,
+          margin: 2,
+          color: {
+            dark: '#5B47FB',
+            light: '#FFFFFF',
+          },
+        });
 
-      const savedTicket = await this.ticketRepository.save(ticket);
-      tickets.push(savedTicket);
+        const ticketData = {
+          id: ticketId,
+          eventId: event.id,
+          eventName: event.title,
+          eventDate: event.startDate,
+          eventLocation: event.location ? `${event.location.venueName || ''}, ${event.location.city}` : 'TBD',
+          eventImage: event.coverImage,
+          userId: reservation.userId,
+          orderId: reservation.id,
+          qrCode,
+          qrToken,
+          gate: seat.section,
+          row: seat.row,
+          seat: seat.number?.toString(),
+          zone: seat.section,
+          access: 'Standard',
+          category: seat.category || 'General',
+          price: seat.price,
+          status: TicketStatus.CONFIRMED,
+          expiresAt: new Date(event.startDate.getTime() + 24 * 60 * 60 * 1000),
+        };
+
+        const savedTicket = await this.ticketRepository.save(ticketData);
+        tickets.push(savedTicket);
+
+      } catch (error) {
+        console.error('Error saving ticket for seat', seat.id, ':', error.message, error.stack);
+      }
     }
 
     return tickets;

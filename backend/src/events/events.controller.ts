@@ -42,7 +42,7 @@ export class EventsController {
     @Req() req: any // TODO: Replace with proper Request type
   ) {
     // TODO: Get organizerId from JWT token
-    // const organizerId = req.user.id;
+    // const organizerId = req.user.sub;
     const organizerId = 'temp-organizer-id'; // Temporary for testing
 
     return await this.eventsService.create(createEventDto, organizerId);
@@ -68,7 +68,7 @@ export class EventsController {
     @Req() req: any
   ) {
     // TODO: Get organizerId from JWT token
-    // const organizerId = req.user.id;
+    // const organizerId = req.user.sub;
     const organizerId = 'temp-organizer-id'; // Temporary
 
     return await this.eventsService.findAll(filterDto, organizerId);

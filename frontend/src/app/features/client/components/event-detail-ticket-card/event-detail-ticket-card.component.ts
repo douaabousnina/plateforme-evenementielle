@@ -1,4 +1,5 @@
 import { Component, input, output, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventDetail, EventDetailTicketOption } from '../../models/event-detail.model';
@@ -6,7 +7,7 @@ import { EventDetail, EventDetailTicketOption } from '../../models/event-detail.
 @Component({
   selector: 'app-event-detail-ticket-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './event-detail-ticket-card.component.html',
   styleUrls: ['./event-detail-ticket-card.component.css'],
 })

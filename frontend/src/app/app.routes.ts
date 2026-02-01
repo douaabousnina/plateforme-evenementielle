@@ -11,11 +11,16 @@ export const routes: Routes = [
         path: 'admin',
         children: ADMIN_ROUTES
     },
-  ...reservationRoutes,
-  ...organizerRoutes,
   ...authRoutes,
+  ...clientRoutes,
+  ...reservationRoutes,
+  ...accessRoutes,
   {
-    path: 'client',
-    children: [...clientRoutes, ...accessRoutes]
+    path: "dashboard", children: [
+      ...organizerRoutes,
+    ]
   },
+  {
+    path: "", redirectTo: "login", pathMatch: "full"
+  }
 ];

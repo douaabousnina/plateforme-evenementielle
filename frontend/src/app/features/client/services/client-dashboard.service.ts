@@ -12,7 +12,7 @@ import {
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../auth-users/services/auth.service';
 /** App display name for client area (configurable, not hardcoded in templates). */
-export const CLIENT_APP_NAME = 'EventMaster';
+export const CLIENT_APP_NAME = 'EventLife';
 
 /** Default date locale for formatting. */
 const DATE_LOCALE = 'fr-FR';
@@ -156,7 +156,7 @@ export class ClientDashboardService {
   }
 
   private getMockDashboardData(): ClientDashboardData {
-    const userName = this.getUserDisplayName() || 'Utilisateur';
+    const userName = this.getUserDisplayName() || 'Thomas';
     const dateLabel = this.formatCurrentDate();
     return {
       welcome: {

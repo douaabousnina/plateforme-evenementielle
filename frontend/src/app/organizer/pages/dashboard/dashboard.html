@@ -2,82 +2,39 @@
 	<app-side-bar></app-side-bar>
 
 	<main class="flex-1 flex flex-col h-full overflow-hidden bg-background-light dark:bg-background-dark relative">
-		<!-- Top Header - Fixed -->
-		<header class="flex-shrink-0 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-white/5 px-6 py-5 shadow-sm">
-			<div class="max-w-[1400px] mx-auto flex flex-wrap justify-between items-end gap-4">
-				<div class="flex flex-col gap-1">
-					<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-						Bonjour, Thomas 👋
-					</h1>
-					<p class="text-slate-500 dark:text-text-secondary text-base">
-						Voici vos performances du jour.
-					</p>
-				</div>
-				<div class="flex items-center gap-3">
-					<button class="relative p-2.5 rounded-xl text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-white/10 transition-all duration-200 hover:scale-105">
-						<span class="material-symbols-outlined icon-filled text-[22px]">notifications</span>
-						<span class="absolute top-1.5 right-1.5 size-2.5 bg-red-500 rounded-full border-2 border-background-light dark:border-background-dark animate-pulse"></span>
-					</button>
-					<div class="h-8 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
-					<button class="flex items-center gap-2 h-10 px-5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all duration-200 hover:scale-105 shadow-lg shadow-primary/25">
-						<span class="material-symbols-outlined text-[20px]">download</span>
-						<span class="hidden sm:block">Exporter le rapport</span>
-					</button>
-				</div>
-			</div>
-		</header>
-
 		<!-- Scrollable Content -->
 		<div class="flex-1 overflow-y-auto custom-scrollbar">
 			<div class="p-6 max-w-[1400px] mx-auto w-full space-y-8 pb-20">
-				
+
 				<!-- KPI Cards Row -->
 				@if(kpiService.loading()) {
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-						@for (i of [1,2,3,4]; track i) {
-							<div class="h-32 rounded-2xl bg-slate-100 dark:bg-white/5 animate-pulse"></div>
-						}
-					</div>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+					@for (i of [1,2,3,4]; track i) {
+					<div class="h-32 rounded-2xl bg-slate-100 dark:bg-white/5 animate-pulse"></div>
+					}
+				</div>
 				}
-				
+
 				@if(kpiService.kpiData(); as kpis) {
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-						<app-kpi-card 
-							[title]="kpis.revenue.title"
-							[value]="kpis.revenue.value"
-							[icon]="'attach_money'"
-							[trendIcon]="kpis.revenue.trendIcon"
-							[trend]="kpis.revenue.trend"
-							[sub]="kpis.revenue.sub">
-						</app-kpi-card>
-						
-						<app-kpi-card 
-							[title]="kpis.customers.title"
-							[value]="kpis.customers.value"
-							[icon]="'group'"
-							[trendIcon]="kpis.customers.trendIcon"
-							[trend]="kpis.customers.trend"
-							[sub]="kpis.customers.sub">
-						</app-kpi-card>
-						
-						<app-kpi-card 
-							[title]="kpis.conversion.title"
-							[value]="kpis.conversion.value"
-							[icon]="'trending_up'"
-							[trendIcon]="kpis.conversion.trendIcon"
-							[trend]="kpis.conversion.trend"
-							[sub]="kpis.conversion.sub">
-						</app-kpi-card>
-						
-						<app-kpi-card 
-							[title]="kpis.orders.title"
-							[value]="kpis.orders.value"
-							[icon]="'shopping_cart'"
-							[trendIcon]="kpis.orders.trendIcon"
-							[trend]="kpis.orders.trend"
-							[sub]="kpis.orders.sub">
-						</app-kpi-card>
-					</div>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+					<app-kpi-card [title]="kpis.revenue.title" [value]="kpis.revenue.value" [icon]="'attach_money'"
+						[trendIcon]="kpis.revenue.trendIcon" [trend]="kpis.revenue.trend" [sub]="kpis.revenue.sub">
+					</app-kpi-card>
+
+					<app-kpi-card [title]="kpis.customers.title" [value]="kpis.customers.value" [icon]="'group'"
+						[trendIcon]="kpis.customers.trendIcon" [trend]="kpis.customers.trend"
+						[sub]="kpis.customers.sub">
+					</app-kpi-card>
+
+					<app-kpi-card [title]="kpis.conversion.title" [value]="kpis.conversion.value" [icon]="'trending_up'"
+						[trendIcon]="kpis.conversion.trendIcon" [trend]="kpis.conversion.trend"
+						[sub]="kpis.conversion.sub">
+					</app-kpi-card>
+
+					<app-kpi-card [title]="kpis.orders.title" [value]="kpis.orders.value" [icon]="'shopping_cart'"
+						[trendIcon]="kpis.orders.trendIcon" [trend]="kpis.orders.trend" [sub]="kpis.orders.sub">
+					</app-kpi-card>
+				</div>
 				}
 
 				<!-- Main Chart Section -->

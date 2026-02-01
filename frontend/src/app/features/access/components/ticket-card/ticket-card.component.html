@@ -1,15 +1,10 @@
 <div class="ticket-card">
   <!-- Event Image -->
   <div class="ticket-image">
-    @if (ticket().eventImage) {
-      <img [src]="ticket().eventImage" 
+      <img [src]="ticket().eventImage || 'assets/image.png'" 
            [alt]="ticket().eventName"
-           class="event-image">
-    } @else {
-      <div class="event-placeholder">
-        <span class="material-symbols-outlined placeholder-icon">confirmation_number</span>
-      </div>
-    }
+           class="event-image"
+           onerror="this.src='assets/image.png'">
     
     <!-- Category Badge -->
     <div class="category-badge">
@@ -70,15 +65,16 @@
       <!-- QR Code Preview -->
       <button (click)="onQrClick()" 
               class="qr-button">
-        <img [src]="ticket().qrCode" 
+        <img [src]="ticket().qrCode || 'assets/image.png'" 
              alt="QR Code" 
-             class="qr-preview">
+             class="qr-preview"
+             onerror="this.src='assets/image.png'">
         <span class="qr-button-text">Voir QR</span>
       </button>
 
       <!-- Price -->
       <div class="price-section">
-        <p class="price">{{ ticket().price }}€</p>
+        <p class="price">{{ ticket().price }}TND</p>
         <p class="order-id">{{ ticket().orderId }}</p>
       </div>
     </div>

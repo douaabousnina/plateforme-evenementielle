@@ -5,20 +5,15 @@ import { EventDetailPage } from './pages/event-detail/event-detail.page';
 
 export const clientRoutes: Routes = [
   {
-    path: 'home',
+    path: '',
     component: ClientDashboardPage,
   },
   {
-    path: 'marketplace',
+    path: 'events',
     component: MarketplacePage,
   },
   {
     path: 'events/:id',
     component: EventDetailPage,
-  },
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'home',
-  },
+  }
 ];

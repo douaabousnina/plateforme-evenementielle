@@ -21,9 +21,10 @@
     <!-- QR Code -->
     <div class="qr-section">
       <div class="qr-container">
-        <img [src]="ticket().qrCode" 
+        <img [src]="ticket().qrCode || 'assets/image.png'" 
              alt="QR Code" 
-             class="qr-image">
+             class="qr-image"
+             onerror="this.src='assets/image.png'">
         
         <!-- Refresh Overlay -->
         @if (refreshing()) {
@@ -53,7 +54,7 @@
 
         <div class="info-row">
           <span class="info-label">Prix</span>
-          <span class="info-price">{{ ticket().price }}€</span>
+          <span class="info-price">{{ ticket().price }}TND</span>
         </div>
       </div>
     </div>

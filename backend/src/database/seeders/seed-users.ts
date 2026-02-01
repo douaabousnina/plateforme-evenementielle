@@ -37,7 +37,7 @@ export async function seedUsers(dataSource: DataSource): Promise<User[]> {
       phoneNumber: '0600000002',
     },
     {
-      email: 'client1@seed.local',
+      email: 'thomas@seed.local',
       password: hashedPassword,
       role: Role.CLIENT,
       preferences: [Preference.SPORT],
