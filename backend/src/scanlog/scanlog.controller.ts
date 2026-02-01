@@ -23,6 +23,7 @@ export class ScanlogController {
   }
 
   @Get('ticket/:ticketId')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all scan logs for a specific ticket' })
   @ApiResponse({ status: 200, description: 'Returns scan logs for the ticket', type: [ScanLogResponseDto] })
   async getScanLogsByTicket(@Param('ticketId') ticketId: string): Promise<ScanLogResponseDto[]> {
@@ -48,6 +49,8 @@ export class ScanlogController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER, Role.ADMIN)
   @ApiOperation({ summary: 'Get a specific scan log by ID' })
   @ApiResponse({ status: 200, description: 'Returns the scan log', type: ScanLogResponseDto })
   @ApiResponse({ status: 404, description: 'Scan log not found' })
