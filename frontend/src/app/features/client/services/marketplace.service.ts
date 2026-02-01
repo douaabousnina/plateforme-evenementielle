@@ -89,9 +89,9 @@ export class MarketplaceService {
       {
         title: 'Découvrir',
         links: [
-          { label: 'Concerts', route: '/client/marketplace?category=concert' },
-          { label: 'Théâtre', route: '/client/marketplace?category=theater' },
-          { label: 'Festivals', route: '/client/marketplace?category=festival' },
+          { label: 'Concerts', route: '/events?category=concert' },
+          { label: 'Théâtre', route: '/events?category=theater' },
+          { label: 'Festivals', route: '/events?category=festival' },
         ],
       },
     ],

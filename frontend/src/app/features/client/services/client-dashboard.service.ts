@@ -94,9 +94,9 @@ export class ClientDashboardService {
 
   private setStaticQuickActions(): void {
     this.quickActions.set([
-      { id: 'scan', icon: 'qr_code_scanner', label: 'Scanner QR', route: '/client/scanner' },
-      { id: 'tickets', icon: 'confirmation_number', label: 'Mes Billets', route: '/client/my-tickets' },
-      { id: 'explore', icon: 'explore', label: 'Explorer', route: '/client/marketplace' },
+      { id: 'scan', icon: 'qr_code_scanner', label: 'Scanner QR', route: '/scanner' },
+      { id: 'tickets', icon: 'confirmation_number', label: 'Mes Billets', route: '/my-tickets' },
+      { id: 'explore', icon: 'explore', label: 'Explorer', route: '/events' },
       { id: 'wallet', icon: 'account_balance_wallet', label: 'Portefeuille', route: '/wallet' },
     ]);
   }

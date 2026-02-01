@@ -148,6 +148,6 @@ export class ConfirmationPage {
   }
 
   goToMyTickets(): void {
-    this.router.navigate(['/client/my-tickets']);
+    this.router.navigate(['/my-tickets']);
   }
 }
