@@ -119,7 +119,8 @@ export class MarketplaceService {
     };
     if (current.search) params['search'] = current.search;
     if (current.category) params['category'] = current.category;
-    if (current.priceMax != null) params['maxPrice'] = String(current.priceMax);
+    // Backend FilterEventDto n'a pas maxPrice → ne pas l'envoyer pour éviter 400 Bad Request
+    // if (current.priceMax != null) params['maxPrice'] = String(current.priceMax);
     if (current.datePreset) {
       const range = this.datePresetToRange(current.datePreset);
       if (range.from) params['dateFrom'] = range.from;
@@ -128,6 +129,14 @@ export class MarketplaceService {
 
     return this.api.get<{ data: unknown[]; meta?: unknown }>('events', params).pipe(
       map((res) => this.mapApiToListResponse(res)),
+      map((res) => {
+        const maxP = this.filters().priceMax;
+        if (maxP != null && maxP > 0) {
+          const filtered = res.data.filter((e) => e.priceFrom <= maxP);
+          return { ...res, data: filtered, meta: { ...res.meta, total: filtered.length } };
+        }
+        return res;
+      }),
       tap((res) => {
         if (page > 1) {
           this.events.update((prev) => [...prev, ...res.data]);
