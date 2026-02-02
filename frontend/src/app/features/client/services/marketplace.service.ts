@@ -40,6 +40,8 @@ export class MarketplaceService {
   private readonly meta = signal<MarketplaceListResponse['meta'] | null>(null);
   private readonly loading = signal(false);
   private readonly error = signal<string | null>(null);
+  /** True when showing mock data because API failed (backend down, network, etc.). */
+  private readonly demoMode = signal(false);
   private readonly filters = signal<MarketplaceFilters>({
     search: '',
     datePreset: '',
@@ -51,6 +53,7 @@ export class MarketplaceService {
   readonly listMeta = this.meta.asReadonly();
   readonly isLoading = this.loading.asReadonly();
   readonly hasError = this.error.asReadonly();
+  readonly isDemoMode = this.demoMode.asReadonly();
   readonly currentFilters = this.filters.asReadonly();
 
   readonly dateFilterOptions = computed<DateFilterOption[]>(() => [
@@ -110,6 +113,7 @@ export class MarketplaceService {
   loadEvents(filters?: Partial<MarketplaceFilters>, page = 1, limit = 12): Observable<MarketplaceListResponse> {
     this.loading.set(true);
     this.error.set(null);
+    this.demoMode.set(false);
     if (filters) this.filters.update((f) => ({ ...f, ...filters }));
 
     const current = this.filters();
@@ -119,15 +123,25 @@ export class MarketplaceService {
     };
     if (current.search) params['search'] = current.search;
     if (current.category) params['category'] = current.category;
-    if (current.priceMax != null) params['maxPrice'] = String(current.priceMax);
+    // Backend FilterEventDto n'a pas maxPrice → ne pas l'envoyer pour éviter 400 Bad Request
+    // if (current.priceMax != null) params['maxPrice'] = String(current.priceMax);
     if (current.datePreset) {
       const range = this.datePresetToRange(current.datePreset);
       if (range.from) params['dateFrom'] = range.from;
       if (range.to) params['dateTo'] = range.to;
     }
 
-    return this.api.get<{ data: unknown[]; meta?: unknown }>('events', params).pipe(
+    return this.api.get<unknown>('events', params).pipe(
+      map((res) => this.normalizeApiResponse(res, page, limit)),
       map((res) => this.mapApiToListResponse(res)),
+      map((res) => {
+        const maxP = this.filters().priceMax;
+        if (maxP != null && maxP > 0) {
+          const filtered = res.data.filter((e) => e.priceFrom <= maxP);
+          return { ...res, data: filtered, meta: { ...res.meta, total: filtered.length } };
+        }
+        return res;
+      }),
       tap((res) => {
         if (page > 1) {
           this.events.update((prev) => [...prev, ...res.data]);
@@ -137,12 +151,14 @@ export class MarketplaceService {
         this.meta.set(res.meta);
         this.loading.set(false);
       }),
-      catchError((err) => {
+      catchError((_err) => {
         this.loading.set(false);
-        this.error.set(err?.message ?? 'Erreur chargement');
+        this.error.set(null);
+        this.api.error.set(null);
         const fallback = this.getMockListResponse();
         this.events.set(fallback.data);
         this.meta.set(fallback.meta);
+        this.demoMode.set(true);
         return of(fallback);
       })
     );
@@ -210,10 +226,29 @@ export class MarketplaceService {
     }
   }
 
-  private mapApiToListResponse(res: { data: unknown[]; meta?: unknown }): MarketplaceListResponse {
-    const data = Array.isArray(res.data) ? res.data : [];
+  /** Backend renvoie Event[] directement, pas { data, meta }. On normalise pour un seul format. */
+  private normalizeApiResponse(
+    res: unknown,
+    page: number,
+    limit: number
+  ): { data: unknown[]; meta: MarketplaceListResponse['meta'] } {
+    const rawList = Array.isArray(res) ? res : (res as { data?: unknown[] })?.data ?? [];
+    const total = rawList.length;
+    return {
+      data: rawList,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.max(1, Math.ceil(total / limit)),
+      },
+    };
+  }
+
+  private mapApiToListResponse(res: { data: unknown[]; meta: MarketplaceListResponse['meta'] }): MarketplaceListResponse {
+    const data = res.data ?? [];
     const events = data.map((e: unknown) => this.mapRawToCard(e as Record<string, unknown>));
-    const meta = (res.meta as MarketplaceListResponse['meta']) ?? {
+    const meta = res.meta ?? {
       total: events.length,
       page: 1,
       limit: 12,
@@ -224,11 +259,19 @@ export class MarketplaceService {
 
   private mapRawToCard(e: Record<string, unknown>): MarketplaceEventCard {
     const id = String(e['id'] ?? '');
-    const date = e['date'] ? new Date(e['date'] as string) : new Date();
-    const images = (e['images'] as string[]) ?? [];
-    const banner = (e['bannerImage'] as string) ?? images[0] ?? '';
+    const dateRaw = e['startDate'] ?? e['date'];
+    const date = dateRaw ? new Date(dateRaw as string) : new Date();
+    const gallery = (e['gallery'] as string[]) ?? [];
+    const cover = (e['coverImage'] as string) ?? gallery[0] ?? '';
     const category = String(e['category'] ?? '');
-    const available = Number(e['availableSeats'] ?? 0);
+    const loc = e['location'];
+    const locationStr =
+      typeof loc === 'string'
+        ? loc
+        : loc && typeof loc === 'object' && loc !== null
+          ? String((loc as Record<string, unknown>)['city'] ?? (loc as Record<string, unknown>)['address'] ?? '')
+          : '';
+    const available = Number(e['availableCapacity'] ?? e['availableSeats'] ?? 0);
     const total = Number(e['totalCapacity'] ?? 0);
     const basePrice = Number(e['basePrice'] ?? 0);
 
@@ -245,11 +288,11 @@ export class MarketplaceService {
     return {
       id,
       title: String(e['title'] ?? ''),
-      imageUrl: banner || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',
+      imageUrl: cover || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',
       imageAlt: String(e['title'] ?? ''),
       dateLabel: this.formatDateShort(date),
       date,
-      location: String(e['venueName'] ?? e['location'] ?? e['city'] ?? ''),
+      location: locationStr || 'Lieu à préciser',
       rating: Math.round(rating * 10) / 10,
       reviewCount,
       badge,
@@ -271,86 +314,46 @@ export class MarketplaceService {
 
   private getMockListResponse(): MarketplaceListResponse {
     const mock: MarketplaceEventCard[] = [
-      {
-        id: '1',
-        title: 'Neon Nights Festival 2024',
-        imageUrl: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',
-        dateLabel: 'Sam, 12 Oct • 19:00',
-        date: new Date('2024-10-12T19:00:00'),
-        location: 'Paris Expo Porte de Versailles',
-        rating: 4.9,
-        reviewCount: 128,
-        badge: { kind: 'vip', label: 'VIP Dispo', icon: 'diamond' },
-        priceFrom: 45,
-        priceCurrency: 'TND',
-      },
-      {
-        id: '2',
-        title: 'Tech Summit: Future of AI',
-        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
-        dateLabel: 'Lun, 24 Oct • 09:00',
-        date: new Date('2024-10-24T09:00:00'),
-        location: 'Station F, Paris',
-        rating: 4.5,
-        reviewCount: 84,
-        badge: { kind: 'low_stock', label: 'Peu de places', icon: 'local_fire_department' },
-        priceFrom: 120,
-        priceCurrency: 'TND',
-      },
-      {
-        id: '3',
-        title: "Atelier Cuisine: Chefs Étoilés",
-        imageUrl: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400',
-        dateLabel: 'Dim, 15 Oct • 14:00',
-        date: new Date('2024-10-15T14:00:00'),
-        location: "L'Atelier des Chefs, Lyon",
-        rating: 4.7,
-        reviewCount: 210,
-        priceFrom: 85,
-        priceCurrency: 'TND',
-      },
-      {
-        id: '4',
-        title: "Nuit de l'Art Moderne",
-        imageUrl: 'https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=400',
-        dateLabel: 'Ven, 20 Oct • 18:30',
-        date: new Date('2024-10-20T18:30:00'),
-        location: "Musée d'Orsay, Paris",
-        rating: 4.2,
-        reviewCount: 45,
-        priceFrom: 25,
-        priceCurrency: 'TND',
-      },
-      {
-        id: '5',
-        title: 'Yoga au lever du soleil',
-        imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
-        dateLabel: 'Dim, 22 Oct • 07:00',
-        date: new Date('2024-10-22T07:00:00'),
-        location: 'Parc des Buttes, Paris',
-        rating: 5,
-        reviewCount: 12,
-        priceFrom: 15,
-        priceCurrency: 'TND',
-      },
-      {
-        id: '6',
-        title: 'Soirée Stand-up Comedy',
-        imageUrl: 'https://images.unsplash.com/photo-1585699324551-f6c91c8d0c4e?w=400',
-        dateLabel: 'Mer, 25 Oct • 20:30',
-        date: new Date('2024-10-25T20:30:00'),
-        location: 'Le Comedy Club, Paris',
-        rating: 4.8,
-        reviewCount: 340,
-        badge: { kind: 'vip', label: 'VIP Dispo', icon: 'diamond' },
-        priceFrom: 30,
-        priceCurrency: 'TND',
-      },
+      { id: '1', title: 'Neon Nights Festival 2024', imageUrl: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400', dateLabel: 'Sam, 12 Oct • 19:00', date: new Date('2024-10-12T19:00:00'), location: 'Paris Expo Porte de Versailles', rating: 4.9, reviewCount: 128, badge: { kind: 'vip', label: 'VIP Dispo', icon: 'diamond' }, priceFrom: 45, priceCurrency: 'TND', category: 'concert' },
+      { id: '2', title: 'Tech Summit: Future of AI', imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400', dateLabel: 'Lun, 24 Oct • 09:00', date: new Date('2024-10-24T09:00:00'), location: 'Station F, Paris', rating: 4.5, reviewCount: 84, badge: { kind: 'low_stock', label: 'Peu de places', icon: 'local_fire_department' }, priceFrom: 120, priceCurrency: 'TND', category: 'conference' },
+      { id: '3', title: "Atelier Cuisine: Chefs Étoilés", imageUrl: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400', dateLabel: 'Dim, 15 Oct • 14:00', date: new Date('2024-10-15T14:00:00'), location: "L'Atelier des Chefs, Lyon", rating: 4.7, reviewCount: 210, priceFrom: 85, priceCurrency: 'TND', category: 'workshop' },
+      { id: '4', title: "Nuit de l'Art Moderne", imageUrl: 'https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=400', dateLabel: 'Ven, 20 Oct • 18:30', date: new Date('2024-10-20T18:30:00'), location: "Musée d'Orsay, Paris", rating: 4.2, reviewCount: 45, priceFrom: 25, priceCurrency: 'TND', category: 'exhibition' },
+      { id: '5', title: 'Yoga au lever du soleil', imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400', dateLabel: 'Dim, 22 Oct • 07:00', date: new Date('2024-10-22T07:00:00'), location: 'Parc des Buttes, Paris', rating: 5, reviewCount: 12, priceFrom: 15, priceCurrency: 'TND', category: 'sport' },
+      { id: '6', title: 'Soirée Stand-up Comedy', imageUrl: 'https://images.unsplash.com/photo-1585699324551-f6c91c8d0c4e?w=400', dateLabel: 'Mer, 25 Oct • 20:30', date: new Date('2024-10-25T20:30:00'), location: 'Le Comedy Club, Paris', rating: 4.8, reviewCount: 340, badge: { kind: 'vip', label: 'VIP Dispo', icon: 'diamond' }, priceFrom: 30, priceCurrency: 'TND', category: 'theater' },
     ];
+    const filtered = this.filterMockByCurrentFilters(mock);
     return {
-      data: mock,
-      meta: { total: mock.length, page: 1, limit: 12, totalPages: 1 },
+      data: filtered,
+      meta: { total: filtered.length, page: 1, limit: 12, totalPages: 1 },
     };
+  }
+
+  private filterMockByCurrentFilters(list: MarketplaceEventCard[]): MarketplaceEventCard[] {
+    const f = this.filters();
+    let out = list;
+    if (f.category) {
+      out = out.filter((e) => (e.category ?? '').toLowerCase() === f.category.toLowerCase());
+    }
+    if (f.priceMax != null && f.priceMax > 0) {
+      out = out.filter((e) => e.priceFrom <= f.priceMax!);
+    }
+    if (f.datePreset) {
+      const range = this.datePresetToRange(f.datePreset);
+      if (range.from && range.to) {
+        const from = new Date(range.from);
+        const to = new Date(range.to);
+        to.setHours(23, 59, 59, 999);
+        out = out.filter((e) => {
+          const d = new Date(e.date);
+          return d >= from && d <= to;
+        });
+      }
+    }
+    if (f.search?.trim()) {
+      const q = f.search.trim().toLowerCase();
+      out = out.filter((e) => e.title.toLowerCase().includes(q) || e.location.toLowerCase().includes(q));
+    }
+    return out;
   }
 
   private mapApiToEventDetail(raw: unknown, id: string): EventDetail {

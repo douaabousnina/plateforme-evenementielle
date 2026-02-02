@@ -16,11 +16,17 @@
 
       <app-marketplace-filter-bar (filtersChange)="onFiltersChange($event)" />
 
+      @if (isDemoMode()) {
+        <div class="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-amber-800 dark:text-amber-200 text-sm">
+          Données de démonstration (serveur indisponible). Les filtres s'appliquent sur la liste locale.
+        </div>
+      }
+
       @if (loading()) {
         <div class="flex justify-center py-20">
           <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
         </div>
-      } @else if (error()) {
+      } @else if (error() && events().length === 0) {
         <p class="text-red-500 text-center py-8">{{ error() }}</p>
       } @else {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
