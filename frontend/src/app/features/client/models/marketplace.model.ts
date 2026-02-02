@@ -1,6 +1,4 @@
-/**
- * Marketplace listing and filter models. Data comes from API or config – no hardcoding in templates.
- */
+
 
 export interface MarketplaceEventCard {
   id: string;

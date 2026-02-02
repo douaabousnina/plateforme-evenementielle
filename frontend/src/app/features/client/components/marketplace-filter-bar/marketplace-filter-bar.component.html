@@ -13,7 +13,7 @@
       </div>
       <div class="relative min-w-[180px]">
         <select
-          class="w-full h-12 appearance-none rounded-xl bg-slate-50 dark:bg-slate-900 border-0 focus:ring-2 focus:ring-primary pl-11 pr-10 text-base text-slate-900 dark:text-white cursor-pointer transition-all"
+          class="marketplace-select w-full h-12 appearance-none rounded-xl bg-slate-50 dark:bg-slate-900 border-0 focus:ring-2 focus:ring-primary pl-11 pr-10 text-base text-slate-900 dark:text-white cursor-pointer transition-all"
           [value]="datePreset()"
           (change)="onDateChange($any($event.target).value)"
         >
@@ -52,10 +52,27 @@
       <div class="flex items-center gap-3 min-w-[200px] px-2 w-full sm:w-auto">
         <span class="text-xs font-semibold text-slate-500 uppercase">Prix</span>
         <div class="relative flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full">
-          <div class="absolute left-0 top-0 h-full w-1/2 bg-primary rounded-full"></div>
-          <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-4 bg-white dark:bg-slate-700 border-2 border-primary rounded-full shadow cursor-pointer hover:scale-110 transition-transform"></div>
+          <div
+            class="absolute left-0 top-0 h-full bg-primary rounded-full"
+            [style.width.%]="pricePercent"
+          ></div>
+          <div
+            class="absolute top-1/2 -translate-y-1/2 size-4 bg-white dark:bg-slate-700 border-2 border-primary rounded-full shadow cursor-pointer hover:scale-110 transition-transform"
+            [style.left.%]="pricePercent"
+          ></div>
+          <input
+            type="range"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            [min]="0"
+            [max]="maxPriceValue"
+            [step]="10"
+            [value]="priceMax() ?? maxPriceValue"
+            (input)="onPriceSliderChange($any($event.target).value)"
+          />
         </div>
-        <span class="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">Max {{ priceMax() ?? 150 }}TND</span>
+        <span class="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">
+          Max {{ priceMax() ?? maxPriceValue }}TND
+        </span>
       </div>
     </div>
   </div>

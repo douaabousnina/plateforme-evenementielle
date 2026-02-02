@@ -1,11 +1,10 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { EventService } from '../../../reservation/services/event.service';
-import { Event } from '../../../reservation/models/event.model';
 import { MarketplaceFilterBarComponent } from '../../components/marketplace-filter-bar/marketplace-filter-bar.component';
 import { MarketplaceEventCardComponent } from '../../components/marketplace-event-card/marketplace-event-card.component';
 import { ClientFooterComponent } from '../../components/client-footer/client-footer.component';
 import { MarketplaceFilters } from '../../models/marketplace.model';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
+import { MarketplaceService } from '../../services/marketplace.service';
 
 @Component({
   selector: 'app-marketplace-page',
@@ -20,41 +19,29 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
   styleUrls: ['./marketplace.page.css'],
 })
 export class MarketplacePage implements OnInit {
-  private readonly eventService = inject(EventService);
+  private readonly marketplace = inject(MarketplaceService);
 
-  readonly loading = this.eventService.loading;
-  readonly error = this.eventService.error;
-  readonly events = signal<Event[]>([]);
-  readonly meta = signal<any>(null);
-  readonly footerConfig = signal<any>(null);
+  readonly loading = this.marketplace.isLoading;
+  readonly error = this.marketplace.hasError;
+  readonly events = this.marketplace.eventsList;
+  readonly meta = this.marketplace.listMeta;
+  readonly footerConfig = this.marketplace.footerConfig;
   readonly currentPage = signal(1);
+  private readonly currentFilters = signal<Partial<MarketplaceFilters>>({});
 
-  readonly heroTitle = computed(() => 'Découvrez des événements uniques');
+  readonly heroTitle = computed(() => 'Découvrez des événements');
   readonly heroSubtitle = computed(() => "Concerts, festivals, ateliers et plus encore. Trouvez votre prochaine expérience inoubliable.");
   readonly loadMoreLabel = 'Voir plus d\'événements';
 
   ngOnInit(): void {
-    this.eventService.loadEventsList(1, 12).subscribe({
-      next: (response) => {
-        const eventsList = Array.isArray(response) ? response : (response.data || response);
-        this.events.set(eventsList);
-        this.meta.set(response.meta || { page: 1, limit: 12 });
-      },
-      error: (err) => {
-        this.eventService.error.set(err.message || 'Failed to load events');
-      }
-    });
+    this.marketplace.loadEvents(undefined, 1, 12).subscribe();
   }
 
   onFiltersChange(filters: Partial<MarketplaceFilters>): void {
+    const merged = { ...this.currentFilters(), ...filters };
+    this.currentFilters.set(merged);
     this.currentPage.set(1);
-    this.eventService.loadEventsList(1, 12, filters).subscribe({
-      next: (response) => {
-        const eventsList = Array.isArray(response) ? response : (response.data || response);
-        this.events.set(eventsList);
-        this.meta.set(response.meta || { page: 1, limit: 12 });
-      }
-    });
+    this.marketplace.loadEvents(merged, 1, 12).subscribe();
   }
 
   loadMore(): void {
@@ -62,18 +49,10 @@ export class MarketplacePage implements OnInit {
     if (!meta || meta.page >= meta.totalPages) return;
     const next = this.currentPage() + 1;
     this.currentPage.set(next);
-    
-    this.eventService.loadEventsList(next, 12).subscribe({
-      next: (response) => {
-        const eventsList = Array.isArray(response) ? response : (response.data || response);
-        const currentEvents = this.events();
-        this.events.set([...currentEvents, ...eventsList]);
-        this.meta.set(response.meta || { page: next, limit: 12 });
-      }
-    });
+    this.marketplace.loadEvents(this.currentFilters(), next, 12).subscribe();
   }
 
-  onFavorite(event: Event): void {
+  onFavorite(_event: unknown): void {
     // TODO: call favorites API or toggle local state
   }
 }
