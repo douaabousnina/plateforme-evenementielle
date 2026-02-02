@@ -37,6 +37,13 @@ export enum LocationType {
   TBD = 'tbd',
 }
 
+// COMMENTED OUT - Tickets managed via Seats after event creation
+// export enum TicketTypeEnum {
+//   VIP = 'vip',
+//   REGULAR = 'regular',
+//   EARLY_BIRD = 'early_bird',
+// }
+
 export interface CreateLocationRequest {
   type: LocationType | string;
   address?: string;

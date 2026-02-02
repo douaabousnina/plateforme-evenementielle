@@ -13,7 +13,7 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import { Location } from './location.entity';
 import { EventCategory, EventStatus, EventType } from 'src/common/enums/event.enum';
 import { Seat } from './seat.entity';
-import { TicketType } from './ticket-type.entity';
+// import { TicketType } from './ticket-type.entity'; // COMMENTED OUT
 
 @Entity('events')
 export class Event extends BaseEntity {
@@ -77,8 +77,8 @@ export class Event extends BaseEntity {
   seats: Seat[];
 
   // Ticket Types
-  @OneToMany(() => TicketType, ticketType => ticketType.event, { eager: true, cascade: true })
-  ticketTypes: TicketType[];
+  // @OneToMany(() => TicketType, ticketType => ticketType.event, { eager: true, cascade: true })
+  // ticketTypes: TicketType[]; // COMMENTED OUT
 
   // Status
   @Column({
