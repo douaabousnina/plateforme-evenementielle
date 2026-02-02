@@ -273,7 +273,12 @@ export class MarketplaceService {
           : '';
     const available = Number(e['availableCapacity'] ?? e['availableSeats'] ?? 0);
     const total = Number(e['totalCapacity'] ?? 0);
-    const basePrice = Number(e['basePrice'] ?? 0);
+    const seats = (e['seats'] as Array<Record<string, unknown>>) ?? [];
+    const minSeatPrice = seats
+      .map((s) => Number(s['price']))
+      .filter((p) => Number.isFinite(p) && p > 0)
+      .reduce((min, p) => (min === null || p < min ? p : min), null as number | null);
+    const basePrice = Number(e['basePrice'] ?? minSeatPrice ?? 0);
 
     let badge: EventCardBadge | undefined;
     if (Math.random() > 0.6) {
@@ -363,6 +368,11 @@ export class MarketplaceService {
     const banner = (e['bannerImage'] as string) ?? images[0] ?? '';
     const category = String(e['category'] ?? 'other');
     const available = Number(e['availableSeats'] ?? 0);
+    const seats = (e['seats'] as Array<Record<string, unknown>>) ?? [];
+    const minSeatPrice = seats
+      .map((s) => Number(s['price']))
+      .filter((p) => Number.isFinite(p) && p > 0)
+      .reduce((min, p) => (min === null || p < min ? p : min), null as number | null);
 
     return {
       id,
@@ -383,7 +393,7 @@ export class MarketplaceService {
       organizerLogoUrl: undefined,
       images: images.length ? images : [banner].filter(Boolean),
       bannerImage: banner || undefined,
-      priceFrom: Number(e['basePrice'] ?? 45),
+      priceFrom: Number(e['basePrice'] ?? minSeatPrice ?? 45),
       priceCurrency: 'TND',
       isAvailable: available > 0,
       availabilityLabel: available > 0 ? 'Dispo' : 'Complet',

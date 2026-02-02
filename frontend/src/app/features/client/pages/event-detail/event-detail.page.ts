@@ -84,6 +84,10 @@ export class EventDetailPage implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+    const minSeatPrice = (event.seats ?? [])
+      .map((s) => Number((s as Record<string, unknown>)['price']))
+      .filter((p) => Number.isFinite(p) && p > 0)
+      .reduce((min, p) => (min === null || p < min ? p : min), null as number | null);
 
     return {
       id: event.id,
@@ -103,7 +107,7 @@ export class EventDetailPage implements OnInit {
       organizerName: 'Organizer Name',
       images: event.gallery || [],
       bannerImage: event.coverImage,
-      priceFrom: 0,
+      priceFrom: minSeatPrice ?? 0,
       priceCurrency: 'TND',
       isAvailable: (event.availableCapacity ?? 0) > 0,
       availabilityLabel: (event.availableCapacity ?? 0) > 0 ? 'Places disponibles' : 'Événement complet'
