@@ -7,12 +7,12 @@ import { ADMIN_ROUTES } from './admin/admin.routes';
 import { clientRoutes } from './features/client/client.routes';
 
 export const routes: Routes = [
+  ...authRoutes,
+  ...clientRoutes,
     {
         path: 'admin',
         children: ADMIN_ROUTES
     },
-  ...authRoutes,
-  ...clientRoutes,
   ...reservationRoutes,
   ...accessRoutes,
   {
@@ -21,6 +21,6 @@ export const routes: Routes = [
     ]
   },
   {
-    path: "", redirectTo: "login", pathMatch: "full"
+    path: "", redirectTo: "home", pathMatch: "full"
   }
 ];

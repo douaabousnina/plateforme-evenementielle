@@ -46,8 +46,8 @@ export class EventDetailPage implements OnInit {
     const ev = this.event();
     if (!ev) return [];
     return [
-      { label: 'Accueil', route: '/client/events', completed: true, active: false, stepNumber: 1 },
-      { label: ev.category || 'Événement', route: `/client/events?category=${ev.category}`, completed: true, active: false, stepNumber: 2 },
+      { label: 'Accueil', route: '/events', completed: true, active: false, stepNumber: 1 },
+      { label: ev.category || 'Événement', route: `/events?category=${ev.category}`, completed: true, active: false, stepNumber: 2 },
       { label: ev.title, route: '', completed: false, active: true, stepNumber: 3 },
     ];
   });

@@ -17,11 +17,10 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { UpdateEventStatusDto } from './dto/update-event-status.dto';
 import { FilterEventDto } from './dto/filter-event.dto';
-
-// TODO: Uncomment when auth module is ready
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-// import { RolesGuard } from '../auth/guards/roles.guard';
-// import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
 
 @Controller('events')
 export class EventsController {
@@ -34,16 +33,13 @@ export class EventsController {
    * CREATE EVENT - Organizer only
    */
   @Post()
-  // TODO: Uncomment when auth is ready
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('ORGANIZER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER)
   async create(
     @Body() createEventDto: CreateEventDto,
     @Req() req: any // TODO: Replace with proper Request type
   ) {
-    // TODO: Get organizerId from JWT token
-    // const organizerId = req.user.sub;
-    const organizerId = 'temp-organizer-id'; // Temporary for testing
+    const organizerId = req.user?.sub || 'temp-organizer-id';
 
     return await this.eventsService.create(createEventDto, organizerId);
   }
@@ -60,16 +56,14 @@ export class EventsController {
    * GET ORGANIZER'S EVENTS - Dashboard
    */
   @Get('my-events')
-  // TODO: Uncomment when auth is ready
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('ORGANIZER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER)
   async findMyEvents(
     @Query() filterDto: FilterEventDto,
     @Req() req: any
   ) {
-    // TODO: Get organizerId from JWT token
-    // const organizerId = req.user.sub;
-    const organizerId = 'temp-organizer-id'; // Temporary
+    // Get organizerId from JWT token
+    const organizerId = req.user?.sub || 'temp-organizer-id';
 
     return await this.eventsService.findAll(filterDto, organizerId);
   }
@@ -108,15 +102,13 @@ export class EventsController {
    * GET SEAT STATISTICS - Dashboard analytics for organizers
    */
   @Get(':id/seats/stats')
-  // TODO: Uncomment when auth is ready
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('ORGANIZER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER)
   async getSeatStatistics(
     @Param('id') id: string,
     @Req() req: any
   ) {
-    // TODO: Verify organizer owns this event
-    const organizerId = 'temp-organizer-id'; // Temporary
+    const organizerId = req.user?.sub || 'temp-organizer-id';
     
     // Verify ownership
     const event = await this.eventsService.findOne(id);
@@ -131,16 +123,14 @@ export class EventsController {
    * UPDATE EVENT - Organizer only
    */
   @Patch(':id')
-  // TODO: Uncomment when auth is ready
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('ORGANIZER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER)
   async update(
     @Param('id') id: string,
     @Body() updateEventDto: UpdateEventDto,
     @Req() req: any
   ) {
-    // TODO: Get organizerId from JWT token
-    const organizerId = 'temp-organizer-id'; // Temporary
+    const organizerId = req.user?.sub || 'temp-organizer-id';
 
     return await this.eventsService.update(id, updateEventDto, organizerId);
   }
@@ -149,15 +139,14 @@ export class EventsController {
    * UPDATE EVENT STATUS - Publish/Cancel/Complete
    */
   @Patch(':id/status')
-  // TODO: Uncomment when auth is ready
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('ORGANIZER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER)
   async updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateEventStatusDto,
     @Req() req: any
   ) {
-    const organizerId = 'temp-organizer-id'; // Temporary
+    const organizerId = req.user?.sub || 'temp-organizer-id';
     if (dto.status == null) {
       throw new BadRequestException('status is required');
     }
@@ -168,14 +157,13 @@ export class EventsController {
    * GET EVENT STATISTICS - Dashboard analytics
    */
   @Get(':id/stats')
-  // TODO: Uncomment when auth is ready
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('ORGANIZER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER)
   async getStats(
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const organizerId = 'temp-organizer-id'; // Temporary
+    const organizerId = req.user?.sub || 'temp-organizer-id';
 
     return await this.eventsService.getStats(id, organizerId);
   }
@@ -184,14 +172,13 @@ export class EventsController {
    * DELETE EVENT - Organizer only (only if no reservations)
    */
   @Delete(':id')
-  // TODO: Uncomment when auth is ready
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('ORGANIZER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ORGANIZER)
   async remove(
     @Param('id') id: string,
     @Req() req: any
   ) {
-    const organizerId = 'temp-organizer-id'; // Temporary
+    const organizerId = req.user?.sub || 'temp-organizer-id';
     return await this.eventsService.remove(id, organizerId);
   }
 }
