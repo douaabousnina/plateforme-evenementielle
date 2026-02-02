@@ -10,18 +10,18 @@ export const clientRoutes: Routes = [
     path: 'home',
     component: ClientDashboardPage,
     canActivate: [roleGuard],
-    data: { roles: [Role.CLIENT], redirectIfNotAuth: '/login', redirectIfNoRole: '/' },
+    data: { roles: [Role.CLIENT], redirectIfNotAuth: '/login', redirectIfNoRole: '/dashboard' },
   },
   {
     path: 'events',
     component: MarketplacePage,
     canActivate: [roleGuard],
-    data: { roles: [Role.CLIENT], redirectIfNotAuth: '/login', redirectIfNoRole: '/' },
+    data: { roles: [Role.CLIENT], redirectIfNotAuth: '/login', redirectIfNoRole: '/dashboard' },
   },
   {
     path: 'events/:id',
     component: EventDetailPage,
     canActivate: [roleGuard],
-    data: { roles: [Role.CLIENT], redirectIfNotAuth: '/login', redirectIfNoRole: '/' },
+    data: { roles: [Role.CLIENT], redirectIfNotAuth: '/login', redirectIfNoRole: '/dashboard' },
   }
 ];

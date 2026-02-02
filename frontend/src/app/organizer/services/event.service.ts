@@ -1,7 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, of, delay, tap, catchError, map } from 'rxjs';
+import { Observable, of, delay, tap, catchError, map, switchMap } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { EventsResponse, Event } from '../models/event.models';
+import { CreateEventRequest } from '../models/create-event.model';
 import { MOCK_EVENTS_DATA } from '../mocks/event.mock';
 
 @Injectable({
@@ -57,6 +58,71 @@ export class EventService {
     return {
       events,
       total: data?.total ?? events.length,
+    };
+  }
+
+  createEvent(createEventRequest: CreateEventRequest): Observable<any> {
+    return of(createEventRequest).pipe(
+      // Transform dates and enums
+      map((request) => this.transformEventRequest(request)),
+      // Log the final payload
+      tap((request) => {
+        console.log('Final payload being sent:', request);
+      }),
+      // Send to API
+      switchMap((request) => this.api.post('events', request)),
+      tap(() => {
+        this.error.set(null);
+      }),
+      catchError((error) => {
+        this.error.set('Erreur lors de la création de l\'événement');
+        throw error;
+      })
+    );
+  }
+
+  private transformEventRequest(request: CreateEventRequest): CreateEventRequest {
+    // Ensure dates are properly formatted
+    const combineDateTimeISO = (dateStr: string, timeStr: string): string => {
+      if (!dateStr || !timeStr) {
+        return new Date().toISOString();
+      }
+      try {
+        const combined = `${dateStr}T${timeStr}:00`;
+        return new Date(combined).toISOString();
+      } catch (e) {
+        return new Date().toISOString();
+      }
+    };
+
+    // Ensure enums are lowercase
+    const toLowercase = (value: string): string => value?.toLowerCase() || '';
+
+    // Filter out empty/undefined optional fields
+    const filterOptional = (value: any): any => {
+      if (typeof value === 'string') {
+        return value && value.trim() ? value : undefined;
+      }
+      if (Array.isArray(value)) {
+        return value && value.length > 0 ? value : undefined;
+      }
+      return value;
+    };
+
+    return {
+      ...request,
+      type: toLowercase(request.type),
+      category: toLowercase(request.category),
+      startDate: combineDateTimeISO(request.startDate as any, request.startTime as any),
+      startTime: combineDateTimeISO(request.startDate as any, request.startTime as any),
+      endDate: combineDateTimeISO(request.endDate as any, request.endTime as any),
+      endTime: combineDateTimeISO(request.endDate as any, request.endTime as any),
+      coverImage: filterOptional(request.coverImage),
+      gallery: filterOptional(request.gallery),
+      location: {
+        ...request.location,
+        type: toLowercase(request.location.type as any)
+      }
     };
   }
 }

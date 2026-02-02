@@ -1,0 +1,254 @@
+import { Component, OnInit, WritableSignal, inject, signal } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { EventFormHeaderComponent } from '../../components/event-form-header/event-form-header.component';
+import { EventBasicInfoComponent } from '../../components/event-basic-info/event-basic-info.component';
+import { EventDateTimeComponent } from '../../components/event-date-time/event-date-time.component';
+import { EventLocationComponent } from '../../components/event-location/event-location.component';
+import { EventDescriptionComponent } from '../../components/event-description/event-description.component';
+import { EventMediaComponent } from '../../components/event-media/event-media.component';
+import { EventTicketingComponent } from '../../components/event-ticketing/event-ticketing.component';
+import { EventFormActionsComponent } from '../../components/event-form-actions/event-form-actions.component';
+
+import { EventService } from '../../services/event.service';
+import { CreateEventRequest, CreationStep } from '../../models/create-event.model';
+import { AuthService } from '../../../features/auth-users/services/auth.service';
+
+@Component({
+  selector: 'app-create-event',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    EventFormHeaderComponent,
+    EventBasicInfoComponent,
+    EventDateTimeComponent,
+    EventLocationComponent,
+    EventDescriptionComponent,
+    EventMediaComponent,
+    EventTicketingComponent,
+    EventFormActionsComponent
+  ],
+  template: `
+    <div class="min-h-screen bg-background-light dark:bg-[#0a0814] p-4 md:p-8">
+      <div class="max-w-4xl mx-auto">
+        <!-- Form Header -->
+        <app-event-form-header
+          [currentStep]="currentStep()"
+          [totalSteps]="2"
+          title="Créer un nouvel événement"
+          [description]="currentStep() === 1 
+            ? 'Configurez les détails de base de votre événement'
+            : 'Configurez la billetterie et les prix'">
+        </app-event-form-header>
+
+        <!-- Main Form -->
+        <form [formGroup]="eventForm" class="mt-8 space-y-8 pb-32">
+          <!-- Step 1: General Info -->
+          @if (currentStep() === 1) {
+            <app-event-basic-info [form]="eventForm"></app-event-basic-info>
+            <app-event-date-time [form]="eventForm"></app-event-date-time>
+            <app-event-location [form]="eventForm"></app-event-location>
+            <app-event-description [form]="eventForm"></app-event-description>
+            <app-event-media [form]="eventForm"></app-event-media>
+          }
+
+          <!-- Step 2: Ticketing -->
+          @if (currentStep() === 2) {
+            <app-event-ticketing [form]="eventForm"></app-event-ticketing>
+          }
+        </form>
+
+        <!-- Form Actions -->
+        <app-event-form-actions
+          [disabled]="isSubmitting()"
+          [showBack]="currentStep() > 1"
+          (cancel)="onCancel()"
+          (back)="onBack()"
+          (saveDraft)="onSaveDraft()"
+          (next)="onNext()">
+        </app-event-form-actions>
+      </div>
+    </div>
+  `,
+  styleUrls: ['./create-event.page.css']
+})
+export class CreateEventPage implements OnInit {
+  private formBuilder = inject(FormBuilder);
+  private eventService = inject(EventService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  currentStep: WritableSignal<number> = signal(CreationStep.GENERAL_INFO);
+  isSubmitting: WritableSignal<boolean> = signal(false);
+  eventForm!: FormGroup;
+
+  ngOnInit() {
+    this.initializeForm();
+  }
+
+  private initializeForm() {
+    this.eventForm = this.formBuilder.group({
+      // Basic info
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      type: ['', Validators.required],
+      category: ['', Validators.required],
+
+      // Date & Time
+      startDate: ['', Validators.required],
+      startTime: ['', Validators.required],
+      endDate: ['', Validators.required],
+      endTime: ['', Validators.required],
+      isRecurring: [false],
+
+      // Location
+      locationType: ['physical'], // physical, online, tbd
+      address: [''],
+      venueName: [''],
+      city: [''],
+      country: [''],
+      onlineUrl: [''],
+
+      // Description
+      description: [''],
+
+      // Media
+      coverImage: [''],
+      gallery: [[]],
+
+      // Capacity & Seating
+      totalCapacity: [0, [Validators.required, Validators.min(1)]],
+      hasSeatingPlan: [false]
+    });
+  }
+
+  onCancel() {
+    if (confirm('Êtes-vous sûr de vouloir annuler ? Les données non enregistrées seront perdues.')) {
+      this.router.navigate(['/dashboard/events']);
+    }
+  }
+
+  onBack() {
+    const previousStep = this.currentStep() - 1;
+    if (previousStep >= CreationStep.GENERAL_INFO) {
+      this.currentStep.set(previousStep);
+    }
+  }
+
+  onSaveDraft() {
+    // TODO: Implement draft saving
+    console.log('Save draft:', this.eventForm.value);
+  }
+
+  onNext() {
+    const step = this.currentStep();
+
+    // Validate current step
+    if (!this.validateStep(step)) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    // Move to next step or submit
+    if (step < CreationStep.TICKETING) {
+      this.currentStep.set(step + 1);
+    } else {
+      this.submitForm();
+    }
+  }
+
+  private validateStep(step: number): boolean {
+    const controls = this.eventForm.controls;
+
+    switch (step) {
+      case CreationStep.GENERAL_INFO:
+        return (
+          controls['title'].valid &&
+          controls['type'].valid &&
+          controls['category'].valid &&
+          controls['startDate'].valid &&
+          controls['startTime'].valid &&
+          controls['endDate'].valid &&
+          controls['endTime'].valid
+        );
+      case CreationStep.TICKETING:
+        // Basic validation - ensure at least one ticket is configured
+        const tickets = controls['tickets'].value;
+        return Array.isArray(tickets) && tickets.length > 0;
+      default:
+        return false;
+    }
+  }
+
+  private submitForm() {
+    if (this.eventForm.invalid) {
+      alert('Veuillez vérifier le formulaire.');
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      alert('Utilisateur non authentifié.');
+      this.isSubmitting.set(false);
+      return;
+    }
+
+    const formValue = this.eventForm.value;
+    
+    // Calculate total capacity from manual input
+    const totalCapacity = formValue.totalCapacity || 0;
+    
+    // Build location object
+    const locationTypeMap: Record<string, string> = {
+      'PHYSICAL': 'physical',
+      'ONLINE': 'online',
+      'TBD': 'tbd'
+    };
+
+    const location = {
+      type: locationTypeMap[formValue.locationType] || formValue.locationType.toLowerCase(),
+      address: formValue.address || undefined,
+      venueName: formValue.venueName || undefined,
+      onlineUrl: formValue.onlineUrl || undefined,
+      city: formValue.city || undefined,
+      country: formValue.country || undefined
+    };
+
+    // Simple payload - no tickets (seats are created separately)
+    const createEventRequest: CreateEventRequest = {
+      title: formValue.title,
+      description: formValue.description,
+      type: formValue.type,
+      category: formValue.category,
+      startDate: formValue.startDate as any,
+      startTime: formValue.startTime as any,
+      endDate: formValue.endDate as any,
+      endTime: formValue.endTime as any,
+      location: location,
+      coverImage: formValue.coverImage,
+      gallery: formValue.gallery,
+      totalCapacity: totalCapacity,
+      availableCapacity: totalCapacity,
+      hasSeatingPlan: formValue.hasSeatingPlan || false,
+      organizerId: String(currentUser.id)
+    };
+
+    console.log('Submitting event creation:', createEventRequest);
+
+    this.eventService.createEvent(createEventRequest).subscribe({
+      next: (response: any) => {
+        console.log('Event created successfully:', response);
+        this.router.navigate(['/dashboard/events']);
+      },
+      error: (error: any) => {
+        console.error('Error creating event:', error);
+        console.error('Full error details:', error.error);
+        alert('Une erreur est survenue lors de la création de l\'événement.');
+        this.isSubmitting.set(false);
+      }
+    });
+  }
+}
+
