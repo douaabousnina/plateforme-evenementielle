@@ -1,13 +1,8 @@
-/**
- * Models for the client dashboard (Espace Client - Tableau de Bord).
- * All display data is provided by ClientDashboardService – no hardcoding in templates.
- */
-
 export interface UpcomingEventCard {
   id: string;
   title: string;
   venueName: string;
-  dateLabel: string; // e.g. "12 NOV"
+  dateLabel: string;
   date: Date;
   imageUrl: string;
   ticketCount: number;

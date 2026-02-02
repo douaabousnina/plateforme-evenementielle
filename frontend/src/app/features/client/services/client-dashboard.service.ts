@@ -11,7 +11,6 @@ import {
 } from '../models/client-dashboard.model';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../auth-users/services/auth.service';
-/** App display name for client area (configurable, not hardcoded in templates). */
 export const CLIENT_APP_NAME = 'EventLife';
 
 /** Default date locale for formatting. */

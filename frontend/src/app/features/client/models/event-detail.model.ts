@@ -1,6 +1,4 @@
-/**
- * Event detail page models. All data from API or config – no hardcoding in templates.
- */
+
 
 export interface EventDetail {
   id: string;
