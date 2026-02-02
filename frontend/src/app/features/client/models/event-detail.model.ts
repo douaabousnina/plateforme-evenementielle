@@ -1,5 +1,3 @@
-
-
 export interface EventDetail {
   id: string;
   title: string;

@@ -5,3 +5,11 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Corrige la flèche doublée du <select> (on cache la flèche native du navigateur) */
+.marketplace-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+}

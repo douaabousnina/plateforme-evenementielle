@@ -9,7 +9,7 @@
       <span class="material-symbols-outlined text-lg">favorite</span>
     </button>
     <img
-      [src]="e.coverImage || 'assets/image.png'"
+      [src]="e.imageUrl || 'assets/image.png'"
       [alt]="e.title"
       class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
       onerror="this.src='assets/image.png'"
@@ -22,11 +22,11 @@
       <div class="flex flex-col gap-2 mt-3">
         <div class="flex items-center gap-2 text-slate-500 dark:text-gray-400 text-sm">
           <span class="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
-          <span class="font-medium">{{ getDateLabel(e.startDate) }}</span>
+          <span class="font-medium">{{ e.dateLabel }}</span>
         </div>
         <div class="flex items-center gap-2 text-slate-500 dark:text-gray-400 text-sm">
           <span class="material-symbols-outlined text-[18px] text-primary">location_on</span>
-          <span class="truncate">{{ getLocationString(e.location) }}</span>
+          <span class="truncate">{{ e.location }}</span>
         </div>
       </div>
     </div>
@@ -34,10 +34,10 @@
     <div class="flex flex-end justify-between mt-2 pt-4 border-t border-gray-100 dark:border-gray-700">
       <div class="flex flex-col">
         <span class="text-xs text-slate-500 dark:text-gray-500">À partir de</span>
-        <span class="text-lg font-bold text-slate-900 dark:text-white">{{ getPriceFromCapacity() | number:'1.2-2' }} TND</span>
+        <span class="text-lg font-bold text-slate-900 dark:text-white">{{ e.priceFrom | number:'1.2-2' }} {{ e.priceCurrency }}</span>
       </div>
       <a
-        [routerLink]="['/events', e.id]"
+        [routerLink]="['/client/events', e.id]"
         class="h-9 px-4 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-full transition-colors shadow-lg flex items-center gap-1 inline-flex items-center justify-center">
         Voir détails
       </a>
