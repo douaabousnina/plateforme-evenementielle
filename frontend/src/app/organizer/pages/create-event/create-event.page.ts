@@ -172,12 +172,17 @@ export class CreateEventPage implements OnInit {
           controls['endTime'].valid
         );
       case CreationStep.TICKETING:
-        // Basic validation - ensure at least one ticket is configured
-        const tickets = controls['tickets'].value;
-        return Array.isArray(tickets) && tickets.length > 0;
+        // Validate capacity is set
+        return controls['totalCapacity'].valid && controls['totalCapacity'].value > 0;
       default:
         return false;
     }
+  }
+
+  private formatDateToISO(date: Date | string): string {
+    if (!date) return '';
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toISOString();
   }
 
   private submitForm() {
@@ -216,16 +221,25 @@ export class CreateEventPage implements OnInit {
       country: formValue.country || undefined
     };
 
+    // Combine date and time into ISO format
+    const startDate = formValue.startDate ? new Date(formValue.startDate) : new Date();
+    const startTime = formValue.startTime ? new Date(formValue.startTime) : new Date();
+    startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+    
+    const endDate = formValue.endDate ? new Date(formValue.endDate) : new Date();
+    const endTime = formValue.endTime ? new Date(formValue.endTime) : new Date();
+    endDate.setHours(endTime.getHours(), endTime.getMinutes(), endTime.getSeconds());
+
     // Simple payload - no tickets (seats are created separately)
     const createEventRequest: CreateEventRequest = {
       title: formValue.title,
       description: formValue.description,
       type: formValue.type,
       category: formValue.category,
-      startDate: formValue.startDate as any,
-      startTime: formValue.startTime as any,
-      endDate: formValue.endDate as any,
-      endTime: formValue.endTime as any,
+      startDate: startDate.toISOString(),
+      startTime: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      endTime: endDate.toISOString(),
       location: location,
       coverImage: formValue.coverImage,
       gallery: formValue.gallery,
