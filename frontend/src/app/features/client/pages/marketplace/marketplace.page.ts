@@ -26,6 +26,7 @@ export class MarketplacePage implements OnInit {
   readonly events = this.marketplace.eventsList;
   readonly meta = this.marketplace.listMeta;
   readonly footerConfig = this.marketplace.footerConfig;
+  readonly isDemoMode = this.marketplace.isDemoMode;
   readonly currentPage = signal(1);
   private readonly currentFilters = signal<Partial<MarketplaceFilters>>({});
 
