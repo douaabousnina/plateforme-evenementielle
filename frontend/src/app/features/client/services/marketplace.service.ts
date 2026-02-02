@@ -127,7 +127,8 @@ export class MarketplaceService {
       if (range.to) params['dateTo'] = range.to;
     }
 
-    return this.api.get<{ data: unknown[]; meta?: unknown }>('events', params).pipe(
+    return this.api.get<unknown>('events', params).pipe(
+      map((res) => this.normalizeApiResponse(res, page, limit)),
       map((res) => this.mapApiToListResponse(res)),
       map((res) => {
         const maxP = this.filters().priceMax;
@@ -219,10 +220,29 @@ export class MarketplaceService {
     }
   }
 
-  private mapApiToListResponse(res: { data: unknown[]; meta?: unknown }): MarketplaceListResponse {
-    const data = Array.isArray(res.data) ? res.data : [];
+  /** Backend renvoie Event[] directement, pas { data, meta }. On normalise pour un seul format. */
+  private normalizeApiResponse(
+    res: unknown,
+    page: number,
+    limit: number
+  ): { data: unknown[]; meta: MarketplaceListResponse['meta'] } {
+    const rawList = Array.isArray(res) ? res : (res as { data?: unknown[] })?.data ?? [];
+    const total = rawList.length;
+    return {
+      data: rawList,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.max(1, Math.ceil(total / limit)),
+      },
+    };
+  }
+
+  private mapApiToListResponse(res: { data: unknown[]; meta: MarketplaceListResponse['meta'] }): MarketplaceListResponse {
+    const data = res.data ?? [];
     const events = data.map((e: unknown) => this.mapRawToCard(e as Record<string, unknown>));
-    const meta = (res.meta as MarketplaceListResponse['meta']) ?? {
+    const meta = res.meta ?? {
       total: events.length,
       page: 1,
       limit: 12,
@@ -233,11 +253,19 @@ export class MarketplaceService {
 
   private mapRawToCard(e: Record<string, unknown>): MarketplaceEventCard {
     const id = String(e['id'] ?? '');
-    const date = e['date'] ? new Date(e['date'] as string) : new Date();
-    const images = (e['images'] as string[]) ?? [];
-    const banner = (e['bannerImage'] as string) ?? images[0] ?? '';
+    const dateRaw = e['startDate'] ?? e['date'];
+    const date = dateRaw ? new Date(dateRaw as string) : new Date();
+    const gallery = (e['gallery'] as string[]) ?? [];
+    const cover = (e['coverImage'] as string) ?? gallery[0] ?? '';
     const category = String(e['category'] ?? '');
-    const available = Number(e['availableSeats'] ?? 0);
+    const loc = e['location'];
+    const locationStr =
+      typeof loc === 'string'
+        ? loc
+        : loc && typeof loc === 'object' && loc !== null
+          ? String((loc as Record<string, unknown>)['city'] ?? (loc as Record<string, unknown>)['address'] ?? '')
+          : '';
+    const available = Number(e['availableCapacity'] ?? e['availableSeats'] ?? 0);
     const total = Number(e['totalCapacity'] ?? 0);
     const basePrice = Number(e['basePrice'] ?? 0);
 
@@ -254,11 +282,11 @@ export class MarketplaceService {
     return {
       id,
       title: String(e['title'] ?? ''),
-      imageUrl: banner || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',
+      imageUrl: cover || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',
       imageAlt: String(e['title'] ?? ''),
       dateLabel: this.formatDateShort(date),
       date,
-      location: String(e['venueName'] ?? e['location'] ?? e['city'] ?? ''),
+      location: locationStr || 'Lieu à préciser',
       rating: Math.round(rating * 10) / 10,
       reviewCount,
       badge,
