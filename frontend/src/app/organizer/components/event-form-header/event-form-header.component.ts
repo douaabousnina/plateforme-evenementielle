@@ -5,30 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-event-form-header',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="flex flex-col gap-6 mb-8">
-      <div>
-        <h1 class="text-3xl font-black tracking-tight text-text-main dark:text-white mb-2">
-          {{ title }}
-        </h1>
-        <p class="text-text-secondary dark:text-gray-400">{{ description }}</p>
-      </div>
-      
-      @if (currentStep && totalSteps) {
-        <div class="flex items-center gap-2">
-          <div class="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div 
-              class="h-full bg-primary transition-all duration-300"
-              [style.width.%]="(currentStep / totalSteps) * 100">
-            </div>
-          </div>
-          <span class="text-sm font-medium text-text-secondary dark:text-gray-400">
-            {{ currentStep }} / {{ totalSteps }}
-          </span>
-        </div>
-      }
-    </div>
-  `,
+  templateUrl: './event-form-header.component.html',
   styleUrls: ['./event-form-header.css']
 })
 export class EventFormHeaderComponent {

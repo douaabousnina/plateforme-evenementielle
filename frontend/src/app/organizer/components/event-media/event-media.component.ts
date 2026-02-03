@@ -6,50 +6,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
   selector: 'app-event-media',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="flex flex-col gap-6" [formGroup]="form">
-      <h2 class="text-lg font-bold border-b border-border-light dark:border-border-dark pb-2 flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary">image</span>
-        Médias
-      </h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium mb-2 text-text-main dark:text-gray-200">
-            Image de couverture
-          </label>
-          <div 
-            (click)="coverInput.click()"
-            class="border-2 border-dashed border-border-light dark:border-border-dark rounded-xl bg-background-light dark:bg-[#131022] hover:bg-white dark:hover:bg-gray-800 transition-colors cursor-pointer p-8 flex flex-col items-center justify-center text-center group">
-            <div class="bg-primary/10 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform">
-              <span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
-            </div>
-            <p class="text-sm font-medium text-text-main dark:text-white">
-              Cliquez ou glissez une image ici
-            </p>
-            <p class="text-xs text-text-secondary dark:text-gray-400 mt-1">
-              Recommandé : 2160 x 1080px (Ratio 2:1)
-            </p>
-            <input 
-              type="file"
-              accept="image/*"
-              (change)="onCoverImageSelected($event)"
-              class="hidden"
-              #coverInput
-            />
-            <button 
-              type="button"
-              (click)="$event.stopPropagation(); coverInput.click()"
-              class="mt-4 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm font-medium transition-colors">
-              Sélectionner une image
-            </button>
-          </div>
-        </div>
-        
-
-      </div>
-    </div>
-  `,
+  templateUrl: './event-media.component.html',
   styleUrls: ['./event-media.css']
 })
 export class EventMediaComponent {

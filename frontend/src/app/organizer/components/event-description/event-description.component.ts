@@ -6,51 +6,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
   selector: 'app-event-description',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="flex flex-col gap-6" [formGroup]="form">
-      <h2 class="text-lg font-bold border-b border-border-light dark:border-border-dark pb-2 flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary">description</span>
-        Description
-      </h2>
-      
-      <div class="rounded-lg border border-border-light dark:border-border-dark overflow-hidden bg-background-light dark:bg-[#131022]">
-        <!-- Editor Toolbar -->
-        <div class="flex items-center gap-1 p-2 border-b border-border-light dark:border-border-dark bg-white dark:bg-surface-dark">
-          <button type="button" class="p-1.5 rounded hover:bg-background-light dark:hover:bg-gray-700 text-text-secondary">
-            <span class="material-symbols-outlined text-[20px]">format_bold</span>
-          </button>
-          <button type="button" class="p-1.5 rounded hover:bg-background-light dark:hover:bg-gray-700 text-text-secondary">
-            <span class="material-symbols-outlined text-[20px]">format_italic</span>
-          </button>
-          <button type="button" class="p-1.5 rounded hover:bg-background-light dark:hover:bg-gray-700 text-text-secondary">
-            <span class="material-symbols-outlined text-[20px]">format_underlined</span>
-          </button>
-          <div class="w-px h-5 bg-border-light dark:bg-gray-700 mx-1"></div>
-          <button type="button" class="p-1.5 rounded hover:bg-background-light dark:hover:bg-gray-700 text-text-secondary">
-            <span class="material-symbols-outlined text-[20px]">format_list_bulleted</span>
-          </button>
-          <button type="button" class="p-1.5 rounded hover:bg-background-light dark:hover:bg-gray-700 text-text-secondary">
-            <span class="material-symbols-outlined text-[20px]">format_list_numbered</span>
-          </button>
-          <div class="w-px h-5 bg-border-light dark:bg-gray-700 mx-1"></div>
-          <button type="button" class="p-1.5 rounded hover:bg-background-light dark:hover:bg-gray-700 text-text-secondary">
-            <span class="material-symbols-outlined text-[20px]">link</span>
-          </button>
-          <button type="button" class="p-1.5 rounded hover:bg-background-light dark:hover:bg-gray-700 text-text-secondary">
-            <span class="material-symbols-outlined text-[20px]">image</span>
-          </button>
-        </div>
-        
-        <!-- Text Area -->
-        <textarea 
-          formControlName="description"
-          placeholder="Décrivez votre événement en détail..."
-          rows="8"
-          class="w-full p-4 bg-transparent border-0 focus:ring-0 text-text-main dark:text-white placeholder-text-secondary/50 resize-none">
-        </textarea>
-      </div>
-    </div>
-  `,
+  templateUrl: './event-description.component.html',
   styleUrls: ['./event-description.css']
 })
 export class EventDescriptionComponent {

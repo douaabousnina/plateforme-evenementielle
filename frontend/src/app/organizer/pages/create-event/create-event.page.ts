@@ -12,6 +12,7 @@ import { EventTicketingComponent } from '../../components/event-ticketing/event-
 import { EventFormActionsComponent } from '../../components/event-form-actions/event-form-actions.component';
 
 import { EventService } from '../../services/event.service';
+import { finalize } from 'rxjs';
 import { CreateEventRequest, CreationStep } from '../../models/create-event.model';
 import { AuthService } from '../../../features/auth-users/services/auth.service';
 
@@ -29,48 +30,7 @@ import { AuthService } from '../../../features/auth-users/services/auth.service'
     EventTicketingComponent,
     EventFormActionsComponent
   ],
-  template: `
-    <div class="min-h-screen bg-background-light dark:bg-[#0a0814] p-4 md:p-8">
-      <div class="max-w-4xl mx-auto">
-        <!-- Form Header -->
-        <app-event-form-header
-          [currentStep]="currentStep()"
-          [totalSteps]="2"
-          title="Créer un nouvel événement"
-          [description]="currentStep() === 1 
-            ? 'Configurez les détails de base de votre événement'
-            : 'Configurez la billetterie et les prix'">
-        </app-event-form-header>
-
-        <!-- Main Form -->
-        <form [formGroup]="eventForm" class="mt-8 space-y-8 pb-32">
-          <!-- Step 1: General Info -->
-          @if (currentStep() === 1) {
-            <app-event-basic-info [form]="eventForm"></app-event-basic-info>
-            <app-event-date-time [form]="eventForm"></app-event-date-time>
-            <app-event-location [form]="eventForm"></app-event-location>
-            <app-event-description [form]="eventForm"></app-event-description>
-            <app-event-media [form]="eventForm"></app-event-media>
-          }
-
-          <!-- Step 2: Ticketing -->
-          @if (currentStep() === 2) {
-            <app-event-ticketing [form]="eventForm"></app-event-ticketing>
-          }
-        </form>
-
-        <!-- Form Actions -->
-        <app-event-form-actions
-          [disabled]="isSubmitting()"
-          [showBack]="currentStep() > 1"
-          (cancel)="onCancel()"
-          (back)="onBack()"
-          (saveDraft)="onSaveDraft()"
-          (next)="onNext()">
-        </app-event-form-actions>
-      </div>
-    </div>
-  `,
+  templateUrl: './create-event.page.html',
   styleUrls: ['./create-event.page.css']
 })
 export class CreateEventPage implements OnInit {
@@ -251,7 +211,9 @@ export class CreateEventPage implements OnInit {
 
     console.log('Submitting event creation:', createEventRequest);
 
-    this.eventService.createEvent(createEventRequest).subscribe({
+    this.eventService.createEvent(createEventRequest).pipe(
+      finalize(() => this.isSubmitting.set(false))
+    ).subscribe({
       next: (response: any) => {
         console.log('Event created successfully:', response);
         this.router.navigate(['/dashboard/events']);
@@ -260,7 +222,6 @@ export class CreateEventPage implements OnInit {
         console.error('Error creating event:', error);
         console.error('Full error details:', error.error);
         alert('Une erreur est survenue lors de la création de l\'événement.');
-        this.isSubmitting.set(false);
       }
     });
   }

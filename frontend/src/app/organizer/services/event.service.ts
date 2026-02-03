@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, of, delay, tap, catchError, map, switchMap } from 'rxjs';
+import { Observable, of, delay, tap, catchError, map, switchMap, throwError } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { EventsResponse, Event } from '../models/event.models';
 import { CreateEventRequest } from '../models/create-event.model';
@@ -76,7 +76,7 @@ export class EventService {
       }),
       catchError((error) => {
         this.error.set('Erreur lors de la création de l\'événement');
-        throw error;
+        return throwError(() => error);
       })
     );
   }

@@ -7,59 +7,7 @@ import { FormInputComponent } from '../../../shared/components/form-input/form-i
   selector: 'app-event-ticketing',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormInputComponent],
-  template: `
-    <div class="flex flex-col gap-6" [formGroup]="form">
-      <h2 class="text-lg font-bold border-b border-border-light dark:border-border-dark pb-2 flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary">event_seat</span>
-        Capacité et Places
-      </h2>
-      
-      <div class="space-y-6">
-        <!-- Total Capacity -->
-        <div class="bg-white dark:bg-[#131022] rounded-xl p-6 border border-border-light dark:border-border-dark">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <app-form-input
-                [label]="'Capacité totale'"
-                [placeholder]="'Nombre total de places'"
-                [type]="'number'"
-                [value]="form.get('totalCapacity')?.value?.toString() ?? ''"
-                [name]="'totalCapacity'"
-                (blurred)="onCapacityChange('totalCapacity', $event)"
-              />
-            </div>
-          </div>
-          <p class="mt-3 text-xs text-text-secondary dark:text-gray-400">
-            Le nombre total de places disponibles pour cet événement.
-          </p>
-        </div>
-
-        <!-- Seating Plan -->
-        <div class="bg-white dark:bg-[#131022] rounded-xl p-6 border border-border-light dark:border-border-dark">
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input 
-              type="checkbox"
-              formControlName="hasSeatingPlan"
-              class="form-checkbox rounded text-primary border-border-light focus:ring-primary"
-            />
-            <div>
-              <span class="text-base font-semibold text-text-main dark:text-white">Plan de siège</span>
-              <p class="text-xs text-text-secondary dark:text-gray-400 mt-1">
-                Cet événement dispose d'un plan de sièges avec des rangées et des numéros spécifiques.
-              </p>
-            </div>
-          </label>
-        </div>
-
-        <!-- Info -->
-        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-          <p class="text-sm text-blue-900 dark:text-blue-200">
-            💡 Les prix et catégories de billets seront configurés après la création de l'événement dans la section "Gestion des places".
-          </p>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './event-ticketing.component.html',
   styleUrls: ['./event-ticketing.css']
 })
 export class EventTicketingComponent {
