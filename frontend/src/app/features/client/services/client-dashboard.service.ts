@@ -135,7 +135,7 @@ export class ClientDashboardService {
     const dateLabel = this.formatCurrentDate();
     return {
       welcome: {
-        greeting: `Bonjour, ${userName} 👋`,
+        greeting: `Bonjour`,
         subtitle: `Prêt pour votre prochaine expérience ? Vous avez ${upcomingEvents.length} événements à venir.`,
         upcomingCount: upcomingEvents.length,
         currentDateLabel: dateLabel,
@@ -159,7 +159,7 @@ export class ClientDashboardService {
     const dateLabel = this.formatCurrentDate();
     return {
       welcome: {
-        greeting: `Bonjour, ${userName} 👋`,
+        greeting: `Bonjour`,
         subtitle: `Prêt pour votre prochaine expérience ? Vous avez 3 événements à venir.`,
         upcomingCount: 3,
         currentDateLabel: dateLabel,
