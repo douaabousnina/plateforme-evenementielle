@@ -4,7 +4,7 @@ import { AuthService } from '../../../features/auth-users/services/auth.service'
 
 @Component({
   selector: 'app-side-bar',
-  standalone: true,
+  
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './side-bar.html',
   styleUrls: ['./side-bar.css'],

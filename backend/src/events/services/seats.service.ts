@@ -14,8 +14,8 @@ export class SeatsService {
     ) { }
 
     /**
-     * Check if seats are available for reservation
-     * Also validates that all seats belong to the specified event
+     * Check if seats are available for reservation 
+     * & validates that all seats belong to the specified event
      */
     async checkSeatsAvailability(
         seatIds: string[],
@@ -24,32 +24,7 @@ export class SeatsService {
         allAvailable: boolean;
         takenSeatIds: string[];
     }> {
-        // First, validate that the event exists
-        await this.eventsService.findOne(eventId);
-
-        // Fetch the seats
-        const seats = await this.seatRepository.find({
-            where: {
-                id: In(seatIds),
-            },
-        });
-
-        // Check if all requested seats exist
-        if (seats.length !== seatIds.length) {
-            const foundIds = seats.map(s => s.id);
-            const missingIds = seatIds.filter(id => !foundIds.includes(id));
-            throw new NotFoundException(
-                `Seats not found: ${missingIds.join(', ')}`
-            );
-        }
-
-        // Verify all seats belong to the specified event
-        const seatsFromDifferentEvent = seats.filter(seat => seat.eventId !== eventId);
-        if (seatsFromDifferentEvent.length > 0) {
-            throw new BadRequestException(
-                `Seats ${seatsFromDifferentEvent.map(s => s.id).join(', ')} do not belong to event ${eventId}`
-            );
-        }
+        const seats = await this.fetchAndValidateSeats(seatIds, eventId);
 
         // Check for taken seats
         const takenSeats = seats.filter(
@@ -64,34 +39,10 @@ export class SeatsService {
 
     /**
      * Lock seats for a pending reservation
-     * Validates seats belong to the event and updates event capacity
      */
     async lockSeats(seatIds: string[], eventId: string): Promise<Seat[]> {
-        // Validate event exists
         const event = await this.eventsService.findOne(eventId);
-
-        // Fetch seats
-        const seats = await this.seatRepository.find({
-            where: {
-                id: In(seatIds),
-            },
-        });
-
-        if (seats.length !== seatIds.length) {
-            const foundIds = seats.map(s => s.id);
-            const missingIds = seatIds.filter(id => !foundIds.includes(id));
-            throw new NotFoundException(
-                `Seats not found: ${missingIds.join(', ')}`
-            );
-        }
-
-        // Verify all seats belong to this event
-        const seatsFromDifferentEvent = seats.filter(seat => seat.eventId !== eventId);
-        if (seatsFromDifferentEvent.length > 0) {
-            throw new BadRequestException(
-                `Cannot lock seats from different event. Expected event ${eventId}, but seats ${seatsFromDifferentEvent.map(s => s.id).join(', ')} belong to different events`
-            );
-        }
+        const seats = await this.fetchAndValidateSeats(seatIds, eventId);
 
         // Check if any seat is already taken
         const takenSeats = seats.filter(
@@ -118,35 +69,24 @@ export class SeatsService {
     }
 
     /**
-     * Assign a reservation to already-locked seats (sets reservationId).
-     * Call after lockSeats when creating a reservation.
+     * Assign a reservation to already-locked seats
      */
     async setReservationForSeats(
         seatIds: string[],
         eventId: string,
         reservationId: string,
     ): Promise<Seat[]> {
-        await this.eventsService.findOne(eventId);
-        const seats = await this.seatRepository.find({
-            where: { id: In(seatIds) },
-        });
-        if (seats.length !== seatIds.length) {
-            throw new NotFoundException('Some seats not found');
-        }
-        const invalid = seats.filter((s) => s.eventId !== eventId);
-        if (invalid.length > 0) {
-            throw new BadRequestException(
-                `Seats do not belong to event ${eventId}`,
-            );
-        }
+        const seats = await this.fetchAndValidateSeats(seatIds, eventId);
+
         seats.forEach((seat) => {
             seat.reservationId = reservationId;
         });
+
         return this.seatRepository.save(seats);
     }
 
     /**
-     * Find all seats for a given reservation (for loading reservation with seats).
+     * Find all seats for a given reservation
      */
     async findByReservationId(reservationId: string): Promise<Seat[]> {
         return this.seatRepository.find({
@@ -157,33 +97,11 @@ export class SeatsService {
 
     /**
      * Mark seats as sold (after payment confirmation)
-     * Seats should already be locked before calling this
      */
     async markSeatsAsSold(seatIds: string[], eventId: string): Promise<Seat[]> {
-        // Validate event exists
-        await this.eventsService.findOne(eventId);
+        const seats = await this.fetchAndValidateSeats(seatIds, eventId);
 
-        const seats = await this.seatRepository.find({
-            where: {
-                id: In(seatIds),
-            },
-        });
-
-        if (seats.length !== seatIds.length) {
-            throw new NotFoundException(
-                `Some seats not found. Requested: ${seatIds.length}, Found: ${seats.length}`
-            );
-        }
-
-        // Verify all seats belong to this event
-        const seatsFromDifferentEvent = seats.filter(seat => seat.eventId !== eventId);
-        if (seatsFromDifferentEvent.length > 0) {
-            throw new BadRequestException(
-                `Seats ${seatsFromDifferentEvent.map(s => s.id).join(', ')} do not belong to event ${eventId}`
-            );
-        }
-
-        // Verify seats are locked (should be from a reservation)
+        // Verify seats are locked
         const notLockedSeats = seats.filter(seat => seat.status !== SeatStatus.LOCKED);
         if (notLockedSeats.length > 0) {
             throw new BadRequestException(
@@ -199,35 +117,13 @@ export class SeatsService {
     }
 
     /**
-     * Release seats (make them available again)
-     * Used when: reservation expires, user cancels, or payment fails
-     * Also updates event capacity back
+     * Used when: reservation expires / user cancels / payment fails
      */
     async releaseSeats(seatIds: string[], eventId: string): Promise<Seat[]> {
-        // Validate event exists
         const event = await this.eventsService.findOne(eventId);
+        const seats = await this.fetchAndValidateSeats(seatIds, eventId);
 
-        const seats = await this.seatRepository.find({
-            where: {
-                id: In(seatIds),
-            },
-        });
-
-        if (seats.length !== seatIds.length) {
-            throw new NotFoundException(
-                `Some seats not found. Requested: ${seatIds.length}, Found: ${seats.length}`
-            );
-        }
-
-        // Verify all seats belong to this event
-        const seatsFromDifferentEvent = seats.filter(seat => seat.eventId !== eventId);
-        if (seatsFromDifferentEvent.length > 0) {
-            throw new BadRequestException(
-                `Seats ${seatsFromDifferentEvent.map(s => s.id).join(', ')} do not belong to event ${eventId}`
-            );
-        }
-
-        // Count only locked seats (not sold ones) for capacity release
+        // Count only locked seats for capacity release
         const lockedSeats = seats.filter(seat => seat.status === SeatStatus.LOCKED);
 
         // Update event capacity if event tracks capacity and seats were locked
@@ -247,21 +143,20 @@ export class SeatsService {
      * Find all seats for a specific event
      */
     async findByEventId(eventId: string): Promise<Seat[]> {
-        // Validate event exists
         await this.eventsService.findOne(eventId);
 
         return this.seatRepository.find({
             where: { eventId },
-            order: { 
-                section: 'ASC', 
-                row: 'ASC', 
-                number: 'ASC' 
+            order: {
+                section: 'ASC',
+                row: 'ASC',
+                number: 'ASC'
             },
         });
     }
 
     /**
-     * Find a single seat by ID and optionally validate it belongs to an event
+     * Find a single seat by id & (optionally) validate it belongs to an event
      */
     async findById(id: string, eventId?: string): Promise<Seat> {
         const seat = await this.seatRepository.findOne({
@@ -272,7 +167,6 @@ export class SeatsService {
             throw new NotFoundException(`Seat with ID ${id} not found`);
         }
 
-        // If eventId is provided, validate the seat belongs to that event
         if (eventId && seat.eventId !== eventId) {
             throw new BadRequestException(
                 `Seat ${id} does not belong to event ${eventId}`
@@ -286,7 +180,6 @@ export class SeatsService {
      * Get available seats count for an event
      */
     async getAvailableSeatsCount(eventId: string): Promise<number> {
-        // Validate event exists
         await this.eventsService.findOne(eventId);
 
         return this.seatRepository.count({
@@ -316,28 +209,28 @@ export class SeatsService {
         };
     }
 
-    /**
-     * Validate that multiple seats all belong to the same event
-     * Useful for batch operations
-     */
-    async validateSeatsForEvent(seatIds: string[], eventId: string): Promise<void> {
+    // helpers
+    private async fetchAndValidateSeats(seatIds: string[], eventId: string): Promise<Seat[]> {
+        // Validate event exists
         await this.eventsService.findOne(eventId);
 
+        // Fetch seats that belong to this event
         const seats = await this.seatRepository.find({
             where: {
                 id: In(seatIds),
+                eventId: eventId,
             },
         });
 
+        // Check if all seats were found
         if (seats.length !== seatIds.length) {
-            throw new NotFoundException('Some seats not found');
-        }
-
-        const invalidSeats = seats.filter(seat => seat.eventId !== eventId);
-        if (invalidSeats.length > 0) {
+            const foundIds = seats.map(s => s.id);
+            const missingIds = seatIds.filter(id => !foundIds.includes(id));
             throw new BadRequestException(
-                `These seats do not belong to event ${eventId}: ${invalidSeats.map(s => s.id).join(', ')}`
+                `Seats not found or do not belong to event ${eventId}: ${missingIds.join(', ')}`
             );
         }
+
+        return seats;
     }
 }

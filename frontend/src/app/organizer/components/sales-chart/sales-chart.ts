@@ -4,7 +4,7 @@ import { SalesService } from '../../services/sales.service';
 
 @Component({
   selector: 'app-sales-chart',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './sales-chart.html',
   styleUrls: ['./sales-chart.css'],

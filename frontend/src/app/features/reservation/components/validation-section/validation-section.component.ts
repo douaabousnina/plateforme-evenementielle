@@ -3,7 +3,7 @@ import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-validation-section',
-  standalone: true,
+  
   imports: [DecimalPipe],
   templateUrl: './validation-section.component.html',
 })

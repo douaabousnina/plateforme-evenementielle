@@ -27,6 +27,12 @@ export class CartService {
         return this.reservedSeats().length;
     });
 
+    constructor() {
+        // because: even on refresh, reserved seats remain reserved!
+        // => initialize with []
+        this.reservedSeats.set([]);
+    }
+
 
     setSeats(seats: Seat[]): void {
         this.reservedSeats.set(seats);

@@ -8,7 +8,7 @@ import { MarketplaceService } from '../../services/marketplace.service';
 
 @Component({
   selector: 'app-marketplace-page',
-  standalone: true,
+  
   imports: [
     MarketplaceFilterBarComponent,
     MarketplaceEventCardComponent,

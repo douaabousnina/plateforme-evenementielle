@@ -5,7 +5,7 @@ import { MarketplaceEventCard } from '../../models/marketplace.model';
 
 @Component({
   selector: 'app-marketplace-event-card',
-  standalone: true,
+  
   imports: [CommonModule, RouterLink],
   templateUrl: './marketplace-event-card.component.html',
   styleUrls: ['./marketplace-event-card.component.css'],

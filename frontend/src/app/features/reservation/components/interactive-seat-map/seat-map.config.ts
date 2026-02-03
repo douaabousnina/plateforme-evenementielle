@@ -1,4 +1,5 @@
-// TODO: to change according to backend
+// Just zina pour frontend, par défaut
+
 export interface SectionConfig {
     name: string;
     seatsPerRow: number;
@@ -10,7 +11,6 @@ export interface SectionConfig {
     };
 }
 
-// TODO: hardcoded for now
 export const SECTION_CONFIGS: SectionConfig[] = [
     {
         name: 'Fosse Or',
@@ -20,7 +20,7 @@ export const SECTION_CONFIGS: SectionConfig[] = [
     {
         name: 'Catégorie 1',
         seatsPerRow: 6,
-        layout: 'triple', // Will be split into left (4), center (6), right (4)
+        layout: 'triple',
         style: {
             rotation: 6,
             borderColor: 'purple',

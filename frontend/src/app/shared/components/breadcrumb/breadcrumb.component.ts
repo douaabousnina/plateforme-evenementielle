@@ -6,7 +6,7 @@ import { BreadcrumbStep } from '../../../core/models/breadcrumb.model';
 
 @Component({
     selector: 'app-breadcrumb',
-    standalone: true,
+    
     imports: [CommonModule, RouterLink],
     templateUrl: './breadcrumb.component.html',
 })

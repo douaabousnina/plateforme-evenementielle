@@ -3,7 +3,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-order-details',
-  standalone: true,
+  
   imports: [DatePipe, DecimalPipe],
   templateUrl: './order-details.component.html',
 })

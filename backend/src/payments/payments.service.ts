@@ -23,7 +23,7 @@ export class PaymentsService {
 
   async create(userId: string, dto: CreatePaymentDto) {
     const reservation = await this.reservationsService.findById(
-      dto.reservationId,
+      dto.reservationId, userId
     );
 
     if (!reservation) throw new NotFoundException('Reservation not found');
@@ -55,7 +55,7 @@ export class PaymentsService {
     await this.paymentRepo.save(payment);
 
     if (payment.status === PaymentStatus.SUCCESS) {
-      await this.reservationsService.confirm(reservation.id);
+      await this.reservationsService.confirm(reservation.id, userId);
     } else {
       throw new BadRequestException('Payment failed');
     }
@@ -97,6 +97,7 @@ export class PaymentsService {
     return payment;
   }
 
+  // helpers
   private generateMethod(cardNumber: string): PaymentMethod {
     if (!cardNumber) {
       throw new BadRequestException('Card number is required');
