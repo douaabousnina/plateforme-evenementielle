@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-scan-history-button',
-  standalone: true,
+  
   imports: [],
   templateUrl: './scan-history-button.html',
   styleUrls: ['./scan-history-button.css']

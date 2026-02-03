@@ -12,7 +12,7 @@ import { EventService } from '../../services/event.service';
 
 @Component({
   selector: 'app-confirmation-page',
-  standalone: true,
+  
   imports: [
     CommonModule,
     HeaderComponent,

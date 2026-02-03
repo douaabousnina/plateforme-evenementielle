@@ -13,7 +13,7 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
 
 @Component({
   selector: 'app-event-detail-page',
-  standalone: true,
+  
   imports: [
     BreadcrumbComponent,
     EventDetailHeroComponent,

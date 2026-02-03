@@ -3,7 +3,7 @@ import { PaymentMethod } from '../../enums/payment-method.enum';
 
 @Component({
   selector: 'app-payment-method',
-  standalone: true,
+  
   templateUrl: './payment-method.component.html',
 })
 export class PaymentMethodComponent {

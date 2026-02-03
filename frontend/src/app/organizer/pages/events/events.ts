@@ -8,7 +8,7 @@ import { Event } from '../../models/event.models';
 
 @Component({
   selector: 'app-events',
-  standalone: true,
+  
   imports: [CommonModule, SideBar,EventsTable, RouterLink],
   templateUrl: './events.html',
   styleUrls: ['./events.css']

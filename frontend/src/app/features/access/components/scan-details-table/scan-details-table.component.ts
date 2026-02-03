@@ -4,7 +4,7 @@ import { ScanLog } from '../../models/access.model';
 
 @Component({
   selector: 'app-scan-details-table',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './scan-details-table.component.html',
   styleUrls: ['./scan-details-table.component.css']

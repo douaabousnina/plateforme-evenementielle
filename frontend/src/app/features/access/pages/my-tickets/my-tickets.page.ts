@@ -10,7 +10,7 @@ import { AuthService } from '../../../auth-users/services/auth.service';
 
 @Component({
   selector: 'app-my-tickets',
-  standalone: true,
+  
   imports: [CommonModule, TicketCardComponent, TicketFiltersComponent, QrModalComponent, HeaderComponent],
   templateUrl: './my-tickets.page.html',
   styleUrls: ['./my-tickets.page.css']

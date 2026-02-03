@@ -16,7 +16,7 @@ import { createBreadcrumbSteps } from '../../../../core/config/breadcrumb.config
 
 @Component({
   selector: 'app-seat-selection-page',
-  standalone: true,
+
   imports: [
     CommonModule,
     InteractiveSeatMapComponent,

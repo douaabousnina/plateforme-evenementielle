@@ -5,7 +5,7 @@ import { MarketplaceFilters } from '../../models/marketplace.model';
 
 @Component({
   selector: 'app-marketplace-filter-bar',
-  standalone: true,
+  
   imports: [FormsModule],
   templateUrl: './marketplace-filter-bar.component.html',
   styleUrls: ['./marketplace-filter-bar.component.css'],

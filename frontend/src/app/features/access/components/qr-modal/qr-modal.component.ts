@@ -5,7 +5,7 @@ import { AccessService } from '../../services/access.service';
 
 @Component({
   selector: 'app-qr-modal',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './qr-modal.component.html',
   styleUrls: ['./qr-modal.component.css']

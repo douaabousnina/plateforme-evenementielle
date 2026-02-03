@@ -4,7 +4,7 @@ import { ClientDashboardService } from '../../services/client-dashboard.service'
 
 @Component({
   selector: 'app-quick-actions',
-  standalone: true,
+  
   imports: [RouterLink],
   templateUrl: './quick-actions.component.html',
   styleUrls: ['./quick-actions.component.css'],

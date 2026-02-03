@@ -38,7 +38,7 @@ import {
     ) {
       const userId = req.user.sub;
       
-      return await this.reservationsService.confirm(id);
+      return await this.reservationsService.confirm(id, userId);
     }
   
     // CANCEL RESERVATION => User cancels before payment/expiration
@@ -50,7 +50,7 @@ import {
     ) {
       const userId = req.user.sub;
       
-      return await this.reservationsService.cancel(id);
+      return await this.reservationsService.cancel(id, userId);
     }
   
     // GET USER'S RESERVATIONS => Booking history
@@ -71,6 +71,6 @@ import {
     ) {
       const userId = req.user.sub;
       
-      return await this.reservationsService.findById(id);
+      return await this.reservationsService.findById(id, userId);
     }
   }

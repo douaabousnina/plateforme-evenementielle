@@ -10,7 +10,7 @@ import { SideBar } from '../../../../organizer/components/side-bar/side-bar';
 
 @Component({
   selector: 'app-qr-scanner',
-  standalone: true,
+  
   imports: [CommonModule, FormsModule, ZXingScannerModule, SideBar],
   templateUrl: './qr-scanner.page.html',
   styleUrls: ['./qr-scanner.page.css']

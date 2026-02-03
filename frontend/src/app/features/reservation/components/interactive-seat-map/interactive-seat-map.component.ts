@@ -13,7 +13,6 @@ interface SectionData {
 
 @Component({
   selector: 'app-interactive-seat-map',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './interactive-seat-map.component.html',
 })
@@ -46,7 +45,7 @@ export class InteractiveSeatMapComponent {
 
   getBorderColorClass(config: SectionConfig, status: SeatStatus): string {
     if (status === SeatStatus.LOCKED) return 'border-primary';
-    
+
     const color = config.style?.borderColor || 'primary';
     return status === SeatStatus.AVAILABLE ? `border-${color}-400/50` : '';
   }

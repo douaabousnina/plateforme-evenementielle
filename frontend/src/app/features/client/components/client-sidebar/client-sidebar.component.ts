@@ -6,7 +6,7 @@ import { ClientDashboardService } from '../../services/client-dashboard.service'
 
 @Component({
   selector: 'app-client-sidebar',
-  standalone: true,
+  
   imports: [LoyaltyCardComponent, QuickActionsComponent, NotificationsFeedComponent],
   templateUrl: './client-sidebar.component.html',
   styleUrls: ['./client-sidebar.component.css'],

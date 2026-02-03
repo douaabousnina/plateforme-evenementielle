@@ -5,7 +5,7 @@ import { ClientDashboardService } from '../../services/client-dashboard.service'
 
 @Component({
   selector: 'app-upcoming-events-carousel',
-  standalone: true,
+  
   imports: [RouterLink, EventCardComponent],
   templateUrl: './upcoming-events-carousel.component.html',
   styleUrls: ['./upcoming-events-carousel.component.css'],

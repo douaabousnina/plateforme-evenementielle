@@ -4,7 +4,7 @@ import { FooterConfig } from '../../models/marketplace.model';
 
 @Component({
   selector: 'app-client-footer',
-  standalone: true,
+  
   imports: [RouterLink],
   templateUrl: './client-footer.component.html',
   styleUrls: ['./client-footer.component.css'],

@@ -11,7 +11,7 @@ interface StatCard {
 
 @Component({
   selector: 'app-scan-stats-summary',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './scan-stats-summary.component.html',
   styleUrls: ['./scan-stats-summary.component.css']

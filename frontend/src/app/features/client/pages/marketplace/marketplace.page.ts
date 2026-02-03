@@ -9,7 +9,7 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
 
 @Component({
   selector: 'app-marketplace-page',
-  standalone: true,
+  
   imports: [
     MarketplaceFilterBarComponent,
     MarketplaceEventCardComponent,
