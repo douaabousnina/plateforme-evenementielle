@@ -12,7 +12,7 @@ export interface EventStats {
 
 @Component({
   selector: 'app-event-stats-card',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './event-stats-card.component.html',
   styleUrls: ['./event-stats-card.component.css']

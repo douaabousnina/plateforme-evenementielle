@@ -4,7 +4,7 @@ import { RecommendationCard } from '../../models/client-dashboard.model';
 
 @Component({
   selector: 'app-recommendation-card',
-  standalone: true,
+  
   imports: [RouterLink],
   templateUrl: './recommendation-card.component.html',
   styleUrls: ['./recommendation-card.component.css'],

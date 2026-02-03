@@ -13,7 +13,7 @@ interface EventStatsWithScans extends EventStats {
 
 @Component({
   selector: 'app-scan-history',
-  standalone: true,
+  
   imports: [
     CommonModule,
     ScanStatsSummaryComponent,

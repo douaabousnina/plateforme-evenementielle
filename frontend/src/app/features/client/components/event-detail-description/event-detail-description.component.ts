@@ -3,7 +3,7 @@ import { EventDetail } from '../../models/event-detail.model';
 
 @Component({
   selector: 'app-event-detail-description',
-  standalone: true,
+  
   templateUrl: './event-detail-description.component.html',
   styleUrls: ['./event-detail-description.component.css'],
 })

@@ -5,7 +5,7 @@ import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-seat-cart-summary',
-  standalone: true,
+  
   imports: [CommonModule, DecimalPipe],
   templateUrl: './seat-cart-summary.component.html'
 })

@@ -4,7 +4,7 @@ import { ContactInfo } from '../../models/payment.model';
 
 @Component({
   selector: 'app-contact-form',
-  standalone: true,
+  
   imports: [FormInputComponent],
   templateUrl: './contact-form.component.html',
 })

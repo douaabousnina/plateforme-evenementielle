@@ -7,7 +7,7 @@ import { PaymentMethod } from '../../enums/payment-method.enum';
 
 @Component({
     selector: 'app-payment-form',
-    standalone: true,
+    
     imports: [FormInputComponent, PaymentMethodComponent],
     templateUrl: './payment-form.component.html',
 })

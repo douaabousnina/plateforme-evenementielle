@@ -32,58 +32,47 @@ export class ReservationsService {
 
     // LOCK SEATS & CREATE RESERVATION
     async lockSeats(userId: string, dto: LockSeatsDto) {
-        // Check seat availability - this validates:
-        // 1. Event exists
-        // 2. Seats exist
-        // 3. Seats belong to the specified event
-        // 4. Seats are available (not locked/sold)
         const availabilityCheck = await this.seatsService.checkSeatsAvailability(
             dto.seatIds,
             dto.eventId
         );
-        
+
         if (!availabilityCheck.allAvailable) {
             throw new ConflictException(
                 `Seats already taken: ${availabilityCheck.takenSeatIds.join(', ')}`
             );
         }
 
-        // Lock seats - this also:
-        // 1. Validates seats belong to the event
-        // 2. Updates event capacity
         const seats = await this.seatsService.lockSeats(dto.seatIds, dto.eventId);
         const totalPrice = seats.reduce((sum, s) => sum + Number(s.price), 0);
         const expiresAt = new Date(Date.now() + RESERVATION_EXPIRATION_MINUTES * 60 * 1000);
 
-        const reservation = this.reservationRepo.create({
+        const reservation = await this.reservationRepo.save({
             userId,
             eventId: dto.eventId,
             totalPrice,
             status: ReservationStatus.PENDING,
             expiresAt,
         });
-        const savedReservation = await this.reservationRepo.save(reservation);
 
         await this.seatsService.setReservationForSeats(
             dto.seatIds,
             dto.eventId,
-            savedReservation.id,
+            reservation.id,
         );
 
-        return this.findById(savedReservation.id);
+        return this.findById(reservation.id, userId);
     }
 
     // CONFIRM (after payment)
-    async confirm(reservationId: string) {
-        const reservation = await this.findById(reservationId);
+    async confirm(reservationId: string, userId: string) {
+        const reservation = await this.findById(reservationId, userId);
 
         if (reservation.status !== ReservationStatus.PENDING) {
             throw new BadRequestException('Reservation not confirmable');
         }
 
-        if (!reservation.seats?.length) {
-            throw new NotFoundException('Reserved seats not found');
-        }
+        this.validateReservationSeats(reservation)
 
         const seatIds = reservation.seats.map((s) => s.id);
 
@@ -99,37 +88,25 @@ export class ReservationsService {
         const confirmedReservation = await this.reservationRepo.save(reservation);
 
         // Generate tickets for the confirmed reservation
-        try {
-            const event = await this.eventRepo.findOne({ 
-                where: { id: reservation.eventId },
-                relations: ['location'] // Load location relation
-            });
-            if (event) {
-                console.log('Generating tickets for reservation', reservation.id, 'with seats:', reservation.seats.map(s => s.id));
-                const tickets = await this.accessService.generateTicketsForReservation(reservation, event);
-                console.log('Successfully generated', tickets.length, 'tickets');
-            } else {
-                console.warn('Event not found for reservation', reservation.id);
-            }
-        } catch (error) {
-            console.error('Failed to generate tickets:', error.message, error.stack);
-            // Don't throw error to prevent payment confirmation failure
-        }
+        const event = await this.eventRepo.findOne({
+            where: { id: reservation.eventId },
+            relations: ['location'] // we need location info pour tickets
+        });
+        if (event)
+            await this.accessService.generateTicketsForReservation(reservation, event);
 
         return confirmedReservation;
     }
 
     // CANCEL (by user)
-    async cancel(reservationId: string) {
-        const reservation = await this.findById(reservationId);
+    async cancel(reservationId: string, userId: string) {
+        const reservation = await this.findById(reservationId, userId);
 
         if (reservation.status !== ReservationStatus.PENDING) {
             throw new BadRequestException('Only pending reservations can be cancelled');
         }
 
-        if (!reservation.seats?.length) {
-            throw new NotFoundException('Reserved seats not found');
-        }
+        this.validateReservationSeats(reservation)
 
         reservation.status = ReservationStatus.CANCELLED;
         await this.seatsService.releaseSeats(
@@ -140,9 +117,9 @@ export class ReservationsService {
     }
 
     // FIND ONE
-    async findById(id: string) {
+    async findById(id: string, userId: string) {
         const reservation = await this.reservationRepo.findOne({
-            where: { id },
+            where: { id: id, userId: userId },
             relations: ['seats'],
         });
 
@@ -166,9 +143,9 @@ export class ReservationsService {
         this.isExpiringWorking = true;
 
         const expired = await this.reservationRepo.find({
-            where: { 
-                status: ReservationStatus.PENDING, 
-                expiresAt: LessThan(new Date()) 
+            where: {
+                status: ReservationStatus.PENDING,
+                expiresAt: LessThan(new Date())
             },
             relations: ['seats'],
         });
@@ -187,8 +164,14 @@ export class ReservationsService {
         return expired.length;
     }
 
-    // Get seats for an event
-    async findSeatsByEventId(eventId: string) {
-        return this.seatsService.findByEventId(eventId);
+    // helper
+    private validateReservationSeats(reservation: Reservation): void {
+        if (!reservation.seats) {
+            throw new NotFoundException('Reserved seats not found');
+        }
+
+        if (reservation.seats.length === 0) {
+            throw new NotFoundException('No seats found in this reservation');
+        }
     }
 }

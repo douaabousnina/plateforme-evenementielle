@@ -4,7 +4,7 @@ import { Ticket } from '../../models/access.model';
 
 @Component({
   selector: 'app-ticket-card',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './ticket-card.component.html',
   styleUrls: ['./ticket-card.component.css']

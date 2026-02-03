@@ -3,7 +3,7 @@ import { EventDetailReview } from '../../models/event-detail.model';
 
 @Component({
   selector: 'app-event-detail-reviews',
-  standalone: true,
+  
   templateUrl: './event-detail-reviews.component.html',
   styleUrls: ['./event-detail-reviews.component.css'],
 })

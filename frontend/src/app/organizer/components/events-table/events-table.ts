@@ -5,7 +5,7 @@ import { EventStatus } from '../../models/event.models';
 
 @Component({
   selector: 'app-events-table',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './events-table.html',
   styleUrls: ['./events-table.css']

@@ -3,7 +3,7 @@ import { LoyaltyInfo } from '../../models/client-dashboard.model';
 
 @Component({
   selector: 'app-loyalty-card',
-  standalone: true,
+  
   imports: [],
   templateUrl: './loyalty-card.component.html',
   styleUrls: ['./loyalty-card.component.css'],

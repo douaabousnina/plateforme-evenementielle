@@ -11,7 +11,7 @@ import { AlertsService } from '../../services/alerts.service';
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
+  
   imports: [SideBar, KpiCard, SalesChart, EventsTable, Alerts, ScanHistoryButton],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],

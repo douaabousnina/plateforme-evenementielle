@@ -17,7 +17,7 @@ import { TimerComponent } from '../../components/timer/timer.component';
 
 @Component({
   selector: 'app-payment-page',
-  standalone: true,
+  
   imports: [
     HeaderComponent,
     BreadcrumbComponent,

@@ -5,7 +5,7 @@ export type FilterTab = 'upcoming' | 'past' | 'cancelled';
 
 @Component({
   selector: 'app-ticket-filters',
-  standalone: true,
+  
   imports: [CommonModule],
   templateUrl: './ticket-filters.component.html',
   styleUrls: ['./ticket-filters.component.css']

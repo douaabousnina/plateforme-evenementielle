@@ -8,7 +8,7 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
 
 @Component({
   selector: 'app-client-dashboard',
-  standalone: true,
+  
   imports: [
     HeaderComponent,
     WelcomeSectionComponent,

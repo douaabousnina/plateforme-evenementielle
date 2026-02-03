@@ -3,7 +3,7 @@ import { WelcomeSectionData } from '../../models/client-dashboard.model';
 
 @Component({
   selector: 'app-welcome-section',
-  standalone: true,
+  
   imports: [],
   templateUrl: './welcome-section.component.html',
   styleUrls: ['./welcome-section.component.css'],

@@ -4,7 +4,7 @@ import { ClientDashboardService } from '../../services/client-dashboard.service'
 
 @Component({
   selector: 'app-recommendations-section',
-  standalone: true,
+  
   imports: [RecommendationCardComponent],
   templateUrl: './recommendations-section.component.html',
   styleUrls: ['./recommendations-section.component.css'],
